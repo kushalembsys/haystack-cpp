@@ -21,10 +21,11 @@ class Date : public Val
     Date();
 	// disable assignment
     Date& operator=(const Date &other);
-protected:
-    const char type() const { return 'D'; }
+    friend class DateTime;
+    Date(const Date &other) : year(other.year), month(other.month), day(other.day) {};
 public:
-    
+    const char type() const { return DATE_TYPE; }
+
     // Four digit year such as 2014
     const int year;
 
@@ -36,7 +37,6 @@ public:
 
     // ctors
     Date(int year, int month, int day) : year(year), month(month), day(day) {};
-    Date(const Date &other) : year(other.year), month(other.month), day(other.day) {};
 	
     // Encode as "YYYY-MM-DD"
 	const std::string to_zinc() const;
@@ -62,7 +62,7 @@ public:
     bool operator <(const Date &b) const;
     bool operator >(const Date &b) const;
 
-    bool operator ==(const Val &other) const
+    bool operator==(const Val &other) const
     {
         if (type() != other.type())
             return false;

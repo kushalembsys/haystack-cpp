@@ -19,14 +19,14 @@ class Bool : public Val
 	Bool();
 	// disable assignment
 	Bool& operator=(const Bool &other);
-protected:
-    const char type() const { return 'B'; }
+	Bool(const Bool &other) : value(other.value){};
 public:
-	// This bool value
+    const char type() const { return BOOL_TYPE; }
+	
+    // This bool value
 	const bool value;
 
 	Bool(bool val);	
-	Bool(const Bool &other) : value(other.value){};
 	
 	// Singleton value for true
 	static const Bool TRUE_VAL;
@@ -43,7 +43,7 @@ public:
     // Equality
     bool operator ==(const Bool &other) const;
     bool operator !=(const Bool &other) const;
-    bool operator ==(const Val &other) const
+    bool operator==(const Val &other) const
     {
         if (type() != other.type())
             return false;

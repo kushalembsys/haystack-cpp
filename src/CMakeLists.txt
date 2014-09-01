@@ -10,8 +10,15 @@ set_property( GLOBAL PROPERTY USE_FOLDERS ON)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 FILE(GLOB all_headers "${PROJECT_SOURCE_DIR}/include/*.h*")
 source_group("headers" FILES ${all_headers}) 
+
+# Boost Includes
+find_package(Boost 1.40)
+
+
 # Source files
 FILE(GLOB src ${PROJECT_SOURCE_DIR}/src/*.cpp)
 source_group(source FILES ${src})
-
-add_library(libhaystack++ ${src} ${all_headers})
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+  add_library(haystack++ ${src} ${all_headers} ${Boost_INCLUDE_DIRS})
+endif()

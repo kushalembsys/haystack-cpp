@@ -97,11 +97,11 @@ bool DateTime::operator >(const DateTime &other) const
 
 const int64_t DateTime::millis() const
 {
-    if (_millis > 0)
-        return _millis;
+    if (m_millis > 0)
+        return m_millis;
     // lazy init millis
     std::tm tm = { time.sec /*sec*/, time.min /*min*/, time.hour + TimeZone::DEFAULT.offset /*hr*/, date.day, date.month - 1, date.year - 1900 };
     std::time_t t = std::mktime(&tm);
-    const_cast<DateTime*>(this)->_millis = static_cast<int64_t>((t + std::abs(tz_offset)) * 1000ULL + time.ms);
-    return _millis;
+    const_cast<DateTime*>(this)->m_millis = static_cast<int64_t>((t + std::abs(tz_offset)) * 1000ULL + time.ms);
+    return m_millis;
 }

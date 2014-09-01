@@ -19,14 +19,13 @@ class Uri : public Val
     Uri();
 	// disable assigment
     Uri& operator=(const Uri &other);
-protected:
-    const char type() const { return 'U'; }
+    Uri(const Uri &other) : value(other.value) {};
 public:
+    const char type() const { return URI_TYPE; }
     // This value
 	const std::string value;
 	
     Uri(const std::string &val) : value(val) {};
-    Uri(const Uri &other) : value(other.value) {};
 
     static const Uri EMPTY;
 	
@@ -44,7 +43,7 @@ public:
 
 	bool operator ==(const std::string &other) const;
 
-    bool operator ==(const Val &other) const
+    bool operator==(const Val &other) const
     {
         if (type() != other.type())
             return false;

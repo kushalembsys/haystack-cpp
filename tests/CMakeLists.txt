@@ -9,11 +9,16 @@ FILE(GLOB test_src ${PROJECT_SOURCE_DIR}/tests/*.cpp)
 source_group(tests FILES ${test_src})
 
 
-enable_testing()
-add_executable(test_app ${test_src})
-target_link_libraries(test_app libhaystack++)
+# Boost Includes
+find_package(Boost 1.40)
 
-if (MSVC)
-   set_target_properties(test_app PROPERTIES COMPILE_FLAGS "/Ycheaders.hpp")
-   set_source_files_properties(headers.cpp PROPERTIES COMPILE_FLAGS "/Ycheaders.hpp")
-endif(MSVC)
+if(Boost_FOUND)
+    enable_testing()
+    include_directories(${Boost_INCLUDE_DIRS})
+    add_executable(test_app ${test_src})
+    target_link_libraries(test_app haystack++)
+    if (MSVC)
+        set_target_properties(test_app PROPERTIES COMPILE_FLAGS "/Ycheaders.hpp")
+        set_source_files_properties(headers.cpp PROPERTIES COMPILE_FLAGS "/Ycheaders.hpp")
+    endif(MSVC)
+endif()

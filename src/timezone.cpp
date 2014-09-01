@@ -72,7 +72,7 @@ static const TimeZone currentTZ()
     return TimeZone(os.str(), offset);
 }
 
-const TimeZone TimeZone::UTC        = TimeZone("Etc/UTC", 0);
+const TimeZone TimeZone::UTC        = TimeZone("UTC", 0);
 
 const TimeZone TimeZone::DEFAULT    = TimeZone(currentTZ());
 

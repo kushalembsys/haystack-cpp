@@ -13,7 +13,7 @@
 ////////////////////////////////////////////////
 using namespace haystack;
 
-const Str Str::EMPTY = Str("");
+const Str& Str::EMPTY = *(new Str(""));
 
 Str::Str(const std::string &val) : value(val){}
 
@@ -100,10 +100,10 @@ bool Str::operator ==(const std::string &other) const
 ////////////////////////////////////////////////
 // implicit conversion
 ////////////////////////////////////////////////
-Str::operator const std::string() const
+/*Str::operator const std::string() const
 {
 	return value;
-}
+}*/
 
 /*Str::operator const char*() const
 {

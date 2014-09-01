@@ -5,43 +5,48 @@
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "dict.hpp"
+#include "marker.hpp"
+#include "num.hpp"
+#include "ref.hpp"
+#include "str.hpp"
+#include <sstream>
 
 ////////////////////////////////////////////////
 // Dict
 ////////////////////////////////////////////////
 using namespace haystack;
 
-const Dict Dict::EMPTY = Dict();
-
 // Return true if size is zero
-const bool Dict::is_empty() const { return _map.size() == 0; }
+const bool Dict::is_empty() const { return m_map.size() == 0; }
 
 // Return number of tag name / value pairs
-const size_t Dict::size() const { return _map.size(); }
+const size_t Dict::size() const { return m_map.size(); }
 
 // Return if the given tag is present
-const bool Dict::has(const std::string& name) const { return _map.count(name) > 0; }
+const bool Dict::has(const std::string& name) const { return m_map.count(name) > 0; }
 
 // Return if the given tag is not present
 const bool Dict::missing(const std::string& name) const { return !has(name); }
 
-// Convenience for "get(name, true)"
+// Get a tag by name
 const Val& Dict::get(const std::string& name) const
 {
-    dict_t::const_iterator it = _map.find(name);
-    return it->second;
+    dict_t::const_iterator it = m_map.find(name);
+    if (it != end())
+        return *it->second;
+    return EmptyVal::DEF;
 }
 
 // Iteratator to walk each name / tag pair
 Dict::dict_t::const_iterator Dict::begin() const
 {
-    return _map.begin();
+    return m_map.begin();
 }
 
 // End Iteratator
 Dict::dict_t::const_iterator Dict::end() const
 {
-    return _map.end();
+    return m_map.end();
 }
 
 ////////////////////////////////////////////////
@@ -51,7 +56,34 @@ Dict::dict_t::const_iterator Dict::end() const
 // Encode as "T" or "F"
 const std::string Dict::to_zinc() const
 {
-	return "";
+    std::stringstream os;
+    bool first = true;
+
+    for (dict_t::const_iterator it = begin(), e = end(); it != e; ++it)
+    {
+        const std::string& name = it->first;
+        const Val* val = it->second;
+        if (first) first = false; else os << ' ';
+        os << name;
+        if (!(*val == Marker::VAL)) { os << ':' << val->to_zinc(); }
+    }
+    return os.str();
+}
+
+// Get display string for this entity:
+// - dis tag
+// - id tag
+const std::string Dict::dis() const
+{
+    const Val& dis  = get("dis"); 
+    if (dis.type() == STR_TYPE)
+        return ((Str&)dis).value;
+    
+    const Val& id = get("id"); 
+    if (!(id == EmptyVal::DEF)) 
+        return ((Ref&)id).dis();
+
+    return "????";
 }
 
 // Equality
@@ -61,30 +93,71 @@ bool Dict::operator == (const Dict &other) const
 
     for (dict_t::const_iterator it = begin(), e = end(); it != e; ++it)
     {
-        if (!(it->second == other.get(it->first))) return false;
+        if (! (*it->second == other.get(it->first) ) ) return false;
     }
     return true;
 }
 
-
-////////////////////////////////////////////////
-// DictBuilder
-////////////////////////////////////////////////
-DictBuilder::DictBuilder()
+bool Dict::operator != (const Dict &other) const
 {
+    return !(*this == other);
 }
 
-DictBuilder::~DictBuilder()
+Dict& Dict::add(std::string name, const Val* val)
 {
-}
-// Add new tag
-DictBuilder& DictBuilder::add(const std::string name, const Val& val)
-{
-    _map.insert(value_t(name, val));
+    std::string k = name;
+    Val* d = const_cast<Val*>(val);
+    m_map.insert(k, d);
     return *this;
 }
-// Returns a dict with the value added
-const Dict DictBuilder::to_dict() const
+
+Dict& Dict::add(std::string name)
 {
-    return Dict(_map);
+    std::string k = name;
+    m_map.insert(k, new Marker());
+    return *this;
+}
+
+Dict& Dict::add(std::string name, const std::string& val)
+{
+    std::string k = name;
+    m_map.insert(k, new Str(val));
+    return *this;
+}
+
+// Returns a dict with the Num added
+Dict& Dict::add(std::string name, double val, const std::string &unit)
+{
+    std::string k = name;
+    m_map.insert(k, new Num(val, unit));
+    return *this;
+}
+
+////////////////////////////////////////////////
+// Static
+////////////////////////////////////////////////
+
+const Dict& Dict::EMPTY = *(new Dict());
+
+const bool Dict::is_tag_name(const std::string &n)
+{
+    if (n.size() == 0) return false;
+
+    int first = n[0] & 0xFF;
+    if (first < 'a' || first > 'z') return false;
+    
+    for (std::string::const_iterator it = n.begin(), end = n.end(); it != end; ++it)
+    {
+        int c = *it & 0xFF;
+        if ((c > 31 && c < 128) &&
+            ((c >= '0' && c <= '9')
+            || (c >= 'a' && c <= 'z')
+            || (c >= 'A' && c <= 'Z')
+            || (c == '_' )
+            ))
+            continue;
+        else
+            return false;
+    }
+    return true;
 }

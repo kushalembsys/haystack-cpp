@@ -18,16 +18,21 @@ namespace haystack {
 class Marker : public Val
 {
 	// disable construction
+    friend class Dict;
+    friend class ZincReader;
 	Marker() {};
 	// disable copy ctor
 	Marker(const Marker&);
 	// disable assignment
 	Marker& operator=(const Marker &other);
-protected:
-    const char type() const { return 'M'; }
 public:
-	// default marker value
-	static const Marker VAL;
+    const char type() const { return MARKER_TYPE; }
+
+    // default marker value
+	static const Marker& VAL;
+    // construct a new marker on heap
+    static const Marker* const DEF();
+
 	// Encode as "marker"
 	const std::string to_string() const;
 
@@ -36,7 +41,7 @@ public:
 
 	// Equality
 	bool operator ==(const Marker &b) const;
-    bool operator ==(const Val &other) const
+    bool operator==(const Val &other) const
     {
         if (type() != other.type())
             return false;

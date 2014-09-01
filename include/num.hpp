@@ -19,10 +19,12 @@ class Num : public Val
 {
 	Num() : value(0.0), unit("") {};
 	// disable assignment
+    Num(const Num &other) : value(other.value), unit(other.unit) { enforceUnit(); };
+    Num operator=(const Num &other) { return Num(other.value, other.unit); };
 	
-protected:
-    const char type() const { return 'N'; }
 public:
+    const char type() const { return NUM_TYPE; }
+
     // This double value
     const double		value;
     // This unit string
@@ -34,15 +36,13 @@ public:
     Num(int val) : value(val), unit("") { enforceUnit(); };
     Num(int64_t val, const std::string &unit) : value(static_cast<double>(val)), unit(unit) { enforceUnit(); };
     Num(int64_t val) : value(static_cast<double>(val)), unit("") { enforceUnit(); };
-    Num(const Num &other) : value(other.value), unit(other.unit) { enforceUnit(); };
-    Num operator=(const Num &other) { return Num(other.value, other.unit); };
     // special values
     static const Num ZERO;
 	static const Num POS_INF;
 	static const Num NEG_INF;
 	static const Num NaN;
 
-	// Encode value to zinc format
+    // Encode value to zinc format
 	const std::string to_zinc() const;
 
 	// Equality
@@ -53,12 +53,13 @@ public:
 	bool operator ==(double other) const;
 	bool operator ==(int other) const;
 	bool operator ==(int64_t other) const;
-    bool operator ==(const Val &other) const
+    bool operator==(const Val &other) const
     {
         if (type() != other.type())
             return false;
         return static_cast<const Num&>(other).operator==(*this);
     }
+
     // check if str is a valid unit name
     static bool isUnitName(const std::string&);
 

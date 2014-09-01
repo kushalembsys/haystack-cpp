@@ -20,14 +20,15 @@ class Bin : public Val
 	Bin();
 	// disable assignment
 	Bin& operator=(const Bin &other);
+    Bin(const Bin& other) : value(other.value) {};
 protected:
-    const char type() const { return 'K'; }
 public:
+    const char type() const { return BIN_TYPE; }
+
     // This string value
 	const std::string value;
-	
+	// Construct from std::string
 	Bin(const std::string &val);
-    Bin(const Bin& other) : value(other.value) {};
 	
 	// MIME type for binary file
 	const std::string to_string() const;
@@ -39,7 +40,7 @@ public:
 	bool operator ==(const Bin &b) const;
 	bool operator !=(const Bin &b) const;
 	bool operator ==(const std::string &other) const;
-    bool operator ==(const Val &other) const
+    bool operator==(const Val &other) const
     {
         if (type() != other.type())
             return false;

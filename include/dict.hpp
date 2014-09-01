@@ -1,6 +1,7 @@
 #pragma once
 #include "val.hpp"
-#include <map>
+#include <boost/ptr_container/ptr_map.hpp>
+
 //
 // Copyright (c) 2014, Radu Racariu, Brian Frank
 // History:
@@ -15,23 +16,17 @@
 */
 namespace haystack {
 
-class Dict
+class Dict : boost::noncopyable
 {
 public:
     // dict internal type
-    typedef std::map < const std::string, const Val&> dict_t;
+    typedef boost::ptr_map < std::string, haystack::Val > dict_t;
 private:
-    const dict_t _map;
-    // disable copy ctor
-    friend class DictBuilder;
-    Dict& operator=(const Dict &other);
-    Dict(){};
-    Dict(const Dict &other);// : _map(other._map) {};
-    Dict(const dict_t &m) : _map(m) {};
+    dict_t m_map;
 public:
     
     // Singleton for empty set of tags.
-    const static Dict EMPTY;
+    const static Dict& EMPTY;
 
     // Return true if size is zero
     const bool is_empty() const;
@@ -59,25 +54,30 @@ public:
     // Encode value to zinc format
 	const std::string to_zinc() const;
 
+    // Get display string for this entity:
+    // - dis tag
+    // - id tag
+    const std::string dis() const;
+
+    // Returns a dict with the value added
+    Dict& add(std::string name, const Val* val);
+
+    // Returns a dict with the Marker added
+    Dict& add(std::string name);
+
+    // Returns a dict with the Str added
+    Dict& add(std::string name, const std::string& val);
+
+    // Returns a dict with the Num added
+    Dict& add(std::string name, double val, const std::string &unit = "" );
+
+    // Return if the given string is a legal tag name.  The
+    // first char must be ASCII lower case letter.  Rest of
+    // chars must be ASCII letter, digit, or underbar.
+    static const bool is_tag_name(const std::string &);
+
     // Equality
     bool operator ==(const Dict &b) const;
+    bool operator !=(const Dict &b) const;
 };
-
-class DictBuilder
-{
-public:
-    DictBuilder();
-    ~DictBuilder();
-
-private:
-    Dict::dict_t _map;
-    typedef std::pair<const std::string, const Val&> value_t;
-public:
-    // Add new tag
-    DictBuilder& add(const std::string name, const Val& val);
-
-    const Dict to_dict() const;
-
-};
-
 };

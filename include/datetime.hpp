@@ -24,10 +24,10 @@ class DateTime : public Val
     DateTime();
 	// disable assignment
     DateTime& operator=(const DateTime &other);
-protected:
-    const char type() const { return 'X'; }
+    DateTime(const DateTime &other) : date(other.date), time(other.time), tz(TimeZone::DEFAULT), tz_offset(tz.offset * 3600), m_millis(-1)  {};
 public:
-    
+    const char type() const { return DATE_TIME_TYPE; }
+
     // Date component of the timestamp
     const Date date;
 
@@ -42,13 +42,12 @@ public:
 
     // ctors
     DateTime(int year, int month, int day, int hour, int min, int sec, const TimeZone& tz, int tzOffset) 
-        : date(Date(year, month, day)), time(Time(hour, min, sec)), tz(tz), tz_offset(tzOffset), _millis(-1) {};
+        : date(Date(year, month, day)), time(Time(hour, min, sec)), tz(tz), tz_offset(tzOffset), m_millis(-1) {};
     DateTime(int year, int month, int day, int hour, int min, const TimeZone& tz, int tzOffset)
-        : date(Date(year, month, day)), time(Time(hour, min)), tz(tz), tz_offset(tzOffset), _millis(-1) {};
-    DateTime(const Date& date, const Time& time) : date(date), time(time), tz(TimeZone::DEFAULT), tz_offset(tz.offset * 3600), _millis(-1) {};
-    DateTime(const DateTime &other) : date(other.date), time(other.time), tz(TimeZone::DEFAULT), tz_offset(tz.offset * 3600), _millis(-1)  {};
-    DateTime(const Date& date, const Time& time, const TimeZone& tz) : date(date), time(time), tz(tz), tz_offset(tz.offset * 3600), _millis(-1) {};
-    DateTime(const Date& date, const Time& time, const TimeZone& tz, int tzOffset) : date(date), time(time), tz(tz), tz_offset(tzOffset), _millis(-1) {};
+        : date(Date(year, month, day)), time(Time(hour, min)), tz(tz), tz_offset(tzOffset), m_millis(-1) {};
+    DateTime(const Date& date, const Time& time) : date(date), time(time), tz(TimeZone::DEFAULT), tz_offset(tz.offset * 3600), m_millis(-1) {};
+    DateTime(const Date& date, const Time& time, const TimeZone& tz) : date(date), time(time), tz(tz), tz_offset(tz.offset * 3600), m_millis(-1) {};
+    DateTime(const Date& date, const Time& time, const TimeZone& tz, int tzOffset) : date(date), time(time), tz(tz), tz_offset(tzOffset), m_millis(-1) {};
 	
     // construct from time_t
     static DateTime make(const int64_t& time, const TimeZone& = TimeZone::DEFAULT);
@@ -62,7 +61,7 @@ public:
     bool operator ==(const DateTime &) const;
     bool operator !=(const DateTime &) const;
     
-    bool operator ==(const Val &other) const
+    bool operator==(const Val &other) const
     {
         if (type() != other.type())
             return false;
@@ -76,6 +75,6 @@ public:
     const int64_t millis() const;
     // utils
 private:
-    int64_t _millis;
+    int64_t m_millis;
 };
 };

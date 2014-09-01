@@ -21,9 +21,8 @@ class Time : public Val
     Time();
 	// disable assignment
     Time& operator=(const Time &other);
-protected:
-    const char type() const { return 'T'; }
 public:
+    const char type() const { return TIME_TYPE; }
     
     // Hour of day as 0-23
     const int hour;
@@ -50,7 +49,7 @@ public:
     bool operator ==(const Time &b) const;
     bool operator !=(const Time &b) const;
 
-    bool operator ==(const Val &other) const
+    bool operator==(const Val &other) const
     {
         if (type() != other.type())
             return false;

@@ -4,46 +4,40 @@
 //   19 Aug 2014  Radu Racariu Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
-#include "marker.hpp"
+#include "val.hpp"
 
 ////////////////////////////////////////////////
-// Marker
+// EmptyVal
 ////////////////////////////////////////////////
 using namespace haystack;
 
-const Marker& Marker::VAL = *(new Marker());
+const EmptyVal& EmptyVal::DEF = *(new EmptyVal());
 
-const Marker* const Marker::DEF()
-{
-    return new Marker();
-}
-
+const char EmptyVal::type() const { return EMPTY_TYPE; }
 
 ////////////////////////////////////////////////
 // to string
 ////////////////////////////////////////////////
 
 // Encode as "marker"
-const std::string Marker::to_string() const
+const std::string EmptyVal::to_string() const
 {
-	return "marker";
+    assert(false); return "";
 }
 
 ////////////////////////////////////////////////
 // to zinc
 ////////////////////////////////////////////////
 
-// Encode as "M"
-const std::string Marker::to_zinc() const
+const std::string EmptyVal::to_zinc() const
 {
-	return "M";
+    assert(false);  return "";
 }
 
 ////////////////////////////////////////////////
 // Equal
 ////////////////////////////////////////////////
-bool Marker::operator ==(const Marker&) const
+bool EmptyVal::operator ==(const Val &other) const
 {
-    // all markers are the same
-	return true;
+    return type() == other.type();
 }

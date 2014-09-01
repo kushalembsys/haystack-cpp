@@ -9,6 +9,7 @@
 #include "headers.hpp"
 #include "bin.hpp"
 #include "bool.hpp"
+#include "coord.hpp"
 #include "date.hpp"
 #include "datetime.hpp"
 #include "marker.hpp"
@@ -56,7 +57,7 @@ TEST_CASE( "Boolean testcase", "[Bool]" )
 	CHECK(t.to_string() == "true");
 	CHECK(t.to_zinc() == "T");
 
-	Bool  f = Bool(false);
+	const Bool&  f = Bool(false);
 	CHECK(f == false);
 	CHECK(f == haystack::Bool::FALSE_VAL);
 	CHECK_FALSE(f == haystack::Bool::TRUE_VAL);
@@ -80,6 +81,77 @@ TEST_CASE( "Boolean testcase", "[Bool]" )
 	// zinc
 	CHECK(Bool::TRUE_VAL.to_zinc() == "T");
 	CHECK(Bool::FALSE_VAL.to_zinc() == "F");
+}
+
+void verifyCoord(double lat, double lng, std::string s)
+{
+    Coord c(lat, lng);
+    CHECK(c.lat() == lat);
+    CHECK(c.lng() == lng);
+    CHECK(c.to_string() == s);
+    CHECK(Coord::make(s) == c);
+}
+
+///////////////////////////////////////////////////////////
+// Coord
+///////////////////////////////////////////////////////////
+TEST_CASE("Coord testcase", "[Coord]")
+{
+    verifyCoord(12, 34, "C(12.0,34.0)");
+
+    // lat boundaries
+    verifyCoord(90, 123, "C(90.0,123.0)");
+    verifyCoord(-90, 123, "C(-90.0,123.0)");
+    verifyCoord(89.888999, 123, "C(89.888999,123.0)");
+    verifyCoord(-89.888999, 123, "C(-89.888999,123.0)");
+
+    // lon boundaries
+    verifyCoord(45, 180, "C(45.0,180.0)");
+    verifyCoord(45, -180, "C(45.0,-180.0)");
+    verifyCoord(45, 179.999129, "C(45.0,179.999129)");
+    verifyCoord(45, -179.999129, "C(45.0,-179.999129)");
+
+    // decimal places
+    verifyCoord(9.1, -8.1, "C(9.1,-8.1)");
+    verifyCoord(9.12, -8.13, "C(9.12,-8.13)");
+    verifyCoord(9.123, -8.134, "C(9.123,-8.134)");
+    verifyCoord(9.1234, -8.1346, "C(9.1234,-8.1346)");
+    verifyCoord(9.12345, -8.13456, "C(9.12345,-8.13456)");
+    verifyCoord(9.123452, -8.134567, "C(9.123452,-8.134567)");
+
+    // zero boundaries
+    verifyCoord(0, 0, "C(0.0,0.0)");
+    verifyCoord(0.3, -0.3, "C(0.3,-0.3)");
+    verifyCoord(0.03, -0.03, "C(0.03,-0.03)");
+    verifyCoord(0.003, -0.003, "C(0.003,-0.003)");
+    verifyCoord(0.0003, -0.0003, "C(0.0003,-0.0003)");
+    verifyCoord(0.02003, -0.02003, "C(0.02003,-0.02003)");
+    verifyCoord(0.020003, -0.020003, "C(0.020003,-0.020003)");
+    verifyCoord(0.000123, -0.000123, "C(0.000123,-0.000123)");
+    verifyCoord(7.000123, -7.000123, "C(7.000123,-7.000123)");
+
+    // arg errors
+    CHECK(Coord::is_lat(-91.0) == false);
+    CHECK(Coord::is_lat(-90.0) == true);
+    CHECK(Coord::is_lat(-89.0) == true);
+    CHECK(Coord::is_lat(90.0) == true);
+    CHECK(Coord::is_lat(91.0) == false);
+    CHECK(Coord::is_lng(-181.0) == false);
+    CHECK(Coord::is_lng(-179.99) == true);
+    CHECK(Coord::is_lng(180.0) == true);
+    CHECK(Coord::is_lng(181.0) == false);
+    
+    CHECK_THROWS(Coord(91.0, 12.0));
+    CHECK_THROWS(Coord(-90.2, 12.0));
+    CHECK_THROWS(Coord(13.0, 180.009));
+    CHECK_THROWS(Coord(13.0, -181.0));
+
+    // parse errs
+    CHECK_THROWS(Coord::make("1.0,2.0"));
+    CHECK_THROWS(Coord::make("(1.0,2.0)"));
+    CHECK_THROWS(Coord::make("C(1.0,2.0"));
+    CHECK_THROWS(Coord::make("C(x,9)"));
+    
 }
 
 ///////////////////////////////////////////////////////////
@@ -250,8 +322,8 @@ TEST_CASE("Ref testcase", "[Ref]")
     CHECK(Ref("foo") != Ref("Foo"));
 
     // api
-    Ref a = Ref("Misc.foo", "Some dis");
-    CHECK(a.dis == "Some dis");
+    const Ref& a = Ref("Misc.foo", "Some dis");
+    CHECK(a.dis() == "Some dis");
 
     // encoding
     CHECK(Ref("1234-5678.foo:bar").to_zinc() ==  "@1234-5678.foo:bar");
@@ -280,12 +352,12 @@ TEST_CASE("String testcase", "[Str]")
 	CHECK(s.to_string() == "aaa");
 	CHECK(s.to_zinc() == "\"aaa\"");
 
-	Str s1 = Str("aaa\n");
+	const Str& s1 = Str("aaa\n");
 	CHECK(s1 == "aaa\n");
 	CHECK(s1.to_string() == "aaa\n");
 	CHECK(s1.to_zinc() == "\"aaa\\n\"");
     // api
-	Str s3 = s1;
+	const Str& s3 = s1;
 	CHECK(s3 == s1);
 
 	// equality

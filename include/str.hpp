@@ -19,17 +19,17 @@ class Str : public Val
 	Str();
 	// disable assigment
 	Str& operator=(const Str &other);
-protected:
-    const char type() const { return 'S'; }
+    friend class Ref;
+    Str(const Str &other) : value(other.value) {};
 public:
+    const char type() const { return STR_TYPE; }
 	
     // This string value
     const std::string value;
 
 	Str(const std::string &val);
-	Str(const Str &other) : value(other.value) {};
 
-	static const Str EMPTY;
+	static const Str& EMPTY;
 	
 	// Return value string.
 	const std::string to_string() const;
@@ -44,7 +44,7 @@ public:
     bool operator > (const Str &other) const;
 
 	bool operator ==(const std::string &other) const;
-    bool operator ==(const Val &other) const
+    bool operator==(const Val &other) const
     {
         if (type() != other.type())
             return false;
@@ -52,6 +52,6 @@ public:
     }
 	
 	// implicit conversion to std::string
-	operator const std::string() const;
+	//operator const std::string() const;
 };
 };

@@ -19,18 +19,16 @@ class Ref : public Val
     Ref();
 	// disable assignment
     Ref& operator=(const Ref &other);
-protected:
-    const char type() const { return 'R'; }
+    Ref(const Ref &other) : value(other.value), m_dis(other.m_dis) { Ref::enforceId(); };
 public:
+    const char type() const { return REF_TYPE; }
+
 	// This string value
     const std::string	value;
-    // This Str dis
-	const Str	        dis;
 
 	
-    Ref(const std::string& val) : value(val), dis("") { Ref::enforceId(); };
-    Ref(const std::string& val, const std::string &unit) : value(val), dis(unit) { Ref::enforceId(); };
-    Ref(const Ref &other) : value(other.value), dis(other.dis) { Ref::enforceId(); };
+    Ref(const std::string& val) : value(val), m_dis("") { Ref::enforceId(); };
+    Ref(const std::string& val, const std::string &unit) : value(val), m_dis(unit) { Ref::enforceId(); };
     
     // Return the val string
     const std::string to_string() const;
@@ -38,21 +36,27 @@ public:
     // Encode value to zinc format
 	const std::string to_zinc() const;
 
+    // Return display string which is dis field if nont empty, val field otherwise
+    const std::string dis() const;
+
 	// Equality
     bool operator ==(const Ref &other) const;
     bool operator !=(const Ref &other) const;
-    bool operator ==(const Val &other) const
+    bool operator==(const Val &other) const
     {
         if (type() != other.type())
             return false;
         return static_cast<const Ref&>(other).operator==(*this);
     }
     
+    static bool is_id_char(int c);
     // check if str is a valid id
     static bool isId(const std::string&);
 
     // utils
 private:
+    // This Str dis
+    const Str m_dis;
     void enforceId()
     {
         if (!Ref::isId(value))
