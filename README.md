@@ -23,6 +23,7 @@ You will find included all the basic **haystack** types, serialization/de-serial
 ### Contribution guidelines ###
 
 * Writing tests should be done inside the tests folder, the test framework used is CATCH, please look at the existing test files to see how they are structured.
+* Please stick to Cmake and **DON'T** manually configure the cmake generated projects/makefiles.
 
 ### Who do I talk to? ###
 
