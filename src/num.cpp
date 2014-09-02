@@ -92,14 +92,14 @@ bool Num::operator ==(int64_t other) const
 ////////////////////////////////////////////////
 // Comparation
 ////////////////////////////////////////////////
-bool Num::operator < (const Num &other) const
+bool Num::operator < (const Val &other) const
 {
-	return value < other.value;
+    return type() == other.type() && value < ((Num&)other).value;
 }
 
-bool Num::operator >(const Num &other) const
+bool Num::operator >(const Val &other) const
 {
-	return value > other.value;
+    return type() == other.type() && value > ((Num&)other).value;
 }
 
 Num::auto_ptr_t Num::clone() const

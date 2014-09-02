@@ -68,6 +68,18 @@ bool Ref::operator !=(const Ref &other) const
 	return !(*this == other);
 }
 
+////////////////////////////////////////////////
+// Cmp
+////////////////////////////////////////////////
+bool Ref::operator > (const Val& other) const 
+{ 
+    return type() == other.type() && to_string() > other.to_string();
+}
+bool Ref::operator < (const Val& other) const
+{
+    return type() == other.type() && to_string() < other.to_string();
+}
+
 Ref::auto_ptr_t Ref::clone() const
 {
     return auto_ptr_t(new Ref(*this));

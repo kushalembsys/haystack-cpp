@@ -68,14 +68,14 @@ bool Uri::operator !=(const Uri &other) const
 	return !(*this == other);
 }
 
-bool Uri::operator < (const Uri &other) const
+bool Uri::operator < (const Val &other) const
 {
-	return value < other.value;
+	return type() == other.type() && value < ((Uri&)other).value;
 }
 
-bool Uri::operator >(const Uri &other) const
+bool Uri::operator >(const Val &other) const
 {
-    return value > other.value;
+    return type() == other.type() && value > ((Uri&)other).value;
 }
 
 

@@ -65,8 +65,9 @@ public:
     bool operator==(const Val &other) const;
 
     // Comparator
-    bool operator <(const DateTime &) const;
-    bool operator >(const DateTime &) const;
+    bool operator <(const Val &) const;
+    bool operator >(const Val &) const;
+
     // Get this date time as Java milliseconds since epoch * /
     const int64_t millis() const;
     auto_ptr_t clone() const;

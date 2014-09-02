@@ -272,7 +272,7 @@ Val::auto_ptr_t ZincReader::read_num_val()
     {
         int32_t year;
         try { year = boost::lexical_cast<int>(s.str()); }
-        catch (std::exception&) { throw std::runtime_error("Invalid year for date value: "); }
+        catch (std::exception&) { throw std::runtime_error("Invalid year for date value: " + s.str()); }
         consume(); // dash
         int month = read_two_digits("Invalid digit for month in date value");
         if (m_cur != '-') throw std::runtime_error("Expected '-' for date value");
@@ -294,9 +294,9 @@ Val::auto_ptr_t ZincReader::read_num_val()
         // hour (may have been parsed already in date time)
         if (hour < 0)
         {
-            if (s.str().size() != 2) { throw std::runtime_error("Hour must be two digits for time value: "); }
+            if (s.str().size() != 2) { throw std::runtime_error("Hour must be two digits for time value: " + s.str()); }
             try { hour = boost::lexical_cast<int>(s.str()); }
-            catch (std::exception&) { throw std::runtime_error("Invalid hour for time value: "); }
+            catch (std::exception&) { throw std::runtime_error("Invalid hour for time value: " + s.str()); }
         }
         consume(); // colon
         int min = read_two_digits("Invalid digit for minute in time value");
@@ -545,6 +545,103 @@ void ZincReader::consume()
     if (m_cur == '\n') m_line_num++;
 
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+// HFilter
+//////////////////////////////////////////////////////////////////////////
+
+Filter::auto_ptr_t ZincReader::read_filter()
+{
+    m_is_filter = true;
+    skip_space();
+    Filter::auto_ptr_t q = read_filter_or();
+    skip_space();
+    if (m_cur >= 0) throw std::runtime_error("Expected end of stream");
+    return q;
+}
+
+Filter::auto_ptr_t ZincReader::read_filter_or()
+{
+    Filter::auto_ptr_t q = read_filter_and();
+    skip_space();
+    if (m_cur != 'o') return q;
+    if (read_id() != "or") throw std::runtime_error("Expecting 'or' keyword");
+    skip_space();
+    // TODO::
+    return Filter::orF(q, read_filter_or());
+}
+
+Filter::auto_ptr_t ZincReader::read_filter_and()
+{
+    Filter::auto_ptr_t q = read_filter_atomic();
+    skip_space();
+    if (m_cur != 'a') return q;
+    if (read_id() != "and") throw std::runtime_error("Expecting 'and' keyword");
+    skip_space();
+    return Filter::andF(q, read_filter_and());
+}
+
+Filter::auto_ptr_t ZincReader::read_filter_atomic()
+{
+    skip_space();
+    if (m_cur == '(') return read_filter_parens();
+
+    std::string path = read_filter_path();
+    skip_space();
+
+    if (path == "not") { return Filter::missing(read_filter_path()); }
+
+    if (m_cur == '=' && m_peek == '=') { consume_cmp(); return Filter::eq(path, read_val()); }
+    if (m_cur == '!' && m_peek == '=') { consume_cmp(); return Filter::ne(path, read_val()); }
+    if (m_cur == '<' && m_peek == '=') { consume_cmp(); return Filter::le(path, read_val()); }
+    if (m_cur == '>' && m_peek == '=') { consume_cmp(); return Filter::ge(path, read_val()); }
+    if (m_cur == '<')                { consume_cmp(); return Filter::lt(path, read_val()); }
+    if (m_cur == '>')                { consume_cmp(); return Filter::gt(path, read_val()); }
+
+    return Filter::has(path);
+}
+
+Filter::auto_ptr_t ZincReader::read_filter_parens()
+{
+    consume();
+    skip_space();
+    Filter::auto_ptr_t q = read_filter_or();
+    if (m_cur != ')') std::runtime_error("Expecting ')'");
+    consume();
+    return q;
+}
+
+void ZincReader::consume_cmp()
+{
+    consume();
+    if (m_cur == '=') consume();
+    skip_space();
+}
+
+std::string ZincReader::read_filter_path()
+{
+    // read first tag name
+    std::string id = read_id();
+
+    // if not pathed, optimize for common case
+    if (m_cur != '-' || m_peek != '>') return id;
+
+    // parse path
+    std::stringstream s;
+
+    s << id;
+   
+    while (m_cur == '-' || m_peek == '>')
+    {
+        consume();
+        consume();
+        id = read_id();
+        s << '-' << '>' << id;
+    }
+    return s.str();
+}
+
 
 #define DIGIT 0x01
 #define ALPHA_LO 0x02

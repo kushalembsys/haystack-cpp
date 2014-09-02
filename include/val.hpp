@@ -49,7 +49,10 @@ public:
     virtual const std::string to_zinc() const = 0;
 
     virtual const char type() const = 0;
+
     virtual bool operator==(const Val &other) const = 0;
+    virtual bool operator > (const Val &other) const = 0;
+    virtual bool operator < (const Val &other) const = 0;
 
     virtual auto_ptr_t clone() const = 0;
 
@@ -71,6 +74,8 @@ public:
     const char type() const;
     
     bool operator==(const Val &other) const;
+    bool operator > (const Val &other) const;
+    bool operator < (const Val &other) const;
 
     auto_ptr_t clone() const;
 };

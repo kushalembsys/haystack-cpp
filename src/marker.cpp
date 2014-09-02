@@ -48,6 +48,19 @@ bool Marker::operator==(const Val &other) const
     return type() == other.type();
 }
 
+////////////////////////////////////////////////
+// Cmp
+////////////////////////////////////////////////
+bool Marker::operator > (const Val& other) const 
+{ 
+    return  type() == other.type() && to_string() > other.to_string();
+}
+bool Marker::operator < (const Val& other) const
+{ 
+    return  type() == other.type() && to_string() < other.to_string();
+}
+
+
 Marker::auto_ptr_t Marker::clone() const
 {
     return auto_ptr_t(new Marker());

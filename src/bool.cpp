@@ -58,14 +58,14 @@ bool Bool::operator != (const Bool &other) const
     return !(*this == other);
 }
 
-bool Bool::operator < (const Bool &other) const
+bool Bool::operator < (const Val &other) const
 {
-    return value < other.value;
+    return type() == other.type() && value < ((Bool&)other).value;
 }
 
-bool Bool::operator > (const Bool &other) const
+bool Bool::operator > (const Val &other) const
 {
-    return value > other.value;
+    return type() == other.type() && value >  ((Bool&)other).value;
 }
 
 Bool::auto_ptr_t Bool::clone() const

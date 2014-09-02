@@ -93,14 +93,14 @@ bool DateTime::operator !=(const DateTime &other) const
 ////////////////////////////////////////////////
 // Comparators
 ////////////////////////////////////////////////
-bool DateTime::operator <(const DateTime &other) const
+bool DateTime::operator <(const Val &other) const
 {
-    return millis() < other.millis();
+    return type() == other.type() && millis() < ((DateTime&)other).millis();
 }
 
-bool DateTime::operator >(const DateTime &other) const
+bool DateTime::operator >(const Val &other) const
 {
-    return millis() > other.millis();
+    return type() == other.type() && millis() > ((DateTime&)other).millis();
 }
 
 const int64_t DateTime::millis() const

@@ -1,5 +1,7 @@
 #pragma once
 #include "gridreader.hpp"
+#include "val.hpp"
+#include "filter.hpp"
 #include <istream>
 #include <stdint.h>
 
@@ -13,6 +15,7 @@
 
 namespace haystack {
 class Dict;
+class Filter;
 /*
  ZincReader reads grids using the Zinc format.
 
@@ -27,19 +30,10 @@ public:
 
     // Read a grid
     std::auto_ptr<Grid> read_grid();
+    // Parses a filter
+    Filter::auto_ptr_t read_filter();
 
 private:
-    //////////////////////////////////////////////////////////////////////////
-    // Fields
-    //////////////////////////////////////////////////////////////////////////
-
-    std::istream& m_is;
-    int32_t m_cur;
-    int32_t m_peek;
-    int32_t m_line_num;
-    int32_t m_version;
-    bool m_is_filter;
-
     //////////////////////////////////////////////////////////////////////////
     // Implementation
     //////////////////////////////////////////////////////////////////////////
@@ -56,6 +50,13 @@ private:
     Val::auto_ptr_t read_str_val();
     Val::auto_ptr_t read_uri_val();
     Val::auto_ptr_t read_word_val();
+
+    Filter::auto_ptr_t read_filter_or();
+    Filter::auto_ptr_t read_filter_and();
+    Filter::auto_ptr_t read_filter_atomic();
+    Filter::auto_ptr_t read_filter_parens();
+    void consume_cmp();
+    std::string read_filter_path();
 
     std::string read_id();
     std::string read_str_literal();
@@ -76,5 +77,17 @@ private:
     void skip_space();
     void consume_new_line();
     void consume();
+
+    //////////////////////////////////////////////////////////////////////////
+    // Fields
+    //////////////////////////////////////////////////////////////////////////
+
+    std::istream& m_is;
+    int32_t m_cur;
+    int32_t m_peek;
+    int32_t m_line_num;
+    int32_t m_version;
+    bool m_is_filter;
+
 };
 };

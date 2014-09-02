@@ -43,6 +43,12 @@ bool EmptyVal::operator ==(const Val &other) const
     return &other == NULL ||  type() == other.type();
 }
 
+////////////////////////////////////////////////
+// Cmp
+////////////////////////////////////////////////
+bool EmptyVal::operator > (const Val&) const { return false; }
+bool EmptyVal::operator < (const Val&) const { return false; }
+
 EmptyVal::auto_ptr_t EmptyVal::clone() const
 {
     return auto_ptr_t(new EmptyVal());

@@ -60,8 +60,8 @@ public:
     bool operator !=(const Date &b) const;
 
     // Comparator
-    bool operator <(const Date &b) const;
-    bool operator >(const Date &b) const;
+    bool operator <(const Val &b) const;
+    bool operator >(const Val &b) const;
 
     bool operator==(const Val &other) const;
     

@@ -89,14 +89,14 @@ bool Str::operator !=(const Str &other) const
 	return !(*this == other);
 }
 
-bool Str::operator < (const Str &other) const
+bool Str::operator < (const Val &other) const
 {
-	return value < other.value;
+    return type() == other.type() && value < ((Str&)other).value;
 }
 
-bool Str::operator > (const Str &other) const
+bool Str::operator > (const Val &other) const
 {
-    return value > other.value;
+    return type() == other.type() && value > ((Str&)other).value;
 }
 
 

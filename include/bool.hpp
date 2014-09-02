@@ -46,8 +46,8 @@ public:
     bool operator !=(const Bool &other) const;
     bool operator==(const Val &other) const;
 
-    bool operator > (const Bool &other) const;
-    bool operator < (const Bool &other) const;
+    bool operator > (const Val &other) const;
+    bool operator < (const Val &other) const;
 	
     auto_ptr_t clone() const;
 };

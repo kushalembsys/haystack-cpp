@@ -49,8 +49,8 @@ public:
 	// Equality
 	bool operator ==(const Num &other) const;
 	bool operator !=(const Num &other) const;
-	bool operator > (const Num &other) const;
-	bool operator < (const Num &other) const;
+	bool operator > (const Val &other) const;
+	bool operator < (const Val &other) const;
 	bool operator ==(double other) const;
 	bool operator ==(int other) const;
 	bool operator ==(int64_t other) const;

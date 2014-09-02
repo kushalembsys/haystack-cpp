@@ -123,14 +123,14 @@ bool Date::operator !=(const Date &other) const
 ////////////////////////////////////////////////
 // Comparators
 ////////////////////////////////////////////////
-bool Date::operator <(const Date &other) const
+bool Date::operator <(const Val &other) const
 {
-    return compareTo(other) < 0;
+    return type() == other.type() && compareTo(((Date&)other)) < 0;
 }
 
-bool Date::operator >(const Date &other) const
+bool Date::operator >(const Val &other) const
 {
-    return compareTo(other) > 0;
+    return type() == other.type() && compareTo(((Date&)other)) > 0;
 }
 
 int Date::compareTo(const Date &other) const

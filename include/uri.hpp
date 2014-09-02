@@ -39,8 +39,8 @@ public:
 	// Equality is value based
     bool operator ==(const Uri &other) const;
     bool operator !=(const Uri &other) const;
-    bool operator < (const Uri &other) const;
-    bool operator > (const Uri &other) const;
+    bool operator < (const Val &other) const;
+    bool operator > (const Val &other) const;
 
 	bool operator ==(const std::string &other) const;
 

@@ -53,8 +53,8 @@ public:
     bool operator==(const Val &other) const;
 
     // Comparator
-    bool operator <(const Time &b) const;
-    bool operator >(const Time &b) const;
+    bool operator <(const Val &b) const;
+    bool operator >(const Val &b) const;
 
     auto_ptr_t clone() const;
    

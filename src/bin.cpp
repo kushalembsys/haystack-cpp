@@ -75,6 +75,16 @@ bool Bin::operator ==(const std::string &other) const
     return value == other;
 }
 
+bool Bin::operator < (const Val &other) const
+{
+    return type() == other.type() && value < ((Bin&)other).value;
+}
+
+bool Bin::operator >(const Val &other) const
+{
+    return type() == other.type() && value >  ((Bin&)other).value;
+}
+
 Bin::auto_ptr_t Bin::clone() const
 {
     return auto_ptr_t(new Bin(*this));

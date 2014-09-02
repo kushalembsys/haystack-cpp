@@ -130,14 +130,16 @@ bool Coord::operator !=(const Coord &other) const
 	return !(*this == other);
 }
 
-bool Coord::operator < (const Coord &other) const
+bool Coord::operator < (const Val &other) const
 {
-    return ulat < other.ulat && ulng > other.ulng;
+    return type() == other.type() 
+        && ulat < ((Coord&)other).ulat && ulng >((Coord&)other).ulng;
 }
 
-bool Coord::operator >(const Coord &other) const
+bool Coord::operator >(const Val &other) const
 {
-    return ulat > other.ulat && ulng > other.ulng;
+    return type() == other.type() 
+        && ulat > ((Coord&)other).ulat && ulng > ((Coord&)other).ulng;
 }
 
 Coord::auto_ptr_t Coord::clone() const

@@ -60,14 +60,14 @@ bool Time::operator !=(const Time &other) const
 ////////////////////////////////////////////////
 // Comparators
 ////////////////////////////////////////////////
-bool Time::operator <(const Time &other) const
+bool Time::operator <(const Val &other) const
 {
-    return compareTo(other) < 0;
+    return type() == other.type() && compareTo(((Time&)other)) < 0;
 }
 
-bool Time::operator >(const Time &other) const
+bool Time::operator >(const Val &other) const
 {
-    return compareTo(other) > 0;
+    return type() == other.type() && compareTo(((Time&)other)) > 0;
 }
 
 Time::auto_ptr_t Time::clone() const
