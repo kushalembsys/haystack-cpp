@@ -1,7 +1,8 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   28 Aug 2014  Radu Racariu Ported to C++
+//   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "grid.hpp"
@@ -46,8 +47,8 @@ const Col* const Grid::col(const std::string& name) const { return col(name, tru
 // return null, otherwise throw exception
 const Col* const Grid::col(const std::string& name, bool checked) const
 {
-    name_col_map_t::const_iterator it = m_colsByName.find(name);
-    if (it != m_colsByName.end()) return &m_cols[it->second];
+    name_col_map_t::const_iterator it = m_cols_by_name.find(name);
+    if (it != m_cols_by_name.end()) return &m_cols[it->second];
     if (checked) throw std::runtime_error(name);
     return NULL;
 }
@@ -56,6 +57,7 @@ const Col* const Grid::col(const std::string& name, bool checked) const
 // Iterator
 //////////////////////////////////////////////////////////////////////////
 
+Grid::const_iterator Grid::iterator() const  { return m_rows.begin(); }
 Grid::const_iterator Grid::begin() const  { return m_rows.begin(); }
 Grid::const_iterator Grid::end() const { return m_rows.end(); }
 
@@ -64,7 +66,7 @@ Grid::const_iterator Grid::end() const { return m_rows.end(); }
 //////////////////////////////////////////////////////////////////////////
 
 // Add new column and return builder for column metadata.
-//Columns cannot be added after adding the first row. */
+//Columns cannot be added after adding the first row.
 Dict& Grid::addCol(const std::string& name)
 {
     if (m_rows.size() > 0)
@@ -72,17 +74,18 @@ Dict& Grid::addCol(const std::string& name)
     if (!Dict::is_tag_name(name))
         throw  std::runtime_error("Invalid column name: ");
     
-    if (m_colsByName.find(name) != m_colsByName.end())
+    if (m_cols_by_name.find(name) != m_cols_by_name.end())
         throw std::runtime_error("Duplicate col name: ");
 
     size_t index = m_cols.size();
 
-    Col* col = new Col(index, name, *new Dict());
-    m_cols.push_back(col);
+    // dict is owned by m_cols vector
+    Dict* meta = new Dict();
+    m_cols.push_back(new Col(index, name, *meta));
     
-    m_colsByName.insert(std::pair<std::string, size_t>(name, index));
+    m_cols_by_name.insert(std::pair<std::string, size_t>(name, index));
     
-    return (Dict&)(col->_meta);
+    return (Dict&)(*meta);
 }
 
 // Add new row with array of cells which correspond to column

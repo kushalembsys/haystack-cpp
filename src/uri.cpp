@@ -1,7 +1,8 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "uri.hpp"
@@ -55,6 +56,13 @@ bool Uri::operator ==(const Uri &other) const
 	return value == other.value;
 }
 
+bool Uri::operator==(const Val &other) const
+{
+    if (type() != other.type())
+        return false;
+    return static_cast<const Uri&>(other).operator==(*this);
+}
+
 bool Uri::operator !=(const Uri &other) const
 {
 	return !(*this == other);
@@ -74,4 +82,9 @@ bool Uri::operator >(const Uri &other) const
 bool Uri::operator ==(const std::string &other) const
 {
 	return value == other;
+}
+
+Uri::auto_ptr_t Uri::clone() const
+{
+    return auto_ptr_t(new Uri(*this));
 }

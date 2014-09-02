@@ -3,19 +3,20 @@
 #include "boost/noncopyable.hpp"
 
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   28 Aug 2014  Radu Racariu Ported to C++
+//   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 
-/**
+namespace haystack {
+class Dict;
+/*
  Col is a column in a Grid.
 
  @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
 */
-namespace haystack {
-class Dict;
 class Col : boost::noncopyable
 {
     friend class Grid;

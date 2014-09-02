@@ -1,8 +1,9 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
 //   06 Jun 2011  Brian Frank  Creation
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //
 #include "time.hpp"
 #include <sstream>
@@ -44,6 +45,13 @@ bool Time::operator ==(const Time &other) const
     return (hour == other.hour && min == other.min && sec == other.sec && ms == other.ms);
 }
 
+bool Time::operator==(const Val &other) const
+{
+    if (type() != other.type())
+        return false;
+    return static_cast<const Time&>(other).operator==(*this);
+}
+
 bool Time::operator !=(const Time &other) const
 {
     return !(*this == other);
@@ -60,6 +68,11 @@ bool Time::operator <(const Time &other) const
 bool Time::operator >(const Time &other) const
 {
     return compareTo(other) > 0;
+}
+
+Time::auto_ptr_t Time::clone() const
+{
+    return auto_ptr_t(new Time(*this));
 }
 
 int Time::compareTo(const Time &other) const

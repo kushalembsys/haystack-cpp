@@ -1,7 +1,8 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "date.hpp"
@@ -107,6 +108,13 @@ bool Date::operator ==(const Date &other) const
     return (year == other.year && month == other.month && day == other.day);
 }
 
+bool Date::operator==(const Val &other) const
+{
+    if (type() != other.type())
+        return false;
+    return static_cast<const Date&>(other).operator==(*this);
+}
+
 bool Date::operator !=(const Date &other) const
 {
     return !(*this == other);
@@ -131,4 +139,9 @@ int Date::compareTo(const Date &other) const
     if (month < other.month) return -1; else if (month > other.month) return 1;
     if (day < other.day)     return -1; else if (day > other.day)     return 1;
     return 0;
+}
+
+Date::auto_ptr_t Date::clone() const
+{
+    return auto_ptr_t(new Date(*this));
 }

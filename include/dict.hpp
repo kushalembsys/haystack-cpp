@@ -3,24 +3,25 @@
 #include <boost/ptr_container/ptr_map.hpp>
 
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   26 Aug 2014  Radu Racariu Ported to C++
+//   26 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 
-/**
- Dict is an immutable map of name/Val pairs
+namespace haystack {
+/*
+ Dict is a map of name/Val pairs
 
  @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
 */
-namespace haystack {
-
 class Dict : boost::noncopyable
 {
 public:
     // dict internal type
     typedef boost::ptr_map < std::string, haystack::Val > dict_t;
+    typedef dict_t::const_iterator const_iterator;
 private:
     dict_t m_map;
 public:
@@ -42,8 +43,8 @@ public:
     const Val& get(const std::string& name) const;
 
     // Iteratator to walk each name / tag pair
-    dict_t::const_iterator begin() const;
-    dict_t::const_iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 
 	// String format is for human consumption only
 	const std::string to_string() const

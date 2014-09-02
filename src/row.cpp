@@ -1,7 +1,8 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   28 Aug 2014  Radu Racariu Ported to C++
+//   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "row.hpp"
@@ -16,17 +17,17 @@ using namespace haystack;
 // Get the grid associated with this row
 const Grid& Row::grid() const { return m_grid; }
 
-// Number of columns in grid (which may map to null cells)
+// Number of columns in grid (which may map to empty cells)
 size_t Row::size() const { return m_grid.m_cols.size(); }
 
 // Get a cell by column name. 
 const Val& Row::get(const std::string& name) const 
 {
     const Col* col = m_grid.col(name);
-    if (col != NULL)
+    if (col != NULL && !m_cells.is_null(col->_index))
     {
         const Val& val = m_cells[col->_index];
-        if (!(val == EmptyVal::DEF)) return val;
+        if (!val.is_empty()) return val;
     }
     return EmptyVal::DEF;
 }
@@ -34,17 +35,11 @@ const Val& Row::get(const std::string& name) const
 // Get a cell by column.
 const Val& Row::get(const Col& col) const
 {
-    const Val& val = m_cells[col._index];
+    const Val& val = !m_cells.is_null(col._index) ? m_cells[col._index] : EmptyVal::DEF;
     return val;
 }
 
-// Return name/value iterator which only includes
-Row::const_iterator Row::iterator() const
-{
-    return const_row_iterator(*this);
-}
-
-    // Get start it
+// Get start it
 Row::const_iterator Row::begin() const
 {
     return const_row_iterator(*this);
@@ -71,5 +66,5 @@ bool const_row_iterator::equal(const_row_iterator const& other) const
 
 const Val& const_row_iterator::dereference() const
 { 
-    return m_row.get(m_grid.col(m_pos)); 
+    return m_row.get(m_grid.col(m_pos));
 }

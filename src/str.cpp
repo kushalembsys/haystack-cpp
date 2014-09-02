@@ -1,7 +1,8 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "str.hpp"
@@ -76,6 +77,13 @@ bool Str::operator ==(const Str &other) const
 	return value == other.value;
 }
 
+bool Str::operator==(const Val &other) const
+{
+    if (type() != other.type())
+        return false;
+    return static_cast<const Str&>(other).operator==(*this);
+}
+
 bool Str::operator !=(const Str &other) const
 {
 	return !(*this == other);
@@ -95,6 +103,11 @@ bool Str::operator > (const Str &other) const
 bool Str::operator ==(const std::string &other) const
 {
 	return value == other;
+}
+
+Str::auto_ptr_t Str::clone() const
+{
+    return auto_ptr_t(new Str(*this));
 }
 
 ////////////////////////////////////////////////

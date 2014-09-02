@@ -2,18 +2,19 @@
 #include "str.hpp"
 #include <stdexcept>
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 
-/**
+namespace haystack {
+/*
  Ref wraps a string reference identifier and a optional display name.
 
  @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
 */
-namespace haystack {
 class Ref : public Val
 {
     Ref();
@@ -42,13 +43,10 @@ public:
 	// Equality
     bool operator ==(const Ref &other) const;
     bool operator !=(const Ref &other) const;
-    bool operator==(const Val &other) const
-    {
-        if (type() != other.type())
-            return false;
-        return static_cast<const Ref&>(other).operator==(*this);
-    }
+    bool operator==(const Val &other) const;
     
+    auto_ptr_t clone() const;
+
     static bool is_id_char(int c);
     // check if str is a valid id
     static bool isId(const std::string&);

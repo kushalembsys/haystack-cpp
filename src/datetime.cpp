@@ -1,7 +1,8 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++ 
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++ 
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "datetime.hpp"
@@ -77,6 +78,13 @@ bool DateTime::operator ==(const DateTime &other) const
     return (date == other.date && time == other.time && tz == other.tz && tz_offset == other.tz_offset);
 }
 
+bool DateTime::operator==(const Val &other) const
+{
+    if (type() != other.type())
+        return false;
+    return static_cast<const DateTime&>(other).operator==(*this);
+}
+
 bool DateTime::operator !=(const DateTime &other) const
 {
     return !(*this == other);
@@ -104,4 +112,9 @@ const int64_t DateTime::millis() const
     std::time_t t = std::mktime(&tm);
     const_cast<DateTime*>(this)->m_millis = static_cast<int64_t>((t + std::abs(tz_offset)) * 1000ULL + time.ms);
     return m_millis;
+}
+
+DateTime::auto_ptr_t DateTime::clone() const
+{
+    return auto_ptr_t(new DateTime(*this));
 }

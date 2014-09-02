@@ -5,17 +5,13 @@
 #include <boost/iterator/iterator_facade.hpp>
 
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   28 Aug 2014  Radu Racariu Ported to C++
+//   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 
-/**
- Row is a row in a Grid.  It implements the Dict interface also.
-
- @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
-*/
 namespace haystack {
 
 // fwd dec
@@ -26,7 +22,7 @@ class Row;
 //////////////////////////////////////////////////////////////////////////
 // RowIterator
 //////////////////////////////////////////////////////////////////////////
-
+class const_row_iterator;
 class const_row_iterator
     : public boost::iterator_facade<
     const_row_iterator
@@ -34,10 +30,9 @@ class const_row_iterator
     , boost::forward_traversal_tag
     >
 {
-public:
+    friend class Row;
     explicit const_row_iterator(const Row& p, size_t pos = 0);
 
-private:
     friend class boost::iterator_core_access;
 
     void increment();
@@ -51,12 +46,17 @@ private:
     const Grid& m_grid;
 };
 
+/*
+ Row is a row in a Grid.  It implements the Dict interface also.
+
+ @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
+*/
 class Row : public Dict
 {
 public:
     typedef const_row_iterator const_iterator;
 
-    typedef boost::ptr_vector<Val> val_vec_t;
+    typedef boost::ptr_vector< boost::nullable<Val> > val_vec_t;
 private:
     friend class Grid;
     // Private constructor
@@ -73,9 +73,6 @@ public:
 
     // Get a cell by column.
     const Val& get(const Col& col) const;
-
-    // Return name/value iterator which only includes
-    const_row_iterator iterator() const;
 
     // Get start it
     const_iterator begin() const;

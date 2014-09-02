@@ -4,20 +4,21 @@
 #include <stdint.h>
 
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   29 Aug 2014  Radu Racariu Ported to C++
+//   29 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 
-/**
+namespace haystack {
+class Dict;
+/*
  ZincReader reads grids using the Zinc format.
 
  @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a> 
 
 */
-namespace haystack {
-class Dict;
 class ZincReader : public GridReader
 {
 public:
@@ -25,7 +26,7 @@ public:
     ZincReader(std::istream& is);
 
     // Read a grid
-    const Grid& read_grid();
+    std::auto_ptr<Grid> read_grid();
 
 private:
     //////////////////////////////////////////////////////////////////////////
@@ -45,21 +46,24 @@ private:
     void read_ver();
     void read_meta(Dict&);
 
-    const Val& read_val();
-    const Val& read_scalar();
-    const Val& read_num_val();
-    const Val& read_bin_val();
-    const Val& read_coord_val();
-    const Val& read_ref_val();
-    const Val& read_str_val();
-    const Val& read_uri_val();
-    const Val& read_word_val();
+    // no ownership
+    Val::auto_ptr_t read_val();
+    Val::auto_ptr_t read_scalar();
+    Val::auto_ptr_t read_num_val();
+    Val::auto_ptr_t read_bin_val();
+    Val::auto_ptr_t read_coord_val();
+    Val::auto_ptr_t read_ref_val();
+    Val::auto_ptr_t read_str_val();
+    Val::auto_ptr_t read_uri_val();
+    Val::auto_ptr_t read_word_val();
+
     std::string read_id();
     std::string read_str_literal();
     int32_t read_two_digits(std::string errMsg);
     int32_t read_esc_char();
     
     static const char *charType;
+    // static init the charType table
     static char* init_table();
     static bool is_id(int32_t);
     static bool is_id_start(int32_t);

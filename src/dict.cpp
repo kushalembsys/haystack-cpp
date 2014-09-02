@@ -1,7 +1,8 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "dict.hpp"
@@ -38,13 +39,13 @@ const Val& Dict::get(const std::string& name) const
 }
 
 // Iteratator to walk each name / tag pair
-Dict::dict_t::const_iterator Dict::begin() const
+Dict::const_iterator Dict::begin() const
 {
     return m_map.begin();
 }
 
 // End Iteratator
-Dict::dict_t::const_iterator Dict::end() const
+Dict::const_iterator Dict::end() const
 {
     return m_map.end();
 }
@@ -80,7 +81,7 @@ const std::string Dict::dis() const
         return ((Str&)dis).value;
     
     const Val& id = get("id"); 
-    if (!(id == EmptyVal::DEF)) 
+    if (!id.is_empty()) 
         return ((Ref&)id).dis();
 
     return "????";
@@ -114,7 +115,9 @@ Dict& Dict::add(std::string name, const Val* val)
 Dict& Dict::add(std::string name)
 {
     std::string k = name;
-    m_map.insert(k, new Marker());
+    Marker::auto_ptr_t ma = Marker::VAL.clone();
+    m_map.insert(k, (Marker*)ma.get());
+    ma.release();
     return *this;
 }
 

@@ -1,11 +1,12 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, Radu Racariu<radur@2inn.com>, Brian Frank
 // History:
-//   28 Aug 2014  Radu Racariu Ported to C++
+//   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "headers.hpp"
 #include "zincreader.hpp"
+#include "zincwriter.hpp"
 #include "bin.hpp"
 #include "bool.hpp"
 #include "coord.hpp"
@@ -53,10 +54,18 @@ void verifyGridEq(const Grid& grid, const Grid& expected)
 
 void verifyGrid(const std::string& s, const Grid& e)
 {
+    // docode and compare
     std::istringstream iss(s);
     ZincReader r(iss);
-    const Grid& g = r.read_grid();
-    verifyGridEq(g, e);
+    Grid::auto_ptr_t g = r.read_grid();
+    verifyGridEq(*g, e);
+
+    // encode to string then decode and compare again
+    std::string out = ZincWriter::grid_to_string(*g);
+    std::istringstream iss2(out);
+    ZincReader r2(iss2);
+    Grid::auto_ptr_t g1 = r2.read_grid();
+    verifyGridEq(*g1, *g);
 }
 
 TEST_CASE("ZincReader", "[ZincReader]")
@@ -87,7 +96,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
     {
         Grid e;
         e.addCol("val");
-        Val* r[1] = { new EmptyVal() };
+        Val* r[1] = { NULL };
         e.addRow(r, 1);
 
         verifyGrid("ver:\"2.0\"\nval\nN\n\n", e);
@@ -114,7 +123,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
 
         e.addCol("file1").add("icon", new Bin("image/gif")).add("dis", "F1");
         e.addCol("file2").add("icon", new Bin("image/jpg"));
-        Val* r1[2] = { new Bin("text/plain"), new EmptyVal() };
+        Val* r1[2] = { new Bin("text/plain"), NULL };
         Val* r2[2] = { new Num(4.0), new Bin("image/png") };
         Val* r3[2] = { new Bin("text/html; a=foo; bar=\"sep\""), new Bin("text/html; charset=utf8") };
         e.addRow(r1, 2);
@@ -137,11 +146,11 @@ TEST_CASE("ZincReader", "[ZincReader]")
         e.addCol("c");
         e.addCol("d");
         
-        Val* r1[4] = { new Bool(true), new Bool(false), new EmptyVal(), new Num(-99.0) };
+        Val* r1[4] = { new Bool(true), new Bool(false), NULL, new Num(-99.0) };
         Val* r2[4] = { new Num(2.3), new Num(-5.0E-10), new Num(2.4E20), new Num(1.23E-8) };
         Val* r3[4] = { new Str(""), new Str("a"), new Str("\" \\ \t \n \r"), new Str("\x0a") };
         Val* r4[4] = { new Uri("path"), new Ref("12cbb082-0c02ae73"), new Num(4.0, "s"), new Num(-2.5, "min") };
-        Val* r5[4] = { (Val*)Marker::DEF(), new Str("_remove_"), new Bin("image/png"), new Bin("image/png") };
+        Val* r5[4] = { (Val*)new Marker(), new Str("_remove_"), new Bin("image/png"), new Bin("image/png") };
         Val* r6[4] = { new Date(2009, 12, 31), new Time(23, 59, 1, 0), new Time(1, 2, 3, 123), new DateTime(Date(2009, 2, 3), Time(4, 5, 6, 0), TimeZone("UTC")) };
         Val* r7[4] = { new Num(Num::POS_INF.value), new Num(Num::NEG_INF.value), new Str(""), new Num(Num::NaN.value) };
         Val* r8[4] = { new Coord(12.0, -34.0), new Coord(0.123, -0.789), new Coord(84.5, -77.45), new Coord(-90.0, 180.0) };
@@ -222,12 +231,12 @@ TEST_CASE("ZincReader", "[ZincReader]")
         e.addCol("b");
         e.addCol("c");
 
-        Val* r1[3] = { new EmptyVal(), new Num(1.0), new Num(2.0) };
-        Val* r2[3] = { new Num(3.0), new EmptyVal(), new Num(5.0) };
-        Val* r3[3] = { new Num(6.0), new Num(7000.0), new EmptyVal() };
-        Val* r4[3] = { new EmptyVal(), new EmptyVal(), new Num(10.0) };
-        Val* r5[3] = { new EmptyVal(), new EmptyVal(), new EmptyVal() };
-        Val* r6[3] = { new Num(14.0), new EmptyVal(), new EmptyVal() };
+        Val* r1[3] = { NULL, new Num(1.0), new Num(2.0) };
+        Val* r2[3] = { new Num(3.0), NULL, new Num(5.0) };
+        Val* r3[3] = { new Num(6.0), new Num(7000.0), NULL };
+        Val* r4[3] = { NULL, NULL, new Num(10.0) };
+        Val* r5[3] = { NULL, NULL, NULL };
+        Val* r6[3] = { new Num(14.0), NULL, NULL };
 
         e.addRow(r1, 3);
         e.addRow(r2, 3);
@@ -266,11 +275,11 @@ TEST_CASE("ZincReader", "[ZincReader]")
     {
         Grid e;
         e.meta().add("b", new DateTime(Date(2010, 2, 3), Time(4, 5, 6, 0), TimeZone("UTC")))
-            .add("baz", Marker::DEF())
+            .add("baz", new Marker())
             .add("c", new DateTime(Date(2009, 12, 3), Time(4, 5, 6, 0), TimeZone("London")))
             .add("a", new DateTime(Date(2009, 2, 3), Time(4, 5, 6, 0), TimeZone("UTC")))
-            .add("foo", Marker::DEF())
-            .add("bar", Marker::DEF());
+            .add("foo", new Marker())
+            .add("bar", new Marker());
 
         e.addCol("a");
         

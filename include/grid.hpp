@@ -6,26 +6,29 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <stdexcept>
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   28 Aug 2014  Radu Racariu Ported to C++
+//   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 
-/**
+namespace haystack {
+/*
  Grid two dimension data structure of cols and rows.
 
  @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
 */
-namespace haystack {
 class Grid : boost::noncopyable
 {
 public:
-    typedef std::map<std::string, size_t> name_col_map_t;
     typedef boost::ptr_vector<Row> row_vec_t;
     typedef boost::ptr_vector<Col> col_vec_t;
+    typedef std::map<std::string, size_t> name_col_map_t;
 
     typedef row_vec_t::const_iterator const_iterator;
+
+    typedef std::auto_ptr<Grid> auto_ptr_t;
 
     //////////////////////////////////////////////////////////////////////////
     // Rows
@@ -33,7 +36,7 @@ public:
 
     row_vec_t m_rows;
     col_vec_t m_cols;
-    name_col_map_t m_colsByName;
+    name_col_map_t m_cols_by_name;
     Dict m_meta;
 
 public:
@@ -74,6 +77,8 @@ public:
     // Iterator
     //////////////////////////////////////////////////////////////////////////
 
+    // Return name/value iterator which only includes
+    const_iterator iterator() const;
     const_iterator begin() const;
     const_iterator end() const;
 

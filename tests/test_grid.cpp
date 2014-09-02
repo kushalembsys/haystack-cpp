@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, Radu Racariu<radur@2inn.com>, Brian Frank
 // History:
-//   28 Aug 2014  Radu Racariu Ported to C++
+//   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "headers.hpp"
@@ -11,6 +11,7 @@
 #include "num.hpp"
 #include <iostream>
 #include "ext/catch/catch.hpp"
+#include <boost/foreach.hpp>
 
 using namespace haystack;
 
@@ -71,7 +72,7 @@ TEST_CASE("Grid testcase", "[Grid]")
         Val* r1[3] = { new Ref("a"), new Str("Alpha"), new Num(1200) };
         g.addRow(r1, sizeof(r1) / sizeof(Val*));
         
-        Val* r2[3] = { new Ref("b"), new Str("Beta"), (Val*)&EmptyVal::DEF };
+        Val* r2[3] = { new Ref("b"), new Str("Beta"), NULL };
         g.addRow(r2, sizeof(r2) / sizeof(Val*));
         
         // meta
@@ -94,7 +95,7 @@ TEST_CASE("Grid testcase", "[Grid]")
         const Row& gr2 = g.row(1);
         CHECK(gr2.get("id") == Ref("b"));
         CHECK(gr2.get("dis") == Str("Beta"));
-        CHECK(gr2.get("area") == EmptyVal::DEF);
+        CHECK(gr2.get("area").is_empty());
         
         // row it
         Row::const_iterator it = gr1.begin();
@@ -110,5 +111,9 @@ TEST_CASE("Grid testcase", "[Grid]")
         for (Row::const_iterator it = gr2.begin(), end = gr2.end(); it != end; ++it, i++)
             CHECK(*it == *r2[i]);
 
+        BOOST_FOREACH(const Val& v, gr1)
+        {
+
+        }
     }
 }

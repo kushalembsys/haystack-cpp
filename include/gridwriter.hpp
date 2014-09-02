@@ -5,7 +5,7 @@
 // Copyright (c) 2014, J2 Innovations
 // Copyright (c) 2012 Brian Frank
 // History:
-//   29 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
+//   01 Sep 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 
@@ -13,15 +13,15 @@ namespace haystack {
 
 class Grid;
 /*
- GridReader is base class for reading grids from an input stream.
+ GridWriter is base class for writing grids to an output stream.
 
  @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a> 
 
 */
-class GridReader
+class GridWriter
 {
 public:
-    // Read a grid
-    virtual std::auto_ptr<Grid> read_grid() = 0;
+    // Write a grid
+    virtual void write_grid(const Grid& grid) = 0;
 };
 };

@@ -1,7 +1,8 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   29 Aug 2014  Radu Racariu Ported to C++
+//   29 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "zincreader.hpp"
@@ -46,9 +47,9 @@ ZincReader::ZincReader(std::istream& is) : m_is(is),
 
 
 // Read a grid
-const Grid& ZincReader::read_grid()
+std::auto_ptr<Grid> ZincReader::read_grid()
 {
-    Grid* g = new Grid();
+    std::auto_ptr<Grid> g(new Grid());
     // meta line
     read_ver();
     read_meta(g->meta());
@@ -71,15 +72,21 @@ const Grid& ZincReader::read_grid()
     // rows
     while (m_cur != '\n' && m_cur > 0)
     {
-        Val** cells = new Val*[numCols];
+        std::auto_ptr<Val*> cells(new Val*[numCols]);
         
         for (size_t i = 0; i < numCols; ++i)
         {
             skip_space();
             if (m_cur != ',' && m_cur != '\n')
-                cells[i] = (Val*) &read_val();
+            {
+                Val::auto_ptr_t v = read_val();
+                (cells.get())[i] = (Val*)v.get();
+                // ownership transfered to cells vector
+                v.release();
+            }
             else
-                cells[i] = new EmptyVal();
+                (cells.get())[i] = NULL;
+            
 
             skip_space();
             if (i + 1 < numCols)
@@ -89,11 +96,12 @@ const Grid& ZincReader::read_grid()
             }
         }
         consume_new_line();
-        g->addRow(cells, numCols);
+        g->addRow(cells.get(), numCols);
+        cells.reset();
     }
     if (m_cur == '\n') consume_new_line();
 
-    return *g;
+    return g;
 }
 
 std::string ZincReader::read_id()
@@ -115,16 +123,18 @@ void ZincReader::read_meta(Dict& d)
         std::string name = read_id();
 
         // marker or :val
-        Val* val = new Marker();
+        Val::auto_ptr_t val(Marker::VAL.clone());
         skip_space();
         if (m_cur == ':')
         {
             consume();
             skip_space();
-            val = (Val*)&read_val();
+            val = read_val();
             skip_space();
         }
-        d.add(name, val);
+        d.add(name, val.get());
+        // ownership transfered to the dict
+        val.release();
         skip_space();
     }
 }
@@ -141,31 +151,33 @@ void ZincReader::read_ver()
     skip_space();
 }
 
-const Val& ZincReader::read_scalar()
+Val::auto_ptr_t ZincReader::read_scalar()
 {
-    const Val& val = read_val();
+    Val::auto_ptr_t val = read_val();
+    
     if (m_cur >= 0) throw std::runtime_error("Expected end of stream");
+    
     return val;
 }
 
-const Val& ZincReader::read_val()
+Val::auto_ptr_t ZincReader::read_val()
 {
-    if (is_digit(m_cur)) return read_num_val();
-    if (is_alpha(m_cur)) return read_word_val();
+    if (is_digit(m_cur)) return Val::auto_ptr_t(read_num_val());
+    if (is_alpha(m_cur)) return Val::auto_ptr_t(read_word_val());
 
     switch (m_cur)
     {
-    case '@': return read_ref_val();
-    case '"': return read_str_val();
-    case '`': return read_uri_val();
+    case '@': return Val::auto_ptr_t(read_ref_val());
+    case '"': return Val::auto_ptr_t(read_str_val());
+    case '`': return Val::auto_ptr_t(read_uri_val());
     case '-':
-        if (m_peek == 'I') return read_word_val();
-        return read_num_val();
+        if (m_peek == 'I') return Val::auto_ptr_t(read_word_val());
+        return Val::auto_ptr_t(read_num_val());
     default:  throw std::runtime_error("Unexpected char for start of value");
     }
 }
 
-const Val& ZincReader::read_word_val()
+Val::auto_ptr_t ZincReader::read_word_val()
 {
     // read into string
     std::stringstream s;
@@ -175,26 +187,26 @@ const Val& ZincReader::read_word_val()
     // match identifier
     if (m_is_filter)
     {
-        if (word == "true")  return *new Bool(true);
-        if (word == "false") return *new Bool(false);
+        if (word == "true")  return Val::auto_ptr_t(new Bool(true));
+        if (word == "false") return Val::auto_ptr_t(new Bool(false));
     }
     else
     {
-        if (word == "N")   return *new EmptyVal();
-        if (word == "M")   return *new Marker();
-        if (word == "R")   return *new Str("_remove_");
-        if (word == "T")   return *new Bool(true);
-        if (word == "F")   return *new Bool(true);
+        if (word == "N")   return Val::auto_ptr_t();
+        if (word == "M")   return Val::auto_ptr_t(Marker::VAL.clone());
+        if (word == "R")   return Val::auto_ptr_t(new Str("_remove_"));
+        if (word == "T")   return Val::auto_ptr_t(new Bool(true));
+        if (word == "F")   return Val::auto_ptr_t(new Bool(true));
         if (word == "Bin") return read_bin_val();
         if (word == "C")   return read_coord_val();
     }
-    if (word == "NaN") return *new Num(Num::NaN.value);
-    if (word == "INF") return *new Num(Num::POS_INF.value);
-    if (word == "-INF") return *new Num(Num::NEG_INF.value);
+    if (word == "NaN") return Val::auto_ptr_t(new Num(Num::NaN.value));
+    if (word == "INF") return Val::auto_ptr_t(new Num(Num::POS_INF.value));
+    if (word == "-INF") return Val::auto_ptr_t(new Num(Num::NEG_INF.value));
     throw std::runtime_error("Unknown value identifier: " + word);
 }
 
-const Val& ZincReader::read_bin_val()
+Val::auto_ptr_t ZincReader::read_bin_val()
 {
     if (m_cur < 0) throw std::runtime_error("Expected '(' after Bin");
     consume();
@@ -207,10 +219,10 @@ const Val& ZincReader::read_bin_val()
         consume();
     }
     consume();
-    return *new Bin(s.str());
+    return Val::auto_ptr_t(new Bin(s.str()));
 }
 
-const Val& ZincReader::read_coord_val()
+Val::auto_ptr_t ZincReader::read_coord_val()
 {
     if (m_cur < 0) throw std::runtime_error("Expected '(' after Coord");
     consume();
@@ -227,10 +239,10 @@ const Val& ZincReader::read_coord_val()
     consume();
     s << ")";
     const Coord& c = Coord::make(s.str());
-    return *new Coord(c.lat(), c.lng());
+    return Val::auto_ptr_t(new Coord(c.lat(), c.lng()));
 }
 
-const Val& ZincReader::read_num_val()
+Val::auto_ptr_t ZincReader::read_num_val()
 {
     // parse numeric part
     std::stringstream s;
@@ -252,8 +264,8 @@ const Val& ZincReader::read_num_val()
     double val = boost::lexical_cast<double>(s.str());
 
     // Date - check for dash
-    Date* date = NULL;
-    Time* time = NULL;
+    Val::auto_ptr_t date;
+    Val::auto_ptr_t time;
 
     int hour = -1;
     if (m_cur == '-')
@@ -266,10 +278,10 @@ const Val& ZincReader::read_num_val()
         if (m_cur != '-') throw std::runtime_error("Expected '-' for date value");
         consume();
         int day = read_two_digits("Invalid digit for day in date value");
-        date = new Date(year, month, day);
+        date.reset(new Date(year, month, day));
 
         // check for 'T' date time
-        if (m_cur != 'T') return *date;
+        if (m_cur != 'T') return date;
 
         // parse next two digits and drop down to HTime parsing
         consume();
@@ -310,13 +322,13 @@ const Val& ZincReader::read_num_val()
             default: throw std::runtime_error("Too many digits for milliseconds in time value");
             }
         }
-        time = new Time(hour, min, sec, ms);
-        if (date == NULL) return *time;
+        time.reset(new Time(hour, min, sec, ms));
+        if (date.get() == NULL) return time;
     }
 
     // HDateTime (if we have date and time)
     bool zUtc = false;
-    if (date != NULL)
+    if (date.get() != NULL)
     {
         // timezone offset "Z" or "-/+hh:mm"
         int tzOffset = 0;
@@ -355,7 +367,7 @@ const Val& ZincReader::read_num_val()
             while (is_tz(m_cur)) { tzBuf << (char) m_cur; consume(); }
             tz.reset(new TimeZone(tzBuf.str()));
         }
-        return * new DateTime(*date, *time, *tz, tzOffset);
+        return Val::auto_ptr_t(new DateTime((Date&)*date, (Time&)*time, *tz, tzOffset));
     }
 
     // if we have unit, parse that
@@ -367,7 +379,7 @@ const Val& ZincReader::read_num_val()
         unit = s.str();
     }
 
-    return * new Num(val, unit);
+    return Val::auto_ptr_t(new Num(val, unit));
 }
 
 int32_t ZincReader::read_two_digits(std::string errMsg)
@@ -381,7 +393,7 @@ int32_t ZincReader::read_two_digits(std::string errMsg)
     return val;
 }
 
-const Val& ZincReader::read_ref_val()
+Val::auto_ptr_t ZincReader::read_ref_val()
 {
     consume(); // opening @
     std::stringstream s;
@@ -398,12 +410,12 @@ const Val& ZincReader::read_ref_val()
     std::string dis;
     if (m_cur == '"') dis = read_str_literal();
 
-    return * new Ref(s.str(), dis);
+    return Val::auto_ptr_t(new Ref(s.str(), dis));
 }
 
-const Val& ZincReader::read_str_val()
+Val::auto_ptr_t ZincReader::read_str_val()
 {
-    return *new Str(read_str_literal());
+    return Val::auto_ptr_t(new Str(read_str_literal()));
 }
 
 std::string ZincReader::read_str_literal()
@@ -467,7 +479,7 @@ int32_t ZincReader::to_nibble(int32_t c)
     throw std::runtime_error("Invalid hex char");
 }
 
-const Val& ZincReader::read_uri_val()
+Val::auto_ptr_t ZincReader::read_uri_val()
 {
     consume(); // opening backtick
     std::stringstream s;
@@ -507,7 +519,7 @@ const Val& ZincReader::read_uri_val()
         }
     }
     consume(); // closing backtick
-    return * new Uri(s.str());
+    return Val::auto_ptr_t(new Uri(s.str()));
 }
 
 void ZincReader::skip_space()

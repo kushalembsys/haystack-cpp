@@ -1,7 +1,8 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "bool.hpp"
@@ -45,6 +46,13 @@ bool Bool::operator == (const Bool &other) const
     return value == other.value;
 }
 
+bool Bool::operator==(const Val &other) const
+{
+    if (type() != other.type())
+        return false;
+    return static_cast<const Bool&>(other).operator==(*this);
+}
+
 bool Bool::operator != (const Bool &other) const
 {
     return !(*this == other);
@@ -60,7 +68,7 @@ bool Bool::operator > (const Bool &other) const
     return value > other.value;
 }
 
-/*Bool::operator bool() const
+Bool::auto_ptr_t Bool::clone() const
 {
-	return value;
-}*/
+    return auto_ptr_t(new Bool(*this));
+}

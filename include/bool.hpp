@@ -2,18 +2,19 @@
 #include "val.hpp"
 
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 
-/**
- Bool defines singletons for true/false tag values.
+namespace haystack {
+/*
+ Bool defines true/false tag values.
 
  @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
 */
-namespace haystack {
 class Bool : public Val
 {
 	Bool();
@@ -43,17 +44,11 @@ public:
     // Equality
     bool operator ==(const Bool &other) const;
     bool operator !=(const Bool &other) const;
-    bool operator==(const Val &other) const
-    {
-        if (type() != other.type())
-            return false;
-        return static_cast<const Bool&>(other).operator==(*this);
-    }
+    bool operator==(const Val &other) const;
 
     bool operator > (const Bool &other) const;
     bool operator < (const Bool &other) const;
 	
-    // converts to bool
-	//operator bool() const;
+    auto_ptr_t clone() const;
 };
 };

@@ -3,18 +3,19 @@
 #include <stdint.h>
 #include <stdexcept>
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 
-/**
+namespace haystack {
+/*
  Num wraps a 64-bit floating point number and optional unit name.
 
  @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
 */
-namespace haystack {
 class Num : public Val
 {
 	Num() : value(0.0), unit("") {};
@@ -53,12 +54,8 @@ public:
 	bool operator ==(double other) const;
 	bool operator ==(int other) const;
 	bool operator ==(int64_t other) const;
-    bool operator==(const Val &other) const
-    {
-        if (type() != other.type())
-            return false;
-        return static_cast<const Num&>(other).operator==(*this);
-    }
+    bool operator==(const Val &other) const;
+    auto_ptr_t clone() const;
 
     // check if str is a valid unit name
     static bool isUnitName(const std::string&);

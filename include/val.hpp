@@ -1,23 +1,18 @@
 #pragma once
 #include "headers.hpp"
-#include <boost/noncopyable.hpp>
 #include<assert.h>
 
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 
-/**
- Val is the base class for representing haystack tag
- scalar values as an immutable class.
-
- @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
-*/
 namespace haystack {
 
+// Define Val type enumeration for all types
 enum
 {
     BIN_TYPE = 'b',
@@ -34,10 +29,18 @@ enum
     EMPTY_TYPE = '|'
 };
 
+/*
+Val is the base class for representing haystack tag
+scalar values as an immutable class.
+
+@see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
+*/
 class Val : boost::noncopyable
 {
 	        // disable copy ctor
 public:
+    typedef std::auto_ptr<const Val> auto_ptr_t;
+
     virtual ~Val() {};
 	// String format is for human consumption only
     virtual const std::string to_string() const { return to_zinc(); }
@@ -47,11 +50,17 @@ public:
 
     virtual const char type() const = 0;
     virtual bool operator==(const Val &other) const = 0;
+
+    virtual auto_ptr_t clone() const = 0;
+
+    const bool is_empty() const { return type() == EMPTY_TYPE; }
 };
 
 // This class is the "empty" value for all types of Val
 class EmptyVal : public Val
 {
+private:
+    EmptyVal() {}
 public:
     const std::string to_string() const;
 
@@ -63,6 +72,6 @@ public:
     
     bool operator==(const Val &other) const;
 
-
+    auto_ptr_t clone() const;
 };
 };

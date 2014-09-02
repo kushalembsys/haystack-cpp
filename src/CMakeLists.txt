@@ -1,3 +1,7 @@
+# Copyright (c) 2014, J2 Innovations
+# History:
+#   29 Aug 2014  Radu Racariu<radur@2inn.com> created.
+#
 if (MSVC)
 	set(CMAKE_CXX_FLAGS "-Wall /EHsc -D_CRT_SECURE_NO_WARNINGS")
 else (MSVC)

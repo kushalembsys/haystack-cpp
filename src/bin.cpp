@@ -1,7 +1,8 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "bin.hpp"
@@ -57,6 +58,14 @@ bool Bin::operator ==(const Bin &other) const
 {
     return value == other.value;
 }
+
+bool Bin::operator==(const Val &other) const
+{
+    if (type() != other.type())
+        return false;
+    return static_cast<const Bin&>(other).operator==(*this);
+}
+
 bool Bin::operator !=(const Bin &other) const
 {
     return value != other.value;
@@ -64,4 +73,9 @@ bool Bin::operator !=(const Bin &other) const
 bool Bin::operator ==(const std::string &other) const
 {
     return value == other;
+}
+
+Bin::auto_ptr_t Bin::clone() const
+{
+    return auto_ptr_t(new Bin(*this));
 }

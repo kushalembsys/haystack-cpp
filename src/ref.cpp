@@ -1,7 +1,8 @@
 //
-// Copyright (c) 2014, Radu Racariu, Brian Frank
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
 // History:
-//   19 Aug 2014  Radu Racariu Ported to C++
+//   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "ref.hpp"
@@ -55,9 +56,21 @@ bool Ref::operator ==(const Ref &other) const
     return value == other.value;
 }
 
+bool Ref::operator==(const Val &other) const
+{
+    if (type() != other.type())
+        return false;
+    return static_cast<const Ref&>(other).operator==(*this);
+}
+
 bool Ref::operator !=(const Ref &other) const
 {
 	return !(*this == other);
+}
+
+Ref::auto_ptr_t Ref::clone() const
+{
+    return auto_ptr_t(new Ref(*this));
 }
 
 
