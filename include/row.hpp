@@ -60,7 +60,7 @@ namespace haystack {
     private:
         friend class Grid;
         // Private constructor
-        Row(const Grid& grid, const val_vec_t& cells) : m_grid(grid), m_cells(cells) {}
+        Row(const Grid& grid, std::auto_ptr<val_vec_t> cells) : m_grid(grid), m_cells(cells) {}
     public:
         // Get the grid associated with this row
         const Grid& grid() const;
@@ -86,7 +86,7 @@ namespace haystack {
         //////////////////////////////////////////////////////////////////////////
 
         const Grid& m_grid;
-        const val_vec_t& m_cells;
+        const std::auto_ptr<val_vec_t> m_cells;
     };
 
 };

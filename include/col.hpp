@@ -26,14 +26,14 @@ namespace haystack {
         //////////////////////////////////////////////////////////////////////////
         const size_t _index;
         const std::string _name;
-        const Dict& _meta;
+        const std::auto_ptr<Dict> _meta;
 
         //////////////////////////////////////////////////////////////////////////
         // Constructor
         //////////////////////////////////////////////////////////////////////////
 
         // Private constructor
-        Col(size_t index, const std::string& name, const Dict& meta) : _index(index), _name(name), _meta(meta){}
+        Col(size_t index, const std::string& name, std::auto_ptr<Dict> meta) : _index(index), _name(name), _meta(meta){}
 
     public:
         //////////////////////////////////////////////////////////////////////////

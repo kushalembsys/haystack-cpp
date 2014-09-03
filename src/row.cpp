@@ -24,9 +24,9 @@ size_t Row::size() const { return m_grid.m_cols.size(); }
 const Val& Row::get(const std::string& name) const
 {
     const Col* col = m_grid.col(name);
-    if (col != NULL && !m_cells.is_null(col->_index))
+    if (col != NULL && !m_cells->is_null(col->_index))
     {
-        const Val& val = m_cells[col->_index];
+        const Val& val = ((*m_cells)[col->_index]);
         if (!val.is_empty()) return val;
     }
     return EmptyVal::DEF;
@@ -35,8 +35,10 @@ const Val& Row::get(const std::string& name) const
 // Get a cell by column.
 const Val& Row::get(const Col& col) const
 {
-    const Val& val = !m_cells.is_null(col._index) ? m_cells[col._index] : EmptyVal::DEF;
-    return val;
+    if (!m_cells->is_null(col._index))
+        return ((*m_cells)[col._index]);
+
+    return EmptyVal::DEF;
 }
 
 // Get start it
@@ -48,7 +50,7 @@ Row::const_iterator Row::begin() const
 // Get end it
 Row::const_iterator Row::end() const
 {
-    return const_row_iterator(*this, m_cells.size());
+    return const_row_iterator(*this, m_cells->size());
 }
 
 //////////////////////////////////////////////////////////////////////////

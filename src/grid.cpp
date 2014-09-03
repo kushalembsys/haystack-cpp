@@ -79,27 +79,27 @@ Dict& Grid::addCol(const std::string& name)
 
     size_t index = m_cols.size();
 
-    // dict is owned by m_cols vector
-    Dict* meta = new Dict();
-    m_cols.push_back(new Col(index, name, *meta));
+    // col is owned by m_cols vector
+    Col* col = new Col(index, name, std::auto_ptr<Dict>(new Dict()));
+    m_cols.push_back(col);
 
     m_cols_by_name.insert(std::pair<std::string, size_t>(name, index));
 
-    return (Dict&)(*meta);
+    return (Dict&)col->meta();
 }
 
 // Add new row with array of cells which correspond to column
 // order.  Return this.
 Grid& Grid::addRow(Val * valp[], size_t count)
 {
-    Row::val_vec_t* v = new Row::val_vec_t();
+    std::auto_ptr<Row::val_vec_t> v(new Row::val_vec_t());
 
     for (size_t i = 0; i < count; i++)
     {
         v->push_back(valp[i]);
     }
 
-    m_rows.push_back(new Row(*this, *v));
+    m_rows.push_back(new Row(*this, v));
 
     return *this;
 }

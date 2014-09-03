@@ -97,7 +97,6 @@ std::auto_ptr<Grid> ZincReader::read_grid()
         }
         consume_new_line();
         g->addRow(cells.get(), numCols);
-        cells.reset();
     }
     if (m_cur == '\n') consume_new_line();
 
@@ -142,7 +141,7 @@ void ZincReader::read_meta(Dict& d)
 void ZincReader::read_ver()
 {
     std::string id = read_id();
-    if (id != ("ver")) throw std::runtime_error("Expecting zinc header 'ver:2.0', not '");
+    if (id != ("ver")) throw std::runtime_error("Expecting zinc header 'ver:2.0', not '" + id);
     if (m_cur != ':') throw std::runtime_error("Expecting ':' colon");
     consume();
     std::string ver = read_str_literal();
@@ -187,22 +186,22 @@ Val::auto_ptr_t ZincReader::read_word_val()
     // match identifier
     if (m_is_filter)
     {
-        if (word == "true")  return Val::auto_ptr_t(new Bool(true));
-        if (word == "false") return Val::auto_ptr_t(new Bool(false));
+        if (word == "true")  return Bool(true).clone();
+        if (word == "false") return Bool(false).clone();
     }
     else
     {
         if (word == "N")   return Val::auto_ptr_t();
-        if (word == "M")   return Val::auto_ptr_t(Marker::VAL.clone());
-        if (word == "R")   return Val::auto_ptr_t(new Str("_remove_"));
-        if (word == "T")   return Val::auto_ptr_t(new Bool(true));
-        if (word == "F")   return Val::auto_ptr_t(new Bool(true));
+        if (word == "M")   return Marker::VAL.clone();
+        if (word == "R")   return Str("_remove_").clone();
+        if (word == "T")   return Bool(true).clone();
+        if (word == "F")   return Bool(true).clone();
         if (word == "Bin") return read_bin_val();
         if (word == "C")   return read_coord_val();
     }
-    if (word == "NaN") return Val::auto_ptr_t(new Num(Num::NaN.value));
-    if (word == "INF") return Val::auto_ptr_t(new Num(Num::POS_INF.value));
-    if (word == "-INF") return Val::auto_ptr_t(new Num(Num::NEG_INF.value));
+    if (word == "NaN") return Num::NaN.clone();
+    if (word == "INF") return Num::POS_INF.clone();
+    if (word == "-INF") return Num::NEG_INF.clone();
     throw std::runtime_error("Unknown value identifier: " + word);
 }
 
@@ -238,8 +237,7 @@ Val::auto_ptr_t ZincReader::read_coord_val()
     }
     consume();
     s << ")";
-    const Coord& c = Coord::make(s.str());
-    return Val::auto_ptr_t(new Coord(c.lat(), c.lng()));
+    return Coord::make(s.str()).clone();
 }
 
 Val::auto_ptr_t ZincReader::read_num_val()
@@ -568,7 +566,6 @@ Filter::auto_ptr_t ZincReader::read_filter_or()
     if (m_cur != 'o') return q;
     if (read_id() != "or") throw std::runtime_error("Expecting 'or' keyword");
     skip_space();
-    // TODO::
     return Filter::orF(q, read_filter_or());
 }
 
