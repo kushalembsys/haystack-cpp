@@ -10,37 +10,37 @@
 //
 
 namespace haystack {
-/*
- Marker is the singleton value for a marker tag. 
+    /*
+     Marker is the singleton value for a marker tag.
 
- @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a> 
+     @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
 
-*/
-class Marker : public Val
-{
-	// disable copy ctor
-	Marker(const Marker&);
-	// disable assignment
-	Marker& operator=(const Marker &other);
-public:
-    Marker() {};
-    const char type() const { return MARKER_TYPE; }
+     */
+    class Marker : public Val
+    {
+        // disable copy ctor
+        Marker(const Marker&);
+        // disable assignment
+        Marker& operator=(const Marker &other);
+    public:
+        Marker() {};
+        const char type() const { return MARKER_TYPE; }
 
-    // default marker value
-	static const Marker& VAL;
-   
-	// Encode as "marker"
-	const std::string to_string() const;
+        // default marker value
+        static const Marker& VAL;
 
-	// Encode as "M"
-	const std::string to_zinc() const;
+        // Encode as "marker"
+        const std::string to_string() const;
 
-	// Equality
-	bool operator ==(const Marker &b) const;
-    bool operator==(const Val &other) const;
-    bool operator > (const Val &other) const;
-    bool operator < (const Val &other) const;
+        // Encode as "M"
+        const std::string to_zinc() const;
 
-    auto_ptr_t clone() const;
-};
+        // Equality
+        bool operator ==(const Marker &b) const;
+        bool operator==(const Val &other) const;
+        bool operator > (const Val &other) const;
+        bool operator < (const Val &other) const;
+
+        auto_ptr_t clone() const;
+    };
 };

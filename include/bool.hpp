@@ -10,45 +10,45 @@
 //
 
 namespace haystack {
-/*
- Bool defines true/false tag values.
+    /*
+     Bool defines true/false tag values.
 
- @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
-*/
-class Bool : public Val
-{
-	Bool();
-	// disable assignment
-	Bool& operator=(const Bool &other);
-	Bool(const Bool &other) : value(other.value){};
-public:
-    const char type() const { return BOOL_TYPE; }
-	
-    // This bool value
-	const bool value;
+     @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
+     */
+    class Bool : public Val
+    {
+        Bool();
+        // disable assignment
+        Bool& operator=(const Bool &other);
+        Bool(const Bool &other) : value(other.value){};
+    public:
+        const char type() const { return BOOL_TYPE; }
 
-	Bool(bool val);	
-	
-	// Singleton value for true
-	static const Bool TRUE_VAL;
+        // This bool value
+        const bool value;
 
-	// Singleton value for false
-	static const Bool FALSE_VAL;
+        Bool(bool val);
 
-	// Encode as "true" or "false"
-	const std::string to_string() const;
+        // Singleton value for true
+        static const Bool TRUE_VAL;
 
-	// Encode as "T" or "F"
-	const std::string to_zinc() const;
+        // Singleton value for false
+        static const Bool FALSE_VAL;
 
-    // Equality
-    bool operator ==(const Bool &other) const;
-    bool operator !=(const Bool &other) const;
-    bool operator==(const Val &other) const;
+        // Encode as "true" or "false"
+        const std::string to_string() const;
 
-    bool operator > (const Val &other) const;
-    bool operator < (const Val &other) const;
-	
-    auto_ptr_t clone() const;
-};
+        // Encode as "T" or "F"
+        const std::string to_zinc() const;
+
+        // Equality
+        bool operator ==(const Bool &other) const;
+        bool operator !=(const Bool &other) const;
+        bool operator==(const Val &other) const;
+
+        bool operator > (const Val &other) const;
+        bool operator < (const Val &other) const;
+
+        auto_ptr_t clone() const;
+    };
 };

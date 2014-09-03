@@ -32,55 +32,55 @@ using namespace haystack;
 
 TEST_CASE("Bin testcase", "[Bin]")
 {
-	Bin b("text/plain");
-	CHECK(b.to_string() == "text/plain");
-	CHECK(b.to_zinc() == "Bin(text/plain)");
-	// equality
-	CHECK(Bin("text/plain") == Bin("text/plain"));
-	CHECK(Bin("text/plain") != Bin("text/xml"));
+    Bin b("text/plain");
+    CHECK(b.to_string() == "text/plain");
+    CHECK(b.to_zinc() == "Bin(text/plain)");
+    // equality
+    CHECK(Bin("text/plain") == Bin("text/plain"));
+    CHECK(Bin("text/plain") != Bin("text/xml"));
 
-	// encoding
-	CHECK(Bin("text/plain").to_zinc() == "Bin(text/plain)");
-	CHECK(Bin("text/plain; charset=utf-8").to_zinc() == "Bin(text/plain; charset=utf-8)");
+    // encoding
+    CHECK(Bin("text/plain").to_zinc() == "Bin(text/plain)");
+    CHECK(Bin("text/plain; charset=utf-8").to_zinc() == "Bin(text/plain; charset=utf-8)");
 }
 
 ///////////////////////////////////////////////////////////
 // Bool
 ///////////////////////////////////////////////////////////
-TEST_CASE( "Boolean testcase", "[Bool]" ) 
+TEST_CASE("Boolean testcase", "[Bool]")
 {
-	Bool  t(true);
-	CHECK(t == true);
-	CHECK(t == Bool(true));
-	CHECK(t == Bool::TRUE_VAL);
-	CHECK_FALSE(t == Bool::FALSE_VAL);
-	CHECK(t.to_string() == "true");
-	CHECK(t.to_zinc() == "T");
+    Bool  t(true);
+    CHECK(t == true);
+    CHECK(t == Bool(true));
+    CHECK(t == Bool::TRUE_VAL);
+    CHECK_FALSE(t == Bool::FALSE_VAL);
+    CHECK(t.to_string() == "true");
+    CHECK(t.to_zinc() == "T");
 
-	const Bool&  f = Bool(false);
-	CHECK(f == false);
-	CHECK(f == haystack::Bool::FALSE_VAL);
-	CHECK_FALSE(f == haystack::Bool::TRUE_VAL);
-	CHECK(f.to_string() == "false");
-	CHECK(f.to_zinc() == "F");
+    const Bool&  f = Bool(false);
+    CHECK(f == false);
+    CHECK(f == haystack::Bool::FALSE_VAL);
+    CHECK_FALSE(f == haystack::Bool::TRUE_VAL);
+    CHECK(f.to_string() == "false");
+    CHECK(f.to_zinc() == "F");
 
-	// equality
-	CHECK(Bool::TRUE_VAL == Bool::TRUE_VAL);
-	CHECK(Bool::TRUE_VAL != Bool::FALSE_VAL);
-	CHECK(Bool(true) == Bool::TRUE_VAL);
-	CHECK(Bool(false) == Bool::FALSE_VAL);
+    // equality
+    CHECK(Bool::TRUE_VAL == Bool::TRUE_VAL);
+    CHECK(Bool::TRUE_VAL != Bool::FALSE_VAL);
+    CHECK(Bool(true) == Bool::TRUE_VAL);
+    CHECK(Bool(false) == Bool::FALSE_VAL);
 
-	// compare
-	CHECK(Bool::FALSE_VAL < Bool::TRUE_VAL);
-	CHECK(Bool::TRUE_VAL == Bool::TRUE_VAL);
+    // compare
+    CHECK(Bool::FALSE_VAL < Bool::TRUE_VAL);
+    CHECK(Bool::TRUE_VAL == Bool::TRUE_VAL);
 
-	// toString
-	CHECK(Bool::TRUE_VAL.to_string() == "true");
-	CHECK(Bool::FALSE_VAL.to_string() == "false");
+    // toString
+    CHECK(Bool::TRUE_VAL.to_string() == "true");
+    CHECK(Bool::FALSE_VAL.to_string() == "false");
 
-	// zinc
-	CHECK(Bool::TRUE_VAL.to_zinc() == "T");
-	CHECK(Bool::FALSE_VAL.to_zinc() == "F");
+    // zinc
+    CHECK(Bool::TRUE_VAL.to_zinc() == "T");
+    CHECK(Bool::FALSE_VAL.to_zinc() == "F");
 }
 
 void verifyCoord(double lat, double lng, std::string s)
@@ -140,7 +140,7 @@ TEST_CASE("Coord testcase", "[Coord]")
     CHECK(Coord::is_lng(-179.99) == true);
     CHECK(Coord::is_lng(180.0) == true);
     CHECK(Coord::is_lng(181.0) == false);
-    
+
     CHECK_THROWS(Coord(91.0, 12.0));
     CHECK_THROWS(Coord(-90.2, 12.0));
     CHECK_THROWS(Coord(13.0, 180.009));
@@ -151,7 +151,7 @@ TEST_CASE("Coord testcase", "[Coord]")
     CHECK_THROWS(Coord::make("(1.0,2.0)"));
     CHECK_THROWS(Coord::make("C(1.0,2.0"));
     CHECK_THROWS(Coord::make("C(x,9)"));
-    
+
 }
 
 ///////////////////////////////////////////////////////////
@@ -164,7 +164,7 @@ TEST_CASE("Date testcase", "[Date]")
     CHECK(Date(2011, 6, 7) != Date(2011, 6, 8));
     CHECK(Date(2011, 6, 7) != Date(2011, 2, 7));
     CHECK(Date(2011, 6, 7) != Date(2009, 6, 7));
-    
+
     // compare
     CHECK(Date(2011, 6, 9) < Date(2011, 6, 21));
     CHECK(Date(2011, 10, 9) > Date(2011, 3, 21));
@@ -206,9 +206,9 @@ TEST_CASE("DateTime testcase", "[DateTime]")
     const DateTime& ts = DateTime::make(1307377618069LL, TimeZone("New_York", -4));
     CHECK(ts.date.to_string() == "2011-06-06");
     CHECK(ts.time.to_string() == "12:26:58.069");
-    
+
     // equality
-    const TimeZone& utc    = TimeZone::UTC;
+    const TimeZone& utc = TimeZone::UTC;
     const TimeZone& london = TimeZone("London", 0);
 
     CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) == DateTime(2011, 1, 2, 3, 4, 5, utc, 0));
@@ -219,19 +219,19 @@ TEST_CASE("DateTime testcase", "[DateTime]")
 
     // compare
     CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) == DateTime(2011, 1, 2, 3, 4, 5, utc, 0));
-    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) <  DateTime(2011, 1, 2, 3, 4, 6, utc, 0));
-    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) <  DateTime(2011, 1, 2, 3, 5, 5, utc, 0));
-    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) <  DateTime(2011, 1, 2, 4, 4, 5, utc, 0));
-    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) <  DateTime(2011, 1, 3, 3, 4, 5, utc, 0));
-    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) <  DateTime(2011, 2, 2, 3, 4, 5, utc, 0));
-    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) <  DateTime(2012, 1, 2, 3, 4, 5, utc, 0));
-    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) >  DateTime(2011, 1, 2, 3, 4, 0, utc, 0));
+    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) < DateTime(2011, 1, 2, 3, 4, 6, utc, 0));
+    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) < DateTime(2011, 1, 2, 3, 5, 5, utc, 0));
+    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) < DateTime(2011, 1, 2, 4, 4, 5, utc, 0));
+    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) < DateTime(2011, 1, 3, 3, 4, 5, utc, 0));
+    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) < DateTime(2011, 2, 2, 3, 4, 5, utc, 0));
+    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) < DateTime(2012, 1, 2, 3, 4, 5, utc, 0));
+    CHECK(DateTime(2011, 1, 2, 3, 4, 5, utc, 0) > DateTime(2011, 1, 2, 3, 4, 0, utc, 0));
 
     // encoding
     CHECK(ts.to_zinc() == "2011-06-06T12:26:58.069-04:00 New_York");
 
     CHECK(ts.tz_offset == -4 * 60 * 60);
-    CHECK(ts.tz.name ==  "New_York");
+    CHECK(ts.tz.name == "New_York");
     CHECK(ts.millis() == 1307377618069ULL);
 
     // convert back to millis
@@ -251,18 +251,18 @@ TEST_CASE("DateTime testcase", "[DateTime]")
 ///////////////////////////////////////////////////////////
 TEST_CASE("Marker testcase", "[Marker]")
 {
-	const Marker& m = Marker::VAL;
-	CHECK(m == Marker::VAL);
-	CHECK(m.to_string() == "marker");
-	CHECK(m.to_zinc() == "M");
-	// equality
-	CHECK(Marker::VAL == Marker::VAL);
+    const Marker& m = Marker::VAL;
+    CHECK(m == Marker::VAL);
+    CHECK(m.to_string() == "marker");
+    CHECK(m.to_zinc() == "M");
+    // equality
+    CHECK(Marker::VAL == Marker::VAL);
 
-	// toString
-	CHECK(Marker::VAL.to_string() == "marker");
+    // toString
+    CHECK(Marker::VAL.to_string() == "marker");
 
-	// zinc
-	CHECK(Marker::VAL.to_zinc() == "M");
+    // zinc
+    CHECK(Marker::VAL.to_zinc() == "M");
 }
 
 ///////////////////////////////////////////////////////////
@@ -274,25 +274,25 @@ TEST_CASE("Num testcase", "[Num]")
     Num n(42.00, "\u00b0F");
     CHECK(n.value == 42.00);
     CHECK(n.value >= 41);
-	// equality
-	CHECK(Num(12.8) == Num(12.8, ""));
-	CHECK(Num(2) == Num(2.0, ""));
-	CHECK(Num(2) != Num(2, "%"));
-	CHECK(Num(2, "%") != Num(2));
-	CHECK(Num(0) == Num(0.0));
+    // equality
+    CHECK(Num(12.8) == Num(12.8, ""));
+    CHECK(Num(2) == Num(2.0, ""));
+    CHECK(Num(2) != Num(2, "%"));
+    CHECK(Num(2, "%") != Num(2));
+    CHECK(Num(0) == Num(0.0));
 
-	// compare
-	CHECK(Num(9) < Num(11));
-	CHECK(Num(-3) > Num(-4));
-	CHECK(Num(-23) == Num(-23));
+    // compare
+    CHECK(Num(9) < Num(11));
+    CHECK(Num(-3) > Num(-4));
+    CHECK(Num(-23) == Num(-23));
 
-	CHECK(Num(123).to_zinc() == "123");
-	CHECK(Num(123.4, "m/s").to_zinc() == "123.4m/s");
-	CHECK(Num(9.6, "m/s").to_zinc() == "9.6m/s");
-	CHECK(Num(-5.2, "\u00b0F").to_zinc() == "-5.2\u00b0F");
-	CHECK(Num(23, "%").to_zinc() == "23%");
-	CHECK(Num(2.4e-3, "fl_oz").to_zinc() == "0.0024fl_oz");
-	CHECK(Num(2.4e5, "$").to_zinc() == "240000$");
+    CHECK(Num(123).to_zinc() == "123");
+    CHECK(Num(123.4, "m/s").to_zinc() == "123.4m/s");
+    CHECK(Num(9.6, "m/s").to_zinc() == "9.6m/s");
+    CHECK(Num(-5.2, "\u00b0F").to_zinc() == "-5.2\u00b0F");
+    CHECK(Num(23, "%").to_zinc() == "23%");
+    CHECK(Num(2.4e-3, "fl_oz").to_zinc() == "0.0024fl_oz");
+    CHECK(Num(2.4e5, "$").to_zinc() == "240000$");
 
     // specials
     CHECK(Num(-std::numeric_limits<double>::infinity()).to_zinc() == "-INF");
@@ -303,12 +303,12 @@ TEST_CASE("Num testcase", "[Num]")
     CHECK(Num(NAN, "ignore").to_zinc() == "NaN");
     CHECK(Num(INFINITY, "%").to_zinc() == "INF");
     CHECK(Num(-std::numeric_limits<double>::infinity(), "%").to_zinc() == "-INF");
-    
+
     // verify bad unit names
     CHECK(Num::isUnitName("x_z") == true);
     CHECK(Num::isUnitName("x z") == false);
 
-	//std::cout << n.to_zinc() << "\n";
+    //std::cout << n.to_zinc() << "\n";
 }
 
 ///////////////////////////////////////////////////////////
@@ -326,7 +326,7 @@ TEST_CASE("Ref testcase", "[Ref]")
     CHECK(a.dis() == "Some dis");
 
     // encoding
-    CHECK(Ref("1234-5678.foo:bar").to_zinc() ==  "@1234-5678.foo:bar");
+    CHECK(Ref("1234-5678.foo:bar").to_zinc() == "@1234-5678.foo:bar");
     CHECK(Ref("1234-5678", "Foo Bar").to_zinc() == "@1234-5678 \"Foo Bar\"");
     CHECK(Ref("1234-5678", "Foo \"Bar\"").to_zinc() == "@1234-5678 \"Foo \\\"Bar\\\"\"");
 
@@ -347,32 +347,32 @@ TEST_CASE("Ref testcase", "[Ref]")
 ///////////////////////////////////////////////////////////
 TEST_CASE("String testcase", "[Str]")
 {
-	Str s("aaa");
-	assert(s == "aaa");
-	CHECK(s.to_string() == "aaa");
-	CHECK(s.to_zinc() == "\"aaa\"");
+    Str s("aaa");
+    assert(s == "aaa");
+    CHECK(s.to_string() == "aaa");
+    CHECK(s.to_zinc() == "\"aaa\"");
 
-	const Str& s1 = Str("aaa\n");
-	CHECK(s1 == "aaa\n");
-	CHECK(s1.to_string() == "aaa\n");
-	CHECK(s1.to_zinc() == "\"aaa\\n\"");
+    const Str& s1 = Str("aaa\n");
+    CHECK(s1 == "aaa\n");
+    CHECK(s1.to_string() == "aaa\n");
+    CHECK(s1.to_zinc() == "\"aaa\\n\"");
     // api
-	const Str& s3 = s1;
-	CHECK(s3 == s1);
+    const Str& s3 = s1;
+    CHECK(s3 == s1);
 
-	// equality
-	CHECK(Str("a") == Str("a"));
-	CHECK(Str("a") != Str("b"));
-	CHECK(Str("") == Str(""));
+    // equality
+    CHECK(Str("a") == Str("a"));
+    CHECK(Str("a") != Str("b"));
+    CHECK(Str("") == Str(""));
 
-	// compare
-	CHECK(Str("abc") < Str("z"));
-	CHECK(Str("Foo") == Str("Foo"));
+    // compare
+    CHECK(Str("abc") < Str("z"));
+    CHECK(Str("Foo") == Str("Foo"));
 
-	// encoding
-	CHECK(Str("hello").to_zinc() == "\"hello\"");
-	CHECK(Str("_ \\ \" \n \r \t \x00A0 _").to_zinc() == "\"_ \\\\ \\\" \\n \\r \\t \\u00A0 _\"");
-	CHECK(Str("\x00A0").to_zinc() == "\"\\u00A0\"");
+    // encoding
+    CHECK(Str("hello").to_zinc() == "\"hello\"");
+    CHECK(Str("_ \\ \" \n \r \t \x00A0 _").to_zinc() == "\"_ \\\\ \\\" \\n \\r \\t \\u00A0 _\"");
+    CHECK(Str("\x00A0").to_zinc() == "\"\\u00A0\"");
 }
 
 ///////////////////////////////////////////////////////////
@@ -404,7 +404,7 @@ TEST_CASE("Uri testcase", "[Uri]")
 TEST_CASE("Time testcase", "[Time]")
 {
     // equality
-    CHECK(Time(1, 2, 3, 4) ==  Time(1, 2, 3, 4));
+    CHECK(Time(1, 2, 3, 4) == Time(1, 2, 3, 4));
     CHECK(Time(1, 2, 3, 4) != Time(9, 2, 3, 4));
     CHECK(Time(1, 2, 3, 4) != Time(1, 9, 3, 4));
     CHECK(Time(1, 2, 3, 4) != Time(1, 2, 9, 9));

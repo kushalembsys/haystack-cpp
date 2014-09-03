@@ -31,7 +31,7 @@ const std::string Ref::to_string() const
 // Encode using double quotes and back slash escapes
 const std::string Ref::to_zinc() const
 {
-	std::stringstream os;
+    std::stringstream os;
     os << '@';
     os << value;
     if (!m_dis.value.empty())
@@ -65,14 +65,14 @@ bool Ref::operator==(const Val &other) const
 
 bool Ref::operator !=(const Ref &other) const
 {
-	return !(*this == other);
+    return !(*this == other);
 }
 
 ////////////////////////////////////////////////
 // Cmp
 ////////////////////////////////////////////////
-bool Ref::operator > (const Val& other) const 
-{ 
+bool Ref::operator > (const Val& other) const
+{
     return type() == other.type() && to_string() > other.to_string();
 }
 bool Ref::operator < (const Val& other) const

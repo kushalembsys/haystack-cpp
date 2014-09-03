@@ -10,45 +10,45 @@
 //
 
 namespace haystack {
-/*
- Str wraps a std::string as a tag value.
+    /*
+     Str wraps a std::string as a tag value.
 
- @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
-*/
-class Str : public Val
-{
-	Str();
-	// disable assigment
-	Str& operator=(const Str &other);
-    friend class Ref;
-    Str(const Str &other) : value(other.value) {};
-public:
-    const char type() const { return STR_TYPE; }
-	
-    // This string value
-    const std::string value;
+     @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
+     */
+    class Str : public Val
+    {
+        Str();
+        // disable assigment
+        Str& operator=(const Str &other);
+        friend class Ref;
+        Str(const Str &other) : value(other.value) {};
+    public:
+        const char type() const { return STR_TYPE; }
 
-	Str(const std::string &val);
+        // This string value
+        const std::string value;
 
-	static const Str& EMPTY;
-	
-	// Return value string.
-	const std::string to_string() const;
+        Str(const std::string &val);
 
-	// Encode using double quotes and back slash escapes
-	const std::string to_zinc() const;
+        static const Str& EMPTY;
 
-	// Equality is value based
-	bool operator ==(const Str &other) const;
-	bool operator !=(const Str &other) const;
-	bool operator < (const Val &other) const;
-    bool operator > (const Val &other) const;
+        // Return value string.
+        const std::string to_string() const;
 
-	bool operator ==(const std::string &other) const;
-    bool operator==(const Val &other) const;
-    auto_ptr_t clone() const;
-	
-	// implicit conversion to std::string
-	//operator const std::string() const;
-};
+        // Encode using double quotes and back slash escapes
+        const std::string to_zinc() const;
+
+        // Equality is value based
+        bool operator ==(const Str &other) const;
+        bool operator !=(const Str &other) const;
+        bool operator < (const Val &other) const;
+        bool operator > (const Val &other) const;
+
+        bool operator ==(const std::string &other) const;
+        bool operator==(const Val &other) const;
+        auto_ptr_t clone() const;
+
+        // implicit conversion to std::string
+        //operator const std::string() const;
+    };
 };

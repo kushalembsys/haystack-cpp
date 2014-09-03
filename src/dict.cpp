@@ -76,12 +76,12 @@ const std::string Dict::to_zinc() const
 // - id tag
 const std::string Dict::dis() const
 {
-    const Val& dis  = get("dis"); 
+    const Val& dis = get("dis");
     if (dis.type() == STR_TYPE)
         return ((Str&)dis).value;
-    
-    const Val& id = get("id"); 
-    if (!id.is_empty()) 
+
+    const Val& id = get("id");
+    if (!id.is_empty())
         return ((Ref&)id).dis();
 
     return "????";
@@ -94,7 +94,7 @@ bool Dict::operator == (const Dict &other) const
 
     for (dict_t::const_iterator it = begin(), e = end(); it != e; ++it)
     {
-        if (! (*it->second == other.get(it->first) ) ) return false;
+        if (!(*it->second == other.get(it->first))) return false;
     }
     return true;
 }
@@ -148,7 +148,7 @@ const bool Dict::is_tag_name(const std::string &n)
 
     int first = n[0] & 0xFF;
     if (first < 'a' || first > 'z') return false;
-    
+
     for (std::string::const_iterator it = n.begin(), end = n.end(); it != end; ++it)
     {
         int c = *it & 0xFF;
@@ -156,7 +156,7 @@ const bool Dict::is_tag_name(const std::string &n)
             ((c >= '0' && c <= '9')
             || (c >= 'a' && c <= 'z')
             || (c >= 'A' && c <= 'Z')
-            || (c == '_' )
+            || (c == '_')
             ))
             continue;
         else

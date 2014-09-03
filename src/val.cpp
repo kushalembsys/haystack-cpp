@@ -40,7 +40,7 @@ const std::string EmptyVal::to_zinc() const
 ////////////////////////////////////////////////
 bool EmptyVal::operator ==(const Val &other) const
 {
-    return &other == NULL ||  type() == other.type();
+    return &other == NULL || type() == other.type();
 }
 
 ////////////////////////////////////////////////

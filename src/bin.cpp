@@ -16,10 +16,6 @@ using namespace haystack;
 
 Bin::Bin(const std::string &val) : value(val){}
 
-////////////////////////////////////////////////
-// to string
-////////////////////////////////////////////////
-
 // MIME type for binary file
 const std::string Bin::to_string() const
 {
@@ -33,22 +29,22 @@ const std::string Bin::to_string() const
 // Encode as "Bin(<mime>)"
 const std::string Bin::to_zinc() const
 {
-	std::stringstream os;
-	os << "Bin(";
+    std::stringstream os;
+    os << "Bin(";
 
     for (std::string::const_iterator it = value.begin(), end = value.end(); it != end; ++it)
-	{
-		int c = *it;
-		if (c > 127 || c == ')')
-		{
-			std::stringstream ss;
-			ss << "Invalid mime, char='" << (char)c << "'";
-			throw std::runtime_error(ss.str().c_str());
-		}
-		os << (char)c;
-	}
-	os << ')';
-	return os.str();
+    {
+        int c = *it;
+        if (c > 127 || c == ')')
+        {
+            std::stringstream ss;
+            ss << "Invalid mime, char='" << (char)c << "'";
+            throw std::runtime_error(ss.str().c_str());
+        }
+        os << (char)c;
+    }
+    os << ')';
+    return os.str();
 }
 
 ////////////////////////////////////////////////
@@ -82,7 +78,7 @@ bool Bin::operator < (const Val &other) const
 
 bool Bin::operator >(const Val &other) const
 {
-    return type() == other.type() && value >  ((Bin&)other).value;
+    return type() == other.type() && value > ((Bin&)other).value;
 }
 
 Bin::auto_ptr_t Bin::clone() const

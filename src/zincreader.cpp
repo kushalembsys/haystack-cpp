@@ -35,11 +35,11 @@
 using namespace haystack;
 
 ZincReader::ZincReader(std::istream& is) : m_is(is),
-                                            m_cur(0),
-                                            m_peek(0),
-                                            m_line_num(1),
-                                            m_version(0),
-                                            m_is_filter(0)
+m_cur(0),
+m_peek(0),
+m_line_num(1),
+m_version(0),
+m_is_filter(0)
 {
     consume();
     consume();
@@ -73,7 +73,7 @@ std::auto_ptr<Grid> ZincReader::read_grid()
     while (m_cur != '\n' && m_cur > 0)
     {
         std::auto_ptr<Val*> cells(new Val*[numCols]);
-        
+
         for (size_t i = 0; i < numCols; ++i)
         {
             skip_space();
@@ -86,7 +86,7 @@ std::auto_ptr<Grid> ZincReader::read_grid()
             }
             else
                 (cells.get())[i] = NULL;
-            
+
 
             skip_space();
             if (i + 1 < numCols)
@@ -107,9 +107,9 @@ std::auto_ptr<Grid> ZincReader::read_grid()
 std::string ZincReader::read_id()
 {
     if (!is_id_start(m_cur)) throw std::runtime_error("Invalid name start char");
-    
+
     std::stringstream s;
-    
+
     while (is_id(m_cur)) { s << (char)m_cur; consume(); }
     return s.str();
 }
@@ -142,7 +142,7 @@ void ZincReader::read_meta(Dict& d)
 void ZincReader::read_ver()
 {
     std::string id = read_id();
-    if (id !=("ver")) throw std::runtime_error("Expecting zinc header 'ver:2.0', not '");
+    if (id != ("ver")) throw std::runtime_error("Expecting zinc header 'ver:2.0', not '");
     if (m_cur != ':') throw std::runtime_error("Expecting ':' colon");
     consume();
     std::string ver = read_str_literal();
@@ -154,9 +154,9 @@ void ZincReader::read_ver()
 Val::auto_ptr_t ZincReader::read_scalar()
 {
     Val::auto_ptr_t val = read_val();
-    
+
     if (m_cur >= 0) throw std::runtime_error("Expected end of stream");
-    
+
     return val;
 }
 
@@ -181,7 +181,7 @@ Val::auto_ptr_t ZincReader::read_word_val()
 {
     // read into string
     std::stringstream s;
-    do { s << (char) m_cur; consume(); } while (is_alpha(m_cur));
+    do { s << (char)m_cur; consume(); } while (is_alpha(m_cur));
     std::string word = s.str();
 
     // match identifier
@@ -215,7 +215,7 @@ Val::auto_ptr_t ZincReader::read_bin_val()
     {
         if (m_cur < 0) throw std::runtime_error("Unexpected end of bin literal");
         if (m_cur == '\n' || m_cur == '\r') throw std::runtime_error("Unexpected newline in bin literal");
-        s << (char) m_cur;
+        s << (char)m_cur;
         consume();
     }
     consume();
@@ -233,7 +233,7 @@ Val::auto_ptr_t ZincReader::read_coord_val()
     {
         if (m_cur < 0) throw std::runtime_error("Unexpected end of coord literal");
         if (m_cur == '\n' || m_cur == '\r') throw std::runtime_error("Unexpected newline in coord literal");
-        s << (char) m_cur;
+        s << (char)m_cur;
         consume();
     }
     consume();
@@ -250,14 +250,14 @@ Val::auto_ptr_t ZincReader::read_num_val()
     consume();
     while (is_digit(m_cur) || m_cur == '.' || m_cur == '_')
     {
-        if (m_cur != '_') s << (char) m_cur;
+        if (m_cur != '_') s << (char)m_cur;
         consume();
         if (m_cur == 'e' || m_cur == 'E')
         {
             if (m_peek == '-' || m_peek == '+' || is_digit(m_peek))
             {
-                s << (char) m_cur; consume();
-                s << (char) m_cur; consume();
+                s << (char)m_cur; consume();
+                s << (char)m_cur; consume();
             }
         }
     }
@@ -364,7 +364,7 @@ Val::auto_ptr_t ZincReader::read_num_val()
             consume();
             std::stringstream tzBuf;
             if (!is_tz(m_cur)) throw std::runtime_error("Expected timezone name");
-            while (is_tz(m_cur)) { tzBuf << (char) m_cur; consume(); }
+            while (is_tz(m_cur)) { tzBuf << (char)m_cur; consume(); }
             tz.reset(new TimeZone(tzBuf.str()));
         }
         return Val::auto_ptr_t(new DateTime((Date&)*date, (Time&)*time, *tz, tzOffset));
@@ -375,7 +375,7 @@ Val::auto_ptr_t ZincReader::read_num_val()
     if (is_unit(m_cur))
     {
         std::stringstream s;
-        while (is_unit(m_cur)) { s << (char) m_cur; consume(); }
+        while (is_unit(m_cur)) { s << (char)m_cur; consume(); }
         unit = s.str();
     }
 
@@ -402,7 +402,7 @@ Val::auto_ptr_t ZincReader::read_ref_val()
     {
         if (m_cur < 0) throw std::runtime_error("Unexpected end of ref literal");
         if (m_cur == '\n' || m_cur == '\r') throw std::runtime_error("Unexpected newline in ref literal");
-        s << (char) m_cur;
+        s << (char)m_cur;
         consume();
     }
     skip_space();
@@ -428,11 +428,11 @@ std::string ZincReader::read_str_literal()
         if (m_cur == '\n' || m_cur == '\r') throw std::runtime_error("Unexpected newline in str literal");
         if (m_cur == '\\')
         {
-            s << (char) read_esc_char();
+            s << (char)read_esc_char();
         }
         else
         {
-            s << (char) m_cur;
+            s << (char)m_cur;
             consume();
         }
     }
@@ -496,8 +496,8 @@ Val::auto_ptr_t ZincReader::read_uri_val()
             case ':': case '/': case '?': case '#':
             case '[': case ']': case '@': case '\\':
             case '&': case '=': case ';':
-                s << (char) m_cur;
-                s << (char) m_peek;
+                s << (char)m_cur;
+                s << (char)m_peek;
                 consume();
                 consume();
                 break;
@@ -514,7 +514,7 @@ Val::auto_ptr_t ZincReader::read_uri_val()
         }
         else
         {
-            s << (char) m_cur;
+            s << (char)m_cur;
             consume();
         }
     }
@@ -537,9 +537,9 @@ void ZincReader::consume()
 {
     m_cur = m_peek;
     int c = m_is.get();
-   
+
     //if (!m_is.good())
-        //throw std::runtime_error("Bad stream.");
+    //throw std::runtime_error("Bad stream.");
 
     m_peek = c;
     if (m_cur == '\n') m_line_num++;
@@ -631,7 +631,7 @@ std::string ZincReader::read_filter_path()
     std::stringstream s;
 
     s << id;
-   
+
     while (m_cur == '-' || m_peek == '>')
     {
         consume();

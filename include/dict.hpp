@@ -11,74 +11,74 @@
 //
 
 namespace haystack {
-/*
- Dict is a map of name/Val pairs
+    /*
+     Dict is a map of name/Val pairs
 
- @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
-*/
-class Dict : boost::noncopyable
-{
-public:
-    // dict internal type
-    typedef boost::ptr_map < std::string, haystack::Val > dict_t;
-    typedef dict_t::const_iterator const_iterator;
-private:
-    dict_t m_map;
-public:
-    
-    // Singleton for empty set of tags.
-    const static Dict& EMPTY;
+     @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
+     */
+    class Dict : boost::noncopyable
+    {
+    public:
+        // dict internal type
+        typedef boost::ptr_map < std::string, haystack::Val > dict_t;
+        typedef dict_t::const_iterator const_iterator;
+    private:
+        dict_t m_map;
+    public:
 
-    // Return true if size is zero
-    const bool is_empty() const;
-    // Return number of tag name / value pairs
-    const size_t size() const;
-    // Return if the given tag is present
-    const bool has(const std::string& name) const;
+        // Singleton for empty set of tags.
+        const static Dict& EMPTY;
 
-    // Return if the given tag is not present
-    const bool missing(const std::string& name) const;
+        // Return true if size is zero
+        const bool is_empty() const;
+        // Return number of tag name / value pairs
+        const size_t size() const;
+        // Return if the given tag is present
+        const bool has(const std::string& name) const;
 
-    // Get a tag by name
-    const Val& get(const std::string& name) const;
+        // Return if the given tag is not present
+        const bool missing(const std::string& name) const;
 
-    // Iteratator to walk each name / tag pair
-    const_iterator begin() const;
-    const_iterator end() const;
+        // Get a tag by name
+        const Val& get(const std::string& name) const;
 
-	// String format is for human consumption only
-	const std::string to_string() const
-	{
-		return to_zinc();
-	}
-	
-    // Encode value to zinc format
-	const std::string to_zinc() const;
+        // Iteratator to walk each name / tag pair
+        const_iterator begin() const;
+        const_iterator end() const;
 
-    // Get display string for this entity:
-    // - dis tag
-    // - id tag
-    const std::string dis() const;
+        // String format is for human consumption only
+        const std::string to_string() const
+        {
+            return to_zinc();
+        }
 
-    // Returns a dict with the value added
-    Dict& add(std::string name, const Val* val);
+        // Encode value to zinc format
+        const std::string to_zinc() const;
 
-    // Returns a dict with the Marker added
-    Dict& add(std::string name);
+        // Get display string for this entity:
+        // - dis tag
+        // - id tag
+        const std::string dis() const;
 
-    // Returns a dict with the Str added
-    Dict& add(std::string name, const std::string& val);
+        // Returns a dict with the value added
+        Dict& add(std::string name, const Val* val);
 
-    // Returns a dict with the Num added
-    Dict& add(std::string name, double val, const std::string &unit = "" );
+        // Returns a dict with the Marker added
+        Dict& add(std::string name);
 
-    // Return if the given string is a legal tag name.  The
-    // first char must be ASCII lower case letter.  Rest of
-    // chars must be ASCII letter, digit, or underbar.
-    static const bool is_tag_name(const std::string &);
+        // Returns a dict with the Str added
+        Dict& add(std::string name, const std::string& val);
 
-    // Equality
-    bool operator ==(const Dict &b) const;
-    bool operator !=(const Dict &b) const;
-};
+        // Returns a dict with the Num added
+        Dict& add(std::string name, double val, const std::string &unit = "");
+
+        // Return if the given string is a legal tag name.  The
+        // first char must be ASCII lower case letter.  Rest of
+        // chars must be ASCII letter, digit, or underbar.
+        static const bool is_tag_name(const std::string &);
+
+        // Equality
+        bool operator ==(const Dict &b) const;
+        bool operator !=(const Dict &b) const;
+    };
 };

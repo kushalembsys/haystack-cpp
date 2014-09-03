@@ -22,19 +22,19 @@ DateTime DateTime::make(const int64_t& ts, const TimeZone& tz)
 {
     time_t t = ts;
     int ms = 0;
-    if (ts > (time_t) std::numeric_limits<time_t>::max)
+    if (ts > (time_t)std::numeric_limits<time_t>::max)
     {
-        ms = ts % 1000LL ;
+        ms = ts % 1000LL;
         t = static_cast<time_t>(ts / 1000LL);
     }
-   
+
     const std::tm *tm = std::localtime(&t);
     if (tz != TimeZone::DEFAULT)
         tm = std::gmtime(&t);
-    
-   int offset = 3600 * (tz.offset - tm->tm_isdst);
-    
-   return DateTime(Date(1900 + tm->tm_year, tm->tm_mon + 1, tm->tm_mday), Time(tm->tm_hour + tz.offset, tm->tm_min, tm->tm_sec, ms), tz, offset);
+
+    int offset = 3600 * (tz.offset - tm->tm_isdst);
+
+    return DateTime(Date(1900 + tm->tm_year, tm->tm_mon + 1, tm->tm_mday), Time(tm->tm_hour + tz.offset, tm->tm_min, tm->tm_sec, ms), tz, offset);
 }
 
 DateTime DateTime::now(const TimeZone& tz)
@@ -50,7 +50,7 @@ DateTime DateTime::now(const TimeZone& tz)
 const std::string DateTime::to_zinc() const
 {
     std::stringstream os;
-    
+
     os << date.to_zinc();
     os << 'T';
     os << time.to_zinc();

@@ -23,9 +23,9 @@ using namespace haystack;
 const std::string Time::to_zinc() const
 {
     std::stringstream os;
-    if (hour < 10) os << '0'; os <<  hour << ':';
-    if (min  < 10) os << '0'; os << min << ':';
-    if (sec  < 10) os << '0'; os << sec;
+    if (hour < 10) os << '0'; os << hour << ':';
+    if (min < 10) os << '0'; os << min << ':';
+    if (sec < 10) os << '0'; os << sec;
     if (ms != 0)
     {
         os << '.';

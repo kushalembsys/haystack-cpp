@@ -35,7 +35,7 @@ void verifyGridEq(const Grid& grid, const Grid& expected)
 
     // cols
     CHECK(grid.num_cols() == expected.num_cols());
-    
+
     for (size_t i = 0; i < grid.num_cols(); ++i)
     {
         CHECK(grid.col(i).name() == expected.col(i).name());
@@ -44,8 +44,8 @@ void verifyGridEq(const Grid& grid, const Grid& expected)
 
     // rows
     CHECK(grid.num_rows() == expected.num_rows());
-    
-    size_t i = 0 ;
+
+    size_t i = 0;
     for (Grid::const_iterator it = expected.begin(), end = expected.end(); it != end; ++it, i++)
     {
         CHECK(grid.row(i) == *it);
@@ -74,7 +74,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
     {
         Grid e;
         e.addCol("fooBar33");
-        
+
         verifyGrid("ver:\"2.0\"\nfooBar33\n\n", e);
 
     }
@@ -85,9 +85,9 @@ TEST_CASE("ZincReader", "[ZincReader]")
         Grid e;
         e.meta().add("tag").add("foo", "bar");
         e.addCol("xyz");
-        Val* r [1] = {new Str("val")};
-        e.addRow(r, sizeof(r) /sizeof(Val*));
-        
+        Val* r[1] = { new Str("val") };
+        e.addRow(r, sizeof(r) / sizeof(Val*));
+
         verifyGrid("ver:\"2.0\" tag foo:\"bar\"\nxyz\n\"val\"\n\n", e);
 
     }
@@ -101,7 +101,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
 
         verifyGrid("ver:\"2.0\"\nval\nN\n\n", e);
     }
- 
+
     SECTION("Grid verifyGrid3")
     {
         Grid e;
@@ -131,10 +131,10 @@ TEST_CASE("ZincReader", "[ZincReader]")
         e.addRow(r3, 2);
 
         verifyGrid("ver:\"2.0\" bg: Bin(image/jpeg) mark\n"
-        "file1 dis:\"F1\" icon: Bin(image/gif),file2 icon: Bin(image/jpg)\n"
-        "Bin(text/plain),N\n"
-        "4,Bin(image/png)\n"
-        "Bin(text/html; a=foo; bar=\"sep\"),Bin(text/html; charset=utf8)\n", e);
+            "file1 dis:\"F1\" icon: Bin(image/gif),file2 icon: Bin(image/jpg)\n"
+            "Bin(text/plain),N\n"
+            "4,Bin(image/png)\n"
+            "Bin(text/html; a=foo; bar=\"sep\"),Bin(text/html; charset=utf8)\n", e);
     }
 
     SECTION("Grid verifyGrid5")
@@ -145,7 +145,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
         e.addCol("b");
         e.addCol("c");
         e.addCol("d");
-        
+
         Val* r1[4] = { new Bool(true), new Bool(false), NULL, new Num(-99.0) };
         Val* r2[4] = { new Num(2.3), new Num(-5.0E-10), new Num(2.4E20), new Num(1.23E-8) };
         Val* r3[4] = { new Str(""), new Str("a"), new Str("\" \\ \t \n \r"), new Str("\x0a") };
@@ -154,7 +154,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
         Val* r6[4] = { new Date(2009, 12, 31), new Time(23, 59, 1, 0), new Time(1, 2, 3, 123), new DateTime(Date(2009, 2, 3), Time(4, 5, 6, 0), TimeZone("UTC")) };
         Val* r7[4] = { new Num(Num::POS_INF.value), new Num(Num::NEG_INF.value), new Str(""), new Num(Num::NaN.value) };
         Val* r8[4] = { new Coord(12.0, -34.0), new Coord(0.123, -0.789), new Coord(84.5, -77.45), new Coord(-90.0, 180.0) };
-        
+
         e.addRow(r1, 4);
         e.addRow(r2, 4);
         e.addRow(r3, 4);
@@ -181,12 +181,12 @@ TEST_CASE("ZincReader", "[ZincReader]")
     {
         Grid e;
         e.addCol("foo");
-        
+
         Val* r1[1] = { new Uri("foo$20bar") };
         Val* r2[1] = { new Uri("foo`bar") };
         Val* r3[1] = { new Uri("file \\#2") };
         Val* r4[1] = { new Str("$15") };
-        
+
         e.addRow(r1, 1);
         e.addRow(r2, 1);
         e.addRow(r3, 1);
@@ -244,7 +244,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
         e.addRow(r4, 3);
         e.addRow(r5, 3);
         e.addRow(r6, 3);
-       
+
         verifyGrid("ver:\"2.0\"\n"
             "a, b, c\n"
             ", 1, 2\n"
@@ -261,11 +261,11 @@ TEST_CASE("ZincReader", "[ZincReader]")
         Grid e;
         e.addCol("a");
         e.addCol("b");
-       
+
         Val* r1[2] = { new DateTime(Date(2010, 3, 1), Time(23, 55, 0, 13), TimeZone("GMT+5")), new DateTime(Date(2010, 3, 1), Time(23, 55, 0, 13), TimeZone("GMT-10")) };
-        
+
         e.addRow(r1, 2);
-        
+
         verifyGrid("ver:\"2.0\"\n"
             "a,b\n"
             "2010-03-01T23:55:00.013-05:00 GMT+5,2010-03-01T23:55:00.013+10:00 GMT-10\n", e);
@@ -282,7 +282,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
             .add("bar", new Marker());
 
         e.addCol("a");
-        
+
         Val* r1[1] = { new Num(3.814697265625E-6) };
         Val* r2[1] = { new DateTime(Date(2010, 12, 18), Time(14, 11, 30, 924), TimeZone("UTC")) };
         Val* r3[1] = { new DateTime(Date(2010, 12, 18), Time(14, 11, 30, 925), TimeZone("UTC")) };

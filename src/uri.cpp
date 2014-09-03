@@ -23,7 +23,7 @@ const Uri Uri::EMPTY = Uri("");
 // Return value string.
 const std::string Uri::to_string() const
 {
-	return value;
+    return value;
 }
 
 ////////////////////////////////////////////////
@@ -33,9 +33,9 @@ const std::string Uri::to_string() const
 // Encode using double quotes and back slash escapes
 const std::string Uri::to_zinc() const
 {
-	std::stringstream os;
+    std::stringstream os;
     os << '`';
-    
+
     for (std::string::const_iterator it = value.begin(), end = value.end(); it != end; ++it)
     {
         int c = *it;
@@ -44,7 +44,7 @@ const std::string Uri::to_zinc() const
         os << (char)c;
     }
     os << '`';
-    
+
     return os.str();
 }
 
@@ -53,7 +53,7 @@ const std::string Uri::to_zinc() const
 ////////////////////////////////////////////////
 bool Uri::operator ==(const Uri &other) const
 {
-	return value == other.value;
+    return value == other.value;
 }
 
 bool Uri::operator==(const Val &other) const
@@ -65,12 +65,12 @@ bool Uri::operator==(const Val &other) const
 
 bool Uri::operator !=(const Uri &other) const
 {
-	return !(*this == other);
+    return !(*this == other);
 }
 
 bool Uri::operator < (const Val &other) const
 {
-	return type() == other.type() && value < ((Uri&)other).value;
+    return type() == other.type() && value < ((Uri&)other).value;
 }
 
 bool Uri::operator >(const Val &other) const
@@ -81,7 +81,7 @@ bool Uri::operator >(const Val &other) const
 
 bool Uri::operator ==(const std::string &other) const
 {
-	return value == other;
+    return value == other;
 }
 
 Uri::auto_ptr_t Uri::clone() const

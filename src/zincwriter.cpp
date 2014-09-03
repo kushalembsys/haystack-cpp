@@ -85,7 +85,7 @@ void ZincWriter::write_row(const Grid& grid, const Row& row)
     for (size_t i = 0; i < grid.num_cols(); ++i)
     {
         const Val& val = row.get(grid.col(i));
-        if (i > 0) 
+        if (i > 0)
             m_os << ',';
 
         if (val.is_empty())

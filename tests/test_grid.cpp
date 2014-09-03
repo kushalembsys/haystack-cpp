@@ -35,7 +35,7 @@ TEST_CASE("Grid testcase", "[Grid]")
         CHECK(g.meta() == Dict::EMPTY);
         CHECK(g.num_rows() == 0);
         CHECK(g.is_empty() == true);
-        CHECK(!(g.col("foo", false) !=  NULL));
+        CHECK(!(g.col("foo", false) != NULL));
         CHECK_THROWS(g.col("foo"));
     }
 
@@ -52,7 +52,7 @@ TEST_CASE("Grid testcase", "[Grid]")
 
         // cols
         CHECK(g.num_cols() == 2);
-        
+
         const Col& c = verifyCol(g, 0, "a");
         CHECK(c.dis() == "Alpha");
         CHECK(c.meta().size() == 1);
@@ -71,10 +71,10 @@ TEST_CASE("Grid testcase", "[Grid]")
         g.addCol("area");
         Val* r1[3] = { new Ref("a"), new Str("Alpha"), new Num(1200) };
         g.addRow(r1, sizeof(r1) / sizeof(Val*));
-        
+
         Val* r2[3] = { new Ref("b"), new Str("Beta"), NULL };
         g.addRow(r2, sizeof(r2) / sizeof(Val*));
-        
+
         // meta
         CHECK(g.meta().size() == 0);
 
@@ -96,10 +96,10 @@ TEST_CASE("Grid testcase", "[Grid]")
         CHECK(gr2.get("id") == Ref("b"));
         CHECK(gr2.get("dis") == Str("Beta"));
         CHECK(gr2.get("area").is_empty());
-        
+
         // row it
         Row::const_iterator it = gr1.begin();
-        
+
         CHECK(*it == Ref("a"));
         CHECK(*++it == Str("Alpha"));
         CHECK(*++it == Num(1200));

@@ -26,13 +26,13 @@ bool TimeZone::operator ==(const TimeZone &other) const
 
 bool TimeZone::operator !=(const TimeZone &other) const
 {
-	return !(*this == other);
+    return !(*this == other);
 }
 
 
 char upp(char input)
 {
-    return (char) toupper(input);
+    return (char)toupper(input);
 }
 
 int TimeZone::detect_gmt_offset(std::string name)
@@ -54,11 +54,11 @@ int TimeZone::detect_gmt_offset(std::string name)
 
 static const TimeZone currentTZ()
 {
-    time_t time     = std::time(NULL);
-    const tm *l     = std::localtime(&time);
+    time_t time = std::time(NULL);
+    const tm *l = std::localtime(&time);
     const int local = l->tm_hour;
-    const int dst   = l->tm_isdst;
-    const int gmt   = std::gmtime(&time)->tm_hour;
+    const int dst = l->tm_isdst;
+    const int gmt = std::gmtime(&time)->tm_hour;
 
     int offset = local - gmt - dst;
 
@@ -73,7 +73,7 @@ static const TimeZone currentTZ()
     return TimeZone(os.str(), offset);
 }
 
-const TimeZone TimeZone::UTC        = TimeZone("UTC", 0);
+const TimeZone TimeZone::UTC = TimeZone("UTC", 0);
 
-const TimeZone TimeZone::DEFAULT    = TimeZone(currentTZ());
+const TimeZone TimeZone::DEFAULT = TimeZone(currentTZ());
 

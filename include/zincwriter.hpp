@@ -12,39 +12,39 @@
 //
 
 namespace haystack {
-class Dict;
-class Col;
-class Row;
-/*
- ZincWriter is used to write grids in the Zinc format.
+    class Dict;
+    class Col;
+    class Row;
+    /*
+     ZincWriter is used to write grids in the Zinc format.
 
- @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a> 
+     @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
 
-*/
-class ZincWriter : public GridWriter
-{
-public:
+     */
+    class ZincWriter : public GridWriter
+    {
+    public:
 
-    ZincWriter(std::ostream& os);
+        ZincWriter(std::ostream& os);
 
-    // Write a grid
-    void write_grid(const Grid& grid);
+        // Write a grid
+        void write_grid(const Grid& grid);
 
-    // Write a grid to string
-    static const std::string grid_to_string(const Grid& grid);
+        // Write a grid to string
+        static const std::string grid_to_string(const Grid& grid);
 
-private:
-    //////////////////////////////////////////////////////////////////////////
-    // Implementation
-    //////////////////////////////////////////////////////////////////////////
-    void write_meta(const Dict& meta);
-    void write_col(const Col& col);
-    void write_row(const Grid& grid, const Row& row);
-   
-    //////////////////////////////////////////////////////////////////////////
-    // Fields
-    //////////////////////////////////////////////////////////////////////////
+    private:
+        //////////////////////////////////////////////////////////////////////////
+        // Implementation
+        //////////////////////////////////////////////////////////////////////////
+        void write_meta(const Dict& meta);
+        void write_col(const Col& col);
+        void write_row(const Grid& grid, const Row& row);
 
-    std::ostream& m_os;
-};
+        //////////////////////////////////////////////////////////////////////////
+        // Fields
+        //////////////////////////////////////////////////////////////////////////
+
+        std::ostream& m_os;
+    };
 };

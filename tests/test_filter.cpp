@@ -89,9 +89,9 @@ TEST_CASE("Filter testcase", "[Filter]")
         verifyParse("dur < 2.5hr", *Filter::lt("dur", n(2.5, "hr")));
 
         // date, time, datetime
-        verifyParse("foo < 2009-10-30", *Filter::lt("foo", Date(2009,10,30).clone()));
-        verifyParse("foo < 08:30:00", *Filter::lt("foo", Time(8,30,00).clone()));
-        verifyParse("foo < 13:00:00", *Filter::lt("foo", Time(13,00,00).clone()));
+        verifyParse("foo < 2009-10-30", *Filter::lt("foo", Date(2009, 10, 30).clone()));
+        verifyParse("foo < 08:30:00", *Filter::lt("foo", Time(8, 30, 00).clone()));
+        verifyParse("foo < 13:00:00", *Filter::lt("foo", Time(13, 00, 00).clone()));
 
         // ref literals
         verifyParse("author == @xyz", *Filter::eq("author", Ref("xyz").clone()));

@@ -29,12 +29,12 @@ const std::string Date::to_zinc() const
 {
     std::stringstream os;
     os << year << '-';
-    if (month < 10) 
-        os << '0'; 
+    if (month < 10)
+        os << '0';
     os << month << '-';
     if (day < 10)
         os << '0';
-    os<< day;
+    os << day;
 
     return os.str();
 }
@@ -44,9 +44,9 @@ Date Date::inc_days(int numDays) const
 {
     if (numDays == 0) return *this;
     if (numDays < 0) return dec_days(-numDays);
-    int year    = this->year;
-    int month   = this->month;
-    int day     = this->day;
+    int year = this->year;
+    int month = this->month;
+    int day = this->day;
     for (; numDays > 0; --numDays)
     {
         day++;
@@ -64,9 +64,9 @@ Date Date::dec_days(int numDays) const
 {
     if (numDays == 0) return *this;
     if (numDays < 0) return inc_days(-numDays);
-    int year    = this->year;
-    int month   = this->month;
-    int day     = this->day;
+    int year = this->year;
+    int month = this->month;
+    int day = this->day;
     for (; numDays > 0; --numDays)
     {
         day--;
@@ -85,7 +85,7 @@ int Date::weekday() const
     std::tm tm = { 0 /*sec*/, 0 /*min*/, 0 /*hr*/, day, month - 1, year - 1900 };
     std::time_t time = std::mktime(&tm);
     std::tm const *loc_time = std::localtime(&time);
-    
+
     return loc_time->tm_wday + 1;
 }
 

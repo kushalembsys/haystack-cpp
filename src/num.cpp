@@ -17,10 +17,10 @@
 ////////////////////////////////////////////////
 using namespace haystack;
 
-const Num Num::ZERO		= Num();
-const Num Num::POS_INF	= Num(std::numeric_limits<double>::infinity(), "");
-const Num Num::NEG_INF	= Num(-std::numeric_limits<double>::infinity(), "");
-const Num Num::NaN		= Num(NAN, "");
+const Num Num::ZERO = Num();
+const Num Num::POS_INF = Num(std::numeric_limits<double>::infinity(), "");
+const Num Num::NEG_INF = Num(-std::numeric_limits<double>::infinity(), "");
+const Num Num::NaN = Num(NAN, "");
 
 ////////////////////////////////////////////////
 // to zinc
@@ -29,29 +29,29 @@ const Num Num::NaN		= Num(NAN, "");
 // Encode using double quotes and back slash escapes
 const std::string Num::to_zinc() const
 {
-	std::stringstream os;
-	if (value == std::numeric_limits<double>::infinity()) os << "INF";
-	else if (value == -std::numeric_limits<double>::infinity()) os << "-INF";
-	else if (isnan(value)) os << "NaN";
-	else
-	{
-		// don't let fractions
-		double abs = value; if (abs < 0) abs = -abs;
-		if (abs > 1.0)
-		{
-			char buf[64];
-			sprintf(buf, "%.6g", value);
-			os << buf;
-			//os << std::fixed << std::setprecision(4) << value << std::setprecision(0);
-		}
-		else
-		{
-			os << value;
-		}
+    std::stringstream os;
+    if (value == std::numeric_limits<double>::infinity()) os << "INF";
+    else if (value == -std::numeric_limits<double>::infinity()) os << "-INF";
+    else if (isnan(value)) os << "NaN";
+    else
+    {
+        // don't let fractions
+        double abs = value; if (abs < 0) abs = -abs;
+        if (abs > 1.0)
+        {
+            char buf[64];
+            sprintf(buf, "%.6g", value);
+            os << buf;
+            //os << std::fixed << std::setprecision(4) << value << std::setprecision(0);
+        }
+        else
+        {
+            os << value;
+        }
 
-		os << unit;
-	}
-	return os.str();
+        os << unit;
+    }
+    return os.str();
 }
 
 ////////////////////////////////////////////////
@@ -59,7 +59,7 @@ const std::string Num::to_zinc() const
 ////////////////////////////////////////////////
 bool Num::operator ==(const Num &other) const
 {
-	return value == other.value && unit == other.unit;
+    return value == other.value && unit == other.unit;
 }
 
 bool Num::operator==(const Val &other) const
@@ -71,22 +71,22 @@ bool Num::operator==(const Val &other) const
 
 bool Num::operator !=(const Num &other) const
 {
-	return !(*this == other);
+    return !(*this == other);
 }
 
 bool Num::operator ==(double other) const
 {
-	return value == other && unit == "";
+    return value == other && unit == "";
 }
 
 bool Num::operator ==(int other) const
 {
-	return value == other && unit == "";
+    return value == other && unit == "";
 }
 
 bool Num::operator ==(int64_t other) const
 {
-	return value == other && unit == "";
+    return value == other && unit == "";
 }
 
 ////////////////////////////////////////////////
@@ -117,9 +117,9 @@ bool Num::isUnitName(const std::string& unit)
     for (std::string::const_iterator it = unit.begin(), end = unit.end(); it != end; ++it)
     {
         int c = *it;
-        if (c > 31 && c < 128 
-            && !(c >= 'a' && c <= 'z') 
-            && !(c >= 'A' && c <= 'Z') 
+        if (c > 31 && c < 128
+            && !(c >= 'a' && c <= 'z')
+            && !(c >= 'A' && c <= 'Z')
             && c != '_' && c != '$' && c != '%' && c != '/')
             return false;
     }

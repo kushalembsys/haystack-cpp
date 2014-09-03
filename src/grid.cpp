@@ -73,7 +73,7 @@ Dict& Grid::addCol(const std::string& name)
         throw std::runtime_error("Cannot add cols after rows have been added");
     if (!Dict::is_tag_name(name))
         throw  std::runtime_error("Invalid column name: ");
-    
+
     if (m_cols_by_name.find(name) != m_cols_by_name.end())
         throw std::runtime_error("Duplicate col name: ");
 
@@ -82,9 +82,9 @@ Dict& Grid::addCol(const std::string& name)
     // dict is owned by m_cols vector
     Dict* meta = new Dict();
     m_cols.push_back(new Col(index, name, *meta));
-    
+
     m_cols_by_name.insert(std::pair<std::string, size_t>(name, index));
-    
+
     return (Dict&)(*meta);
 }
 
@@ -99,7 +99,7 @@ Grid& Grid::addRow(Val * valp[], size_t count)
         v->push_back(valp[i]);
     }
 
-    m_rows.push_back(new Row (*this, *v));
+    m_rows.push_back(new Row(*this, *v));
 
     return *this;
 }

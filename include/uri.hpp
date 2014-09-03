@@ -10,43 +10,43 @@
 //
 
 namespace haystack {
-/*
- Uri models a URI as a string.
+    /*
+     Uri models a URI as a string.
 
- @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
-*/
-class Uri : public Val
-{
-    Uri();
-	// disable assigment
-    Uri& operator=(const Uri &other);
-    Uri(const Uri &other) : value(other.value) {};
-public:
-    const char type() const { return URI_TYPE; }
-    // This value
-	const std::string value;
-	
-    Uri(const std::string &val) : value(val) {};
+     @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
+     */
+    class Uri : public Val
+    {
+        Uri();
+        // disable assigment
+        Uri& operator=(const Uri &other);
+        Uri(const Uri &other) : value(other.value) {};
+    public:
+        const char type() const { return URI_TYPE; }
+        // This value
+        const std::string value;
 
-    static const Uri EMPTY;
-	
-    // Return value string.
-	const std::string to_string() const;
+        Uri(const std::string &val) : value(val) {};
 
-	// Encode using double quotes and back slash escapes
-	const std::string to_zinc() const;
+        static const Uri EMPTY;
 
-	// Equality is value based
-    bool operator ==(const Uri &other) const;
-    bool operator !=(const Uri &other) const;
-    bool operator < (const Val &other) const;
-    bool operator > (const Val &other) const;
+        // Return value string.
+        const std::string to_string() const;
 
-	bool operator ==(const std::string &other) const;
+        // Encode using double quotes and back slash escapes
+        const std::string to_zinc() const;
 
-    bool operator==(const Val &other) const;
+        // Equality is value based
+        bool operator ==(const Uri &other) const;
+        bool operator !=(const Uri &other) const;
+        bool operator < (const Val &other) const;
+        bool operator > (const Val &other) const;
 
-    auto_ptr_t clone() const;
-	
-};
+        bool operator ==(const std::string &other) const;
+
+        bool operator==(const Val &other) const;
+
+        auto_ptr_t clone() const;
+
+    };
 };

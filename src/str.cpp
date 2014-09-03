@@ -25,7 +25,7 @@ Str::Str(const std::string &val) : value(val){}
 // Return value string.
 const std::string Str::to_string() const
 {
-	return value;
+    return value;
 }
 
 ////////////////////////////////////////////////
@@ -35,38 +35,38 @@ const std::string Str::to_string() const
 // Encode using double quotes and back slash escapes
 const std::string Str::to_zinc() const
 {
-	std::stringstream os;
-	os << '"';
+    std::stringstream os;
+    os << '"';
 
     for (std::string::const_iterator it = value.begin(), end = value.end(); it != end; ++it)
-	{
+    {
         int c = *it & 0xFF;
-		if (c < ' ' || c > 127 || c == '"' || c == '\\')
-		{
-			os << '\\';
-			switch (c)
-			{
-				case '\n':  os << 'n';  break;
-				case '\r':  os << 'r';  break;
-				case '\t':  os << 't';  break;
-				case '"':   os << '"';  break;
-				case '\\':  os << '\\'; break;
-				default:
-					os << 'u' << '0' << '0';
-					if (c <= 0xf)
-						os << '0';
-                    os << std::hex << std::setprecision(4) << std::uppercase << c 
-                        << std::nouppercase << std::setprecision(0) << std::dec;
-			}
-		}
-		else
-		{
-			os << ((char)c);
-		}
-	}
+        if (c < ' ' || c > 127 || c == '"' || c == '\\')
+        {
+            os << '\\';
+            switch (c)
+            {
+            case '\n':  os << 'n';  break;
+            case '\r':  os << 'r';  break;
+            case '\t':  os << 't';  break;
+            case '"':   os << '"';  break;
+            case '\\':  os << '\\'; break;
+            default:
+                os << 'u' << '0' << '0';
+                if (c <= 0xf)
+                    os << '0';
+                os << std::hex << std::setprecision(4) << std::uppercase << c
+                    << std::nouppercase << std::setprecision(0) << std::dec;
+            }
+        }
+        else
+        {
+            os << ((char)c);
+        }
+    }
 
-	os << '"';
-	return os.str();
+    os << '"';
+    return os.str();
 }
 
 ////////////////////////////////////////////////
@@ -74,7 +74,7 @@ const std::string Str::to_zinc() const
 ////////////////////////////////////////////////
 bool Str::operator ==(const Str &other) const
 {
-	return value == other.value;
+    return value == other.value;
 }
 
 bool Str::operator==(const Val &other) const
@@ -86,7 +86,7 @@ bool Str::operator==(const Val &other) const
 
 bool Str::operator !=(const Str &other) const
 {
-	return !(*this == other);
+    return !(*this == other);
 }
 
 bool Str::operator < (const Val &other) const
@@ -94,7 +94,7 @@ bool Str::operator < (const Val &other) const
     return type() == other.type() && value < ((Str&)other).value;
 }
 
-bool Str::operator > (const Val &other) const
+bool Str::operator >(const Val &other) const
 {
     return type() == other.type() && value > ((Str&)other).value;
 }
@@ -102,7 +102,7 @@ bool Str::operator > (const Val &other) const
 
 bool Str::operator ==(const std::string &other) const
 {
-	return value == other;
+    return value == other;
 }
 
 Str::auto_ptr_t Str::clone() const
@@ -115,11 +115,11 @@ Str::auto_ptr_t Str::clone() const
 ////////////////////////////////////////////////
 /*Str::operator const std::string() const
 {
-	return value;
+return value;
 }*/
 
 /*Str::operator const char*() const
 {
-	return this->value.c_str();
+return this->value.c_str();
 }
 */

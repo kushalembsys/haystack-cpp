@@ -14,22 +14,22 @@ namespace haystack {
     class DateTime;
     class Val;
     class Grid;
-/*
- HisItem is used to model a timestamp/value pair.
+    /*
+     HisItem is used to model a timestamp/value pair.
 
- @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
-*/
-class HisItem
-{
-public:
-    boost::shared_ptr<const DateTime> ts;
-    boost::shared_ptr<const Val> val;
+     @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
+     */
+    class HisItem
+    {
+    public:
+        boost::shared_ptr<const DateTime> ts;
+        boost::shared_ptr<const Val> val;
 
-    HisItem(const HisItem&);
-    HisItem(boost::shared_ptr<const DateTime> ts, boost::shared_ptr<const Val> val);
+        HisItem(const HisItem&);
+        HisItem(boost::shared_ptr<const DateTime> ts, boost::shared_ptr<const Val> val);
 
-    // Map Grid to HisItems.  Grid must have ts and val columns.
-    static const std::vector<HisItem> grid_to_items(const Grid& grid);
-};
+        // Map Grid to HisItems.  Grid must have ts and val columns.
+        static const std::vector<HisItem> grid_to_items(const Grid& grid);
+    };
 
 };

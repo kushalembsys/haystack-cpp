@@ -22,7 +22,7 @@ const Marker& Marker::VAL = *(new Marker());
 // Encode as "marker"
 const std::string Marker::to_string() const
 {
-	return "marker";
+    return "marker";
 }
 
 ////////////////////////////////////////////////
@@ -32,7 +32,7 @@ const std::string Marker::to_string() const
 // Encode as "M"
 const std::string Marker::to_zinc() const
 {
-	return "M";
+    return "M";
 }
 
 ////////////////////////////////////////////////
@@ -41,7 +41,7 @@ const std::string Marker::to_zinc() const
 bool Marker::operator ==(const Marker&) const
 {
     // all markers are the same
-	return true;
+    return true;
 }
 bool Marker::operator==(const Val &other) const
 {
@@ -51,12 +51,12 @@ bool Marker::operator==(const Val &other) const
 ////////////////////////////////////////////////
 // Cmp
 ////////////////////////////////////////////////
-bool Marker::operator > (const Val& other) const 
-{ 
+bool Marker::operator > (const Val& other) const
+{
     return  type() == other.type() && to_string() > other.to_string();
 }
 bool Marker::operator < (const Val& other) const
-{ 
+{
     return  type() == other.type() && to_string() < other.to_string();
 }
 

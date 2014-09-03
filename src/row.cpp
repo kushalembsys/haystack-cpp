@@ -21,7 +21,7 @@ const Grid& Row::grid() const { return m_grid; }
 size_t Row::size() const { return m_grid.m_cols.size(); }
 
 // Get a cell by column name. 
-const Val& Row::get(const std::string& name) const 
+const Val& Row::get(const std::string& name) const
 {
     const Col* col = m_grid.col(name);
     if (col != NULL && !m_cells.is_null(col->_index))
@@ -45,7 +45,7 @@ Row::const_iterator Row::begin() const
     return const_row_iterator(*this);
 }
 
-    // Get end it
+// Get end it
 Row::const_iterator Row::end() const
 {
     return const_row_iterator(*this, m_cells.size());
@@ -61,10 +61,10 @@ void const_row_iterator::increment() { m_pos++; }
 
 bool const_row_iterator::equal(const_row_iterator const& other) const
 {
-        return m_pos == other.m_pos && &m_row == &other.m_row;
+    return m_pos == other.m_pos && &m_row == &other.m_row;
 }
 
 const Val& const_row_iterator::dereference() const
-{ 
+{
     return m_row.get(m_grid.col(m_pos));
 }

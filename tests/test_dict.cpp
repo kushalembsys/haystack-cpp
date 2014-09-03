@@ -62,25 +62,25 @@ TEST_CASE("Dict testcase", "[Dict]")
     {
         Dict tags;
         tags.add("id", new Ref("aaaa-bbbb")).add("site")
-        .add("geoAddr", "Richmond, Va")
-        .add("area", 1200, "ft")
-        .add("date", new Date(2000, 12, 3));
-       
-        // size
-       CHECK(tags.size() == 5);
-       CHECK(!tags.is_empty());
-     
-       // configured tags
-       CHECK(tags.get("id") == Ref("aaaa-bbbb"));
-       CHECK(tags.get("site") == Marker::VAL);
-       CHECK(tags.get("geoAddr") == Str("Richmond, Va"));
-       CHECK(tags.get("area") == Num(1200, "ft"));
-       CHECK(tags.get("date") == Date(2000, 12, 3));
+            .add("geoAddr", "Richmond, Va")
+            .add("area", 1200, "ft")
+            .add("date", new Date(2000, 12, 3));
 
-       // missing tag
-       CHECK(!tags.has("foo"));
-       CHECK(tags.missing("foo"));
-       CHECK(tags.get("foo") == EmptyVal::DEF);
+        // size
+        CHECK(tags.size() == 5);
+        CHECK(!tags.is_empty());
+
+        // configured tags
+        CHECK(tags.get("id") == Ref("aaaa-bbbb"));
+        CHECK(tags.get("site") == Marker::VAL);
+        CHECK(tags.get("geoAddr") == Str("Richmond, Va"));
+        CHECK(tags.get("area") == Num(1200, "ft"));
+        CHECK(tags.get("date") == Date(2000, 12, 3));
+
+        // missing tag
+        CHECK(!tags.has("foo"));
+        CHECK(tags.missing("foo"));
+        CHECK(tags.get("foo") == EmptyVal::DEF);
     }
 
     SECTION("Dict testEquality")
@@ -96,14 +96,14 @@ TEST_CASE("Dict testcase", "[Dict]")
         b.add("x").add("y", "str");
         CHECK(b == Dict().add("x").add("y", "str"));
         CHECK(b == Dict().add("y", "str").add("x"));
-        
+
         CHECK(b != Dict().add("x", "str").add("y", "str"));
         CHECK(b != Dict().add("x").add("y", "strx"));
         CHECK(b != Dict().add("y", "str"));
         CHECK(b != Dict().add("x"));
         CHECK(b != Dict().add("x").add("yy", "str"));
     }
-    
+
     SECTION("Dict to_zinc")
     {
         CHECK(Dict().to_zinc() == "");
@@ -112,7 +112,7 @@ TEST_CASE("Dict testcase", "[Dict]")
         CHECK(Dict().add("fooBar", 123, "ft").to_zinc() == "fooBar:123ft");
         //CHECK(Dict().add("bday", new Date(1970, 6, 3)).add("dis", "Bob").add("marker").to_zinc() == "dis:\"Bob\" bday:1970-06-03 marker");
     }
-    
+
     SECTION("Dict testDis")
     {
         CHECK(Dict().add("id", new Ref("a")).dis() == "a");

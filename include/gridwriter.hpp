@@ -11,17 +11,17 @@
 
 namespace haystack {
 
-class Grid;
-/*
- GridWriter is base class for writing grids to an output stream.
+    class Grid;
+    /*
+     GridWriter is base class for writing grids to an output stream.
 
- @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a> 
+     @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
 
-*/
-class GridWriter
-{
-public:
-    // Write a grid
-    virtual void write_grid(const Grid& grid) = 0;
-};
+     */
+    class GridWriter
+    {
+    public:
+        // Write a grid
+        virtual void write_grid(const Grid& grid) = 0;
+    };
 };
