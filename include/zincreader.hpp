@@ -27,13 +27,21 @@ namespace haystack {
     public:
 
         ZincReader(std::istream& is);
+        virtual ~ZincReader(){}
+        static std::auto_ptr<ZincReader> make(const std::string& s);
 
         // Read a grid
         std::auto_ptr<Grid> read_grid();
         // Parses a filter
         Filter::auto_ptr_t read_filter();
+        // Read set of name/value tags as dictionary
+        std::auto_ptr<Dict> read_dict();
+        // Read scalar value.
+        Val::auto_ptr_t read_scalar();
 
     private:
+        // private ctor for owning a local input stream
+        ZincReader(std::auto_ptr<std::istream>);
         //////////////////////////////////////////////////////////////////////////
         // Implementation
         //////////////////////////////////////////////////////////////////////////
@@ -41,8 +49,9 @@ namespace haystack {
         void read_meta(Dict&);
 
         // no ownership
+
+        // Read a single scalar value from the stream.
         Val::auto_ptr_t read_val();
-        Val::auto_ptr_t read_scalar();
         Val::auto_ptr_t read_num_val();
         Val::auto_ptr_t read_bin_val();
         Val::auto_ptr_t read_coord_val();
@@ -55,6 +64,7 @@ namespace haystack {
         Filter::auto_ptr_t read_filter_and();
         Filter::auto_ptr_t read_filter_atomic();
         Filter::auto_ptr_t read_filter_parens();
+
         void consume_cmp();
         std::string read_filter_path();
 
@@ -83,11 +93,11 @@ namespace haystack {
         //////////////////////////////////////////////////////////////////////////
 
         std::istream& m_is;
+        std::auto_ptr<std::istream> m_local_is;
         int32_t m_cur;
         int32_t m_peek;
         int32_t m_line_num;
         int32_t m_version;
         bool m_is_filter;
-
     };
 };

@@ -18,6 +18,7 @@
 #include "str.hpp"
 #include "time.hpp"
 #include "uri.hpp"
+#include "zincreader.hpp"
 #include <assert.h>
 #include <iostream>
 
@@ -30,6 +31,10 @@
 ///////////////////////////////////////////////////////////
 using namespace haystack;
 
+#define READ(str) ZincReader::make(str)->read_scalar() 
+
+#define VERIFY_ZINC(val, str) {  CHECK(val.to_zinc() == str); CHECK( *READ(str) == val); }
+
 TEST_CASE("Bin testcase", "[Bin]")
 {
     Bin b("text/plain");
@@ -40,8 +45,13 @@ TEST_CASE("Bin testcase", "[Bin]")
     CHECK(Bin("text/plain") != Bin("text/xml"));
 
     // encoding
-    CHECK(Bin("text/plain").to_zinc() == "Bin(text/plain)");
-    CHECK(Bin("text/plain; charset=utf-8").to_zinc() == "Bin(text/plain; charset=utf-8)");
+    VERIFY_ZINC(Bin("text/plain; charset=utf-8"), "Bin(text/plain; charset=utf-8)");
+    VERIFY_ZINC(Bin("text/plain"), "Bin(text/plain)");
+
+    // verify bad bins are caught on encoding
+    CHECK_THROWS(Bin("text/plain; f()").to_zinc());
+    CHECK_THROWS(READ("Bin()"));
+    CHECK_THROWS(READ("Bin(text)"));
 }
 
 ///////////////////////////////////////////////////////////
@@ -79,8 +89,8 @@ TEST_CASE("Boolean testcase", "[Bool]")
     CHECK(Bool::FALSE_VAL.to_string() == "false");
 
     // zinc
-    CHECK(Bool::TRUE_VAL.to_zinc() == "T");
-    CHECK(Bool::FALSE_VAL.to_zinc() == "F");
+    VERIFY_ZINC(Bool::TRUE_VAL, "T");
+    VERIFY_ZINC(Bool::FALSE_VAL, "F");
 }
 
 void verifyCoord(double lat, double lng, std::string s)
@@ -184,9 +194,14 @@ TEST_CASE("Date testcase", "[Date]")
     CHECK(Date(2014, 8, 22).weekday() == 6);
 
     // encoding
-    CHECK(Date(2011, 6, 7).to_zinc() == "2011-06-07");
-    CHECK(Date(2011, 10, 10).to_zinc() == "2011-10-10");
-    CHECK(Date(2011, 12, 31).to_zinc() == "2011-12-31");
+    VERIFY_ZINC(Date(2011, 6, 7), "2011-06-07");
+    VERIFY_ZINC(Date(2011, 10, 10), "2011-10-10");
+    VERIFY_ZINC(Date(2011, 12, 31), "2011-12-31");
+
+    CHECK_THROWS(READ("2003-xx-02"));
+    CHECK_THROWS(READ("2003 - 02"));
+    CHECK_THROWS(READ("2003-02-xx"));
+
 
     // leap year
     for (int y = 1900; y <= 2100; y++)
@@ -244,6 +259,13 @@ TEST_CASE("DateTime testcase", "[DateTime]")
     CHECK(DateTime(2011, 6, 7, 11, 3, 43, TimeZone("GMT+10"), -36000).to_zinc() == "2011-06-07T11:03:43-10:00 GMT+10");
     CHECK(DateTime(2011, 6, 7, 11, 3, 43, TimeZone("GMT+10"), -36000).to_zinc() == "2011-06-07T11:03:43-10:00 GMT+10");
     CHECK(DateTime(Date(2011, 6, 8), Time(4, 7, 33, 771), TimeZone("GMT-7"), 25200).to_zinc() == "2011-06-08T04:07:33.771+07:00 GMT-7");
+
+    // errors
+    CHECK_THROWS(READ("2000-02-02T03:04:00-0x:00 New_York"));
+    CHECK_THROWS(READ("2000-02-02T03:04:00-05 New_York"));
+    CHECK_THROWS(READ("2000-02-02T03:04:00-05:!0 New_York"));
+    CHECK_THROWS(READ("2000-02-02T03:04:00-05:00"));
+    CHECK_THROWS(READ("2000-02-02T03:04:00-05:00 @"));
 }
 
 ///////////////////////////////////////////////////////////
@@ -262,7 +284,7 @@ TEST_CASE("Marker testcase", "[Marker]")
     CHECK(Marker::VAL.to_string() == "marker");
 
     // zinc
-    CHECK(Marker::VAL.to_zinc() == "M");
+    VERIFY_ZINC(Marker::VAL, "M");
 }
 
 ///////////////////////////////////////////////////////////
@@ -286,13 +308,16 @@ TEST_CASE("Num testcase", "[Num]")
     CHECK(Num(-3) > Num(-4));
     CHECK(Num(-23) == Num(-23));
 
-    CHECK(Num(123).to_zinc() == "123");
-    CHECK(Num(123.4, "m/s").to_zinc() == "123.4m/s");
-    CHECK(Num(9.6, "m/s").to_zinc() == "9.6m/s");
-    CHECK(Num(-5.2, "\u00b0F").to_zinc() == "-5.2\u00b0F");
-    CHECK(Num(23, "%").to_zinc() == "23%");
-    CHECK(Num(2.4e-3, "fl_oz").to_zinc() == "0.0024fl_oz");
-    CHECK(Num(2.4e5, "$").to_zinc() == "240000$");
+    // zinc
+    VERIFY_ZINC(Num(123), "123");
+    VERIFY_ZINC(Num(123.4, "m/s"), "123.4m/s");
+    VERIFY_ZINC(Num(9.6, "m/s"), "9.6m/s");
+    VERIFY_ZINC(Num(-5.2, "\u00b0F"), "-5.2\u00b0F");
+    VERIFY_ZINC(Num(23, "%"), "23%");
+    VERIFY_ZINC(Num(2.4e-3, "fl_oz"), "0.0024fl_oz");
+    VERIFY_ZINC(Num(2.4e5, "$"), "240000$");
+    CHECK(*READ("1234.56fl_oz") == Num(1234.56, "fl_oz"));
+    CHECK(*READ("0.000028fl_oz") == Num(0.000028, "fl_oz"));
 
     // specials
     CHECK(Num(-std::numeric_limits<double>::infinity()).to_zinc() == "-INF");
@@ -307,6 +332,9 @@ TEST_CASE("Num testcase", "[Num]")
     // verify bad unit names
     CHECK(Num::isUnitName("x_z") == true);
     CHECK(Num::isUnitName("x z") == false);
+
+    CHECK_THROWS(Num(123.4, "foo bar"));
+    CHECK_THROWS(Num(123.4, "foo,bar"));
 
     //std::cout << n.to_zinc() << "\n";
 }
@@ -326,9 +354,9 @@ TEST_CASE("Ref testcase", "[Ref]")
     CHECK(a.dis() == "Some dis");
 
     // encoding
-    CHECK(Ref("1234-5678.foo:bar").to_zinc() == "@1234-5678.foo:bar");
-    CHECK(Ref("1234-5678", "Foo Bar").to_zinc() == "@1234-5678 \"Foo Bar\"");
-    CHECK(Ref("1234-5678", "Foo \"Bar\"").to_zinc() == "@1234-5678 \"Foo \\\"Bar\\\"\"");
+    VERIFY_ZINC(Ref("1234-5678.foo:bar"), "@1234-5678.foo:bar");
+    VERIFY_ZINC(Ref("1234-5678", "Foo Bar"), "@1234-5678 \"Foo Bar\"");
+    VERIFY_ZINC(Ref("1234-5678", "Foo \"Bar\""), "@1234-5678 \"Foo \\\"Bar\\\"\"");
 
     // veify ids
     CHECK(Ref::isId("%") == false);
@@ -340,6 +368,7 @@ TEST_CASE("Ref testcase", "[Ref]")
     CHECK_THROWS(Ref("@a"));
     CHECK_THROWS(Ref("a b"));
     CHECK_THROWS(Ref("a\n"));
+    CHECK_THROWS(READ("@"));
 }
 
 ///////////////////////////////////////////////////////////
@@ -370,9 +399,13 @@ TEST_CASE("String testcase", "[Str]")
     CHECK(Str("Foo") == Str("Foo"));
 
     // encoding
-    CHECK(Str("hello").to_zinc() == "\"hello\"");
-    CHECK(Str("_ \\ \" \n \r \t \x00A0 _").to_zinc() == "\"_ \\\\ \\\" \\n \\r \\t \\u00A0 _\"");
-    CHECK(Str("\x00A0").to_zinc() == "\"\\u00A0\"");
+    VERIFY_ZINC(Str("hello"), "\"hello\"");
+    VERIFY_ZINC(Str("_ \\ \" \n \r \t \x00A0 _"), "\"_ \\\\ \\\" \\n \\r \\t \\u00A0 _\"");
+    VERIFY_ZINC(Str("\x00A0"), "\"\\u00A0\"");
+
+    CHECK_THROWS(READ("\"end..."));
+    CHECK_THROWS(READ("\"end...\n\""));
+    CHECK_THROWS(READ("\"hi\" "));
 }
 
 ///////////////////////////////////////////////////////////
@@ -390,12 +423,15 @@ TEST_CASE("Uri testcase", "[Uri]")
     CHECK(Uri("Foo") == Uri("Foo"));
 
     // encoding
-    CHECK(Uri("http://foo.com/f?q").to_zinc() == "`http://foo.com/f?q`");
-    CHECK(Uri("a$b").to_zinc() == "`a$b`");
-    CHECK(Uri("a`b").to_zinc() == "`a\\`b`");
-    CHECK(Uri("http\\:a\\?b").to_zinc() == "`http\\:a\\?b`");
-    CHECK(Uri("\u00b0F.txt").to_zinc() == "`\u00b0F.txt`");
+    VERIFY_ZINC(Uri("http://foo.com/f?q"), "`http://foo.com/f?q`");
+    VERIFY_ZINC(Uri("a$b"), "`a$b`");
+    VERIFY_ZINC(Uri("a`b"), "`a\\`b`");
+    VERIFY_ZINC(Uri("http\\:a\\?b"), "`http\\:a\\?b`");
+    VERIFY_ZINC(Uri("\u00b0F.txt"), "`\u00b0F.txt`");
 
+    // errors
+    CHECK_THROWS(READ("`no end"));
+    CHECK_THROWS(READ("`new\nline`"));
 }
 
 ///////////////////////////////////////////////////////////
@@ -417,13 +453,18 @@ TEST_CASE("Time testcase", "[Time]")
     CHECK(Time(2, 0, 0, 0) == Time(2, 0, 0, 0));
 
     // encoding
-    CHECK(Time(2, 3).to_zinc() == "02:03:00");
-    CHECK(Time(2, 3, 4).to_zinc() == "02:03:04");
-    CHECK(Time(2, 3, 4, 5).to_zinc() == "02:03:04.005");
-    CHECK(Time(2, 3, 4, 56).to_zinc() == "02:03:04.056");
-    CHECK(Time(2, 3, 4, 109).to_zinc() == "02:03:04.109");
-    CHECK(Time(2, 3, 10, 109).to_zinc() == "02:03:10.109");
-    CHECK(Time(2, 10, 59).to_zinc() == "02:10:59");
-    CHECK(Time(10, 59, 30).to_zinc() == "10:59:30");
-    CHECK(Time(23, 59, 59, 999).to_zinc() == "23:59:59.999");
+    VERIFY_ZINC(Time(2, 3), "02:03:00");
+    VERIFY_ZINC(Time(2, 3, 4), "02:03:04");
+    VERIFY_ZINC(Time(2, 3, 4, 5), "02:03:04.005");
+    VERIFY_ZINC(Time(2, 3, 4, 56), "02:03:04.056");
+    VERIFY_ZINC(Time(2, 3, 4, 109), "02:03:04.109");
+    VERIFY_ZINC(Time(2, 3, 10, 109), "02:03:10.109");
+    VERIFY_ZINC(Time(2, 10, 59), "02:10:59");
+    VERIFY_ZINC(Time(10, 59, 30), "10:59:30");
+    VERIFY_ZINC(Time(23, 59, 59, 999), "23:59:59.999");
+
+    CHECK_THROWS(READ("3:20:00"));
+    CHECK_THROWS(READ("13:xx:00"));
+    CHECK_THROWS(READ("13:45:0x"));
+    CHECK_THROWS(READ("13:45:00.4561"));
 }

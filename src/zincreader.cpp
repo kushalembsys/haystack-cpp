@@ -34,7 +34,12 @@
 ////////////////////////////////////////////////
 using namespace haystack;
 
+//////////////////////////////////////////////////////////////////////////
+// Public
+//////////////////////////////////////////////////////////////////////////
+
 ZincReader::ZincReader(std::istream& is) : m_is(is),
+m_local_is(std::auto_ptr<std::istream>()),
 m_cur(0),
 m_peek(0),
 m_line_num(1),
@@ -45,6 +50,11 @@ m_is_filter(0)
     consume();
 }
 
+std::auto_ptr<ZincReader> ZincReader::make(const std::string& s)
+{
+    std::auto_ptr<std::istream> iss(new std::istringstream(s));
+    return std::auto_ptr<ZincReader>(new ZincReader(iss));
+}
 
 // Read a grid
 std::auto_ptr<Grid> ZincReader::read_grid()
@@ -103,6 +113,52 @@ std::auto_ptr<Grid> ZincReader::read_grid()
     return g;
 }
 
+Filter::auto_ptr_t ZincReader::read_filter()
+{
+    m_is_filter = true;
+    skip_space();
+    Filter::auto_ptr_t q = read_filter_or();
+    skip_space();
+    if (m_cur >= 0) throw std::runtime_error("Expected end of stream");
+    return q;
+}
+
+// Read set of name/value tags as dictionary
+std::auto_ptr<Dict> ZincReader::read_dict()
+{
+    std::auto_ptr<Dict> d(new Dict());
+    read_meta(*d);
+    if (m_cur >= 0) throw std::runtime_error("Expected end of stream");
+    return d;
+}
+
+// Read scalar value.
+Val::auto_ptr_t ZincReader::read_scalar()
+{
+    Val::auto_ptr_t val = read_val();
+
+    if (m_cur >= 0) throw std::runtime_error("Expected end of stream");
+
+    return val;
+}
+
+// ctor with own stream handlers
+ZincReader::ZincReader(std::auto_ptr<std::istream> isAptr) : m_is(*isAptr),
+m_local_is(isAptr),
+m_cur(0),
+m_peek(0),
+m_line_num(1),
+m_version(0),
+m_is_filter(0)
+{
+    consume();
+    consume();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Implementation
+//////////////////////////////////////////////////////////////////////////
+
 std::string ZincReader::read_id()
 {
     if (!is_id_start(m_cur)) throw std::runtime_error("Invalid name start char");
@@ -150,15 +206,6 @@ void ZincReader::read_ver()
     skip_space();
 }
 
-Val::auto_ptr_t ZincReader::read_scalar()
-{
-    Val::auto_ptr_t val = read_val();
-
-    if (m_cur >= 0) throw std::runtime_error("Expected end of stream");
-
-    return val;
-}
-
 Val::auto_ptr_t ZincReader::read_val()
 {
     if (is_digit(m_cur)) return Val::auto_ptr_t(read_num_val());
@@ -194,8 +241,8 @@ Val::auto_ptr_t ZincReader::read_word_val()
         if (word == "N")   return Val::auto_ptr_t();
         if (word == "M")   return Marker::VAL.clone();
         if (word == "R")   return Str("_remove_").clone();
-        if (word == "T")   return Bool(true).clone();
-        if (word == "F")   return Bool(true).clone();
+        if (word == "T")   return Bool::TRUE_VAL.clone();
+        if (word == "F")   return Bool::FALSE_VAL.clone();
         if (word == "Bin") return read_bin_val();
         if (word == "C")   return read_coord_val();
     }
@@ -396,6 +443,8 @@ Val::auto_ptr_t ZincReader::read_ref_val()
     consume(); // opening @
     std::stringstream s;
 
+    if (m_cur < 0) throw std::runtime_error("Unexpected end of ref literal");
+
     while (Ref::is_id_char(m_cur))
     {
         if (m_cur < 0) throw std::runtime_error("Unexpected end of ref literal");
@@ -548,16 +597,6 @@ void ZincReader::consume()
 //////////////////////////////////////////////////////////////////////////
 // HFilter
 //////////////////////////////////////////////////////////////////////////
-
-Filter::auto_ptr_t ZincReader::read_filter()
-{
-    m_is_filter = true;
-    skip_space();
-    Filter::auto_ptr_t q = read_filter_or();
-    skip_space();
-    if (m_cur >= 0) throw std::runtime_error("Expected end of stream");
-    return q;
-}
 
 Filter::auto_ptr_t ZincReader::read_filter_or()
 {

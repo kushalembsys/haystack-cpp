@@ -16,6 +16,7 @@
 #include "str.hpp"
 #include "time.hpp"
 #include "uri.hpp"
+#include "zincreader.hpp"
 #include <iostream>
 
 
@@ -26,6 +27,9 @@ using namespace haystack;
 ///////////////////////////////////////////////////////////
 // Dict
 ///////////////////////////////////////////////////////////
+
+#define verifyZinc(str, tags) { std::istringstream iss(str); std::auto_ptr<Dict> x = ZincReader(iss).read_dict(); if (tags.size() <= 1){ CHECK(tags.to_zinc() == str);} CHECK(*x == tags); }
+
 TEST_CASE("Dict testcase", "[Dict]")
 {
     SECTION("Dict testEmpty")
@@ -110,7 +114,11 @@ TEST_CASE("Dict testcase", "[Dict]")
 
         CHECK(Dict().add("foo_12").to_zinc() == "foo_12");
         CHECK(Dict().add("fooBar", 123, "ft").to_zinc() == "fooBar:123ft");
-        //CHECK(Dict().add("bday", new Date(1970, 6, 3)).add("dis", "Bob").add("marker").to_zinc() == "dis:\"Bob\" bday:1970-06-03 marker");
+
+        verifyZinc("dis:\"Bob\" bday:1970-06-03 marker",
+            Dict().add("bday", new Date(1970, 6, 3)).add("dis", "Bob").add("marker"));
+        verifyZinc("dis  :  \"Bob\"  bday : 1970-06-03  marker",
+            Dict().add("dis", "Bob").add("bday", new Date(1970, 6, 3)).add("marker"));
     }
 
     SECTION("Dict testDis")

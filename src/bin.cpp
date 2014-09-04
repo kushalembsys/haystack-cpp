@@ -14,7 +14,11 @@
 ////////////////////////////////////////////////
 using namespace haystack;
 
-Bin::Bin(const std::string &val) : value(val){}
+Bin::Bin(const std::string &val) : value(val)
+{
+    if (val.size() == 0 || val.find('/') == val.npos)
+        throw std::runtime_error("Invalid mime val: \"" + val + "\"");
+}
 
 // MIME type for binary file
 const std::string Bin::to_string() const
