@@ -60,7 +60,7 @@ namespace haystack {
         // - id tag
         const std::string dis() const;
 
-        // Returns a dict with the value added
+        // Returns a dict with the value added, Val* is owned by this dict
         Dict& add(std::string name, const Val* val);
 
         // Returns a dict with the Marker added

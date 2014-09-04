@@ -1,6 +1,8 @@
 #pragma once
 #include "val.hpp"
 #include <vector>
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/shared_ptr.hpp>
 //
 // Copyright (c) 2014, J2 Innovations
 // Copyright (c) 2012 Brian Frank
@@ -24,10 +26,10 @@ namespace haystack {
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
      */
-    class Filter
+    class Filter : public boost::enable_shared_from_this < Filter >
     {
     public:
-        typedef std::auto_ptr<Filter> auto_ptr_t;
+        typedef boost::shared_ptr<Filter> auto_ptr_t;
 
         static auto_ptr_t make(const std::string&, bool checked = true);
 
@@ -66,10 +68,9 @@ namespace haystack {
         static auto_ptr_t ge(const std::string& path, Val::auto_ptr_t val);
 
         // Return a query which is the logical-and of this and that query.
-        static auto_ptr_t andF(auto_ptr_t first, auto_ptr_t second);
-
+        auto_ptr_t AND(auto_ptr_t second);
         // Return a query which is the logical-or of this and that query.
-        static auto_ptr_t orF(auto_ptr_t first, auto_ptr_t second);
+        auto_ptr_t OR(auto_ptr_t second);
 
         // Return if given tags entity matches this query.
         virtual bool include(const Dict& dict, const Pather& pather) const = 0;
@@ -78,6 +79,8 @@ namespace haystack {
         virtual char type() const { return NORMAL_FILTER_TYPE; };
 
         virtual bool operator ==(const Filter& other);
+
+        virtual ~Filter(){}
 
     };
 

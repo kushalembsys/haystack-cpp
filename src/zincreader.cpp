@@ -566,7 +566,7 @@ Filter::auto_ptr_t ZincReader::read_filter_or()
     if (m_cur != 'o') return q;
     if (read_id() != "or") throw std::runtime_error("Expecting 'or' keyword");
     skip_space();
-    return Filter::orF(q, read_filter_or());
+    return q->OR(read_filter_or());
 }
 
 Filter::auto_ptr_t ZincReader::read_filter_and()
@@ -576,7 +576,7 @@ Filter::auto_ptr_t ZincReader::read_filter_and()
     if (m_cur != 'a') return q;
     if (read_id() != "and") throw std::runtime_error("Expecting 'and' keyword");
     skip_space();
-    return Filter::andF(q, read_filter_and());
+    return q->AND(read_filter_and());
 }
 
 Filter::auto_ptr_t ZincReader::read_filter_atomic()

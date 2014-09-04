@@ -90,15 +90,15 @@ Filter::auto_ptr_t Filter::ge(const std::string& path, Val::auto_ptr_t val)
 }
 
 // Return a query which is the logical-and of this and that query.
-Filter::auto_ptr_t Filter::andF(auto_ptr_t first, auto_ptr_t second)
+Filter::auto_ptr_t Filter::AND(auto_ptr_t second)
 {
-    return auto_ptr_t(new And(first, second));
+    return auto_ptr_t(new And(shared_from_this(), second));
 }
 
 // Return a query which is the logical-or of this and that query.
-Filter::auto_ptr_t Filter::orF(auto_ptr_t first, auto_ptr_t second)
+Filter::auto_ptr_t Filter::OR(auto_ptr_t second)
 {
-    return auto_ptr_t(new Or(first, second));
+    return auto_ptr_t(new Or(shared_from_this(), second));
 }
 
 std::string Filter::str() const
@@ -128,7 +128,7 @@ Path::auto_ptr_t Path::make(const std::string& path)
     std::vector<std::string> acc;
     for (;;)
     {
-        std::string n = path.substr(s, path.size() - dash);
+        std::string n = path.substr(s, dash);
         if (n.size() == 0)
             throw std::exception();
         acc.push_back(n);
@@ -138,7 +138,7 @@ Path::auto_ptr_t Path::make(const std::string& path)
         dash = path.find('-', s);
         if (dash == path.npos)
         {
-            n = path.substr(s, path.length());
+            n = path.substr(s);
             if (n.size() == 0) throw std::exception();
             acc.push_back(n);
             break;
@@ -173,6 +173,7 @@ PathFilter::PathFilter(Path::auto_ptr_t p) : m_path(p) {}
 bool PathFilter::include(const Dict& dict, const Pather& pather) const
 {
     Val* val = (Val*)&dict.get(m_path->get(0));
+
     if (m_path->size() != 1)
     {
         for (size_t i = 1; i < m_path->size(); ++i)
@@ -227,7 +228,7 @@ std::string CmpFilter::str() const
     return ss.str();
 }
 const Val& CmpFilter::val() const { return *m_val; }
-bool CmpFilter::same_type(const Val& v) const { return v.type() == m_val->type(); }
+bool CmpFilter::same_type(const Val& v) const { return !v.is_empty() && v.type() == m_val->type(); }
 
 //////////////////////////////////////////////////////////////////////////
 // Eq
@@ -239,7 +240,7 @@ std::string Eq::cmp_str() const
 }
 bool Eq::do_include(const Val& val) const
 {
-    return CmpFilter::val() == val;
+    return !val.is_empty() && CmpFilter::val() == val;
 }
 //////////////////////////////////////////////////////////////////////////
 // Ne
@@ -251,7 +252,7 @@ std::string Ne::cmp_str() const
 }
 bool Ne::do_include(const Val& val) const
 {
-    return !(CmpFilter::val() == val);
+    return !val.is_empty() && !(CmpFilter::val() == val);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -264,7 +265,7 @@ std::string Lt::cmp_str() const
 }
 bool Lt::do_include(const Val& val) const
 {
-    return same_type(val) && CmpFilter::val() < val;
+    return same_type(val) && val < CmpFilter::val();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -277,7 +278,7 @@ std::string Le::cmp_str() const
 }
 bool Le::do_include(const Val& val) const
 {
-    return same_type(val) && (CmpFilter::val() == val || CmpFilter::val() < val);
+    return same_type(val) && (CmpFilter::val() == val || val < CmpFilter::val());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -285,7 +286,7 @@ bool Le::do_include(const Val& val) const
 //////////////////////////////////////////////////////////////////////////
 Gt::Gt(Path::auto_ptr_t p, Val::auto_ptr_t v) : CmpFilter(p, v){}
 std::string Gt::cmp_str() const { return ">"; }
-bool Gt::do_include(const Val& val) const { return same_type(val) && CmpFilter::val() > val; }
+bool Gt::do_include(const Val& val) const { return same_type(val) && val > CmpFilter::val(); }
 
 //////////////////////////////////////////////////////////////////////////
 // Ge
@@ -297,7 +298,7 @@ std::string Ge::cmp_str() const
 }
 bool Ge::do_include(const Val& val) const
 {
-    return same_type(val) && (CmpFilter::val() == val || CmpFilter::val() > val);
+    return same_type(val) && (CmpFilter::val() == val || val > CmpFilter::val());
 }
 
 //////////////////////////////////////////////////////////////////////////
