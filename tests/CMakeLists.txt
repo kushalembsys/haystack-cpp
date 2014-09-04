@@ -8,6 +8,7 @@ set_property( GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Include files
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/tests/include)
 FILE(GLOB all_headers "${PROJECT_SOURCE_DIR}/include/*.h*")
 # Source files
 FILE(GLOB test_src ${PROJECT_SOURCE_DIR}/tests/*.cpp)
