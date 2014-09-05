@@ -110,10 +110,23 @@ TEST_CASE("Grid testcase", "[Grid]")
         i = 0;
         for (Row::const_iterator it = gr2.begin(), end = gr2.end(); it != end; ++it, i++)
             CHECK(*it == *r2[i]);
-
+        
+        i = 0;
         BOOST_FOREACH(const Val& v, gr1)
         {
-
+            CHECK(v == *r1[i]);
+            i++;
         }
+        
+        i = 0;
+        BOOST_FOREACH(const Row& r, g)
+        {
+            CHECK(r == g.row(i));
+        }
+
+        i = 0;
+        for (Grid::const_iterator it = g.begin(), end = g.end(); it != end; ++it, i++)
+            CHECK(*it == g.row(i));
+
     }
 }

@@ -4,7 +4,6 @@
 #include "row.hpp"
 #include "col.hpp"
 #include <boost/ptr_container/ptr_vector.hpp>
-#include <stdexcept>
 //
 // Copyright (c) 2014, J2 Innovations
 // Copyright (c) 2012 Brian Frank
@@ -22,24 +21,18 @@ namespace haystack {
     class Grid : boost::noncopyable
     {
     public:
+
+
         typedef boost::ptr_vector<Row> row_vec_t;
         typedef boost::ptr_vector<Col> col_vec_t;
         typedef std::map<std::string, size_t> name_col_map_t;
 
+        // really it is a const iterator
+        typedef row_vec_t::const_iterator iterator;
         typedef row_vec_t::const_iterator const_iterator;
 
         typedef std::auto_ptr<Grid> auto_ptr_t;
 
-        //////////////////////////////////////////////////////////////////////////
-        // Rows
-        //////////////////////////////////////////////////////////////////////////
-
-        row_vec_t m_rows;
-        col_vec_t m_cols;
-        name_col_map_t m_cols_by_name;
-        Dict m_meta;
-
-    public:
         //////////////////////////////////////////////////////////////////////////
         // Access
         //////////////////////////////////////////////////////////////////////////
@@ -78,7 +71,6 @@ namespace haystack {
         //////////////////////////////////////////////////////////////////////////
 
         // Return name/value iterator which only includes
-        const_iterator iterator() const;
         const_iterator begin() const;
         const_iterator end() const;
 
@@ -93,5 +85,15 @@ namespace haystack {
         // Add new row with array of cells which correspond to column
         // order.  Return this.
         Grid& addRow(Val *[], size_t count);
+
+    private:
+        //////////////////////////////////////////////////////////////////////////
+        // Rows
+        //////////////////////////////////////////////////////////////////////////
+        friend class const_grid_iterator;
+        row_vec_t m_rows;
+        col_vec_t m_cols;
+        name_col_map_t m_cols_by_name;
+        Dict m_meta;
     };
 };

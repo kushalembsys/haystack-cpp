@@ -7,6 +7,7 @@
 //
 #include "grid.hpp"
 #include "str.hpp"
+#include <stdexcept>
 
 ////////////////////////////////////////////////
 // Grid
@@ -57,7 +58,6 @@ const Col* const Grid::col(const std::string& name, bool checked) const
 // Iterator
 //////////////////////////////////////////////////////////////////////////
 
-Grid::const_iterator Grid::iterator() const  { return m_rows.begin(); }
 Grid::const_iterator Grid::begin() const  { return m_rows.begin(); }
 Grid::const_iterator Grid::end() const { return m_rows.end(); }
 

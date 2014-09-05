@@ -5,8 +5,6 @@
 //   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
-#include "row.hpp"
-#include "col.hpp"
 #include "grid.hpp"
 
 ////////////////////////////////////////////////
@@ -18,7 +16,7 @@ using namespace haystack;
 const Grid& Row::grid() const { return m_grid; }
 
 // Number of columns in grid (which may map to empty cells)
-size_t Row::size() const { return m_grid.m_cols.size(); }
+size_t Row::size() const { return m_grid.num_cols(); }
 
 // Get a cell by column name. 
 const Val& Row::get(const std::string& name) const

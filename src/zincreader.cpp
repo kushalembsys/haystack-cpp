@@ -82,7 +82,7 @@ std::auto_ptr<Grid> ZincReader::read_grid()
     // rows
     while (m_cur != '\n' && m_cur > 0)
     {
-        std::auto_ptr<Val*> cells(new Val*[numCols]);
+        boost::scoped_ptr<Val*> cells(new Val*[numCols]);
 
         for (size_t i = 0; i < numCols; ++i)
         {
@@ -106,6 +106,7 @@ std::auto_ptr<Grid> ZincReader::read_grid()
             }
         }
         consume_new_line();
+        // Val** ownership transfered to the grid
         g->addRow(cells.get(), numCols);
     }
     if (m_cur == '\n') consume_new_line();
@@ -208,17 +209,17 @@ void ZincReader::read_ver()
 
 Val::auto_ptr_t ZincReader::read_val()
 {
-    if (is_digit(m_cur)) return Val::auto_ptr_t(read_num_val());
-    if (is_alpha(m_cur)) return Val::auto_ptr_t(read_word_val());
+    if (is_digit(m_cur)) return read_num_val();
+    if (is_alpha(m_cur)) return read_word_val();
 
     switch (m_cur)
     {
-    case '@': return Val::auto_ptr_t(read_ref_val());
-    case '"': return Val::auto_ptr_t(read_str_val());
-    case '`': return Val::auto_ptr_t(read_uri_val());
+    case '@': return read_ref_val();
+    case '"': return read_str_val();
+    case '`': return read_uri_val();
     case '-':
-        if (m_peek == 'I') return Val::auto_ptr_t(read_word_val());
-        return Val::auto_ptr_t(read_num_val());
+        if (m_peek == 'I') return read_word_val();
+        return read_num_val();
     default:  throw std::runtime_error("Unexpected char for start of value");
     }
 }
