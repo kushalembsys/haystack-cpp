@@ -3,6 +3,7 @@
 #include "dict.hpp"
 #include "row.hpp"
 #include "col.hpp"
+#include <stdexcept>
 #include <boost/ptr_container/ptr_vector.hpp>
 //
 // Copyright (c) 2014, J2 Innovations
@@ -86,7 +87,19 @@ namespace haystack {
         // order.  Return this.
         Grid& addRow(Val *[], size_t count);
 
+        // Constructs an err grid
+        static Grid::auto_ptr_t make_err(const std::runtime_error&);
+        // Constructs grid from Dict
+        static Grid::auto_ptr_t make(const Dict&);
+        // Constructs grid from Dicts vector
+        static Grid::auto_ptr_t make(const boost::ptr_vector<Dict>&);
+
     private:
+        // Add new row with values from the Dict; Dict column
+        // should match this grid columns, exception is thrown otherwise.
+        // Return this.
+        Grid& addRow(const Dict&);
+
         //////////////////////////////////////////////////////////////////////////
         // Rows
         //////////////////////////////////////////////////////////////////////////

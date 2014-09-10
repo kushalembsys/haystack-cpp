@@ -34,13 +34,9 @@ const std::vector<HisItem> HisItem::grid_to_items(const Grid& grid)
     {
         const Row& row = grid.row(i);
 
-        DateTime::auto_ptr_t t =  row.get(*tsCol).clone();
-        boost::shared_ptr<const DateTime> ts((DateTime*)t.get());
-        t.release();
-        Val::auto_ptr_t v = row.get(*valCol).clone();
-        boost::shared_ptr<const Val> val(v.get());
-        v.release();
-
+        boost::shared_ptr<const DateTime> ts((DateTime*)row.get(*tsCol).clone().release());
+        boost::shared_ptr<const Val> val(row.get(*valCol).clone().release());
+        
         items.push_back(HisItem(ts, val));
     }
     return items;

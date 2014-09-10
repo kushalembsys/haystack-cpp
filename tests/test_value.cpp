@@ -260,6 +260,8 @@ TEST_CASE("DateTime testcase", "[DateTime]")
     CHECK(DateTime(2011, 6, 7, 11, 3, 43, TimeZone("GMT+10"), -36000).to_zinc() == "2011-06-07T11:03:43-10:00 GMT+10");
     CHECK(DateTime(Date(2011, 6, 8), Time(4, 7, 33, 771), TimeZone("GMT-7"), 25200).to_zinc() == "2011-06-08T04:07:33.771+07:00 GMT-7");
 
+    CHECK(DateTime::now().tz == TimeZone::DEFAULT);
+
     // errors
     CHECK_THROWS(READ("2000-02-02T03:04:00-0x:00 New_York"));
     CHECK_THROWS(READ("2000-02-02T03:04:00-05 New_York"));

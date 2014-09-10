@@ -90,9 +90,8 @@ std::auto_ptr<Grid> ZincReader::read_grid()
             if (m_cur != ',' && m_cur != '\n')
             {
                 Val::auto_ptr_t v = read_val();
-                (cells.get())[i] = (Val*)v.get();
                 // ownership transfered to cells vector
-                v.release();
+                (cells.get())[i] = (Val*)v.release();
             }
             else
                 (cells.get())[i] = NULL;
@@ -188,9 +187,8 @@ void ZincReader::read_meta(Dict& d)
             val = read_val();
             skip_space();
         }
-        d.add(name, val.get());
         // ownership transfered to the dict
-        val.release();
+        d.add(name, val.release());
         skip_space();
     }
 }

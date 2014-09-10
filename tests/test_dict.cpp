@@ -116,7 +116,7 @@ TEST_CASE("Dict testcase", "[Dict]")
         CHECK(Dict().add("fooBar", 123, "ft").to_zinc() == "fooBar:123ft");
 
         verifyZinc("dis:\"Bob\" bday:1970-06-03 marker",
-            Dict().add("bday", new Date(1970, 6, 3)).add("dis", "Bob").add("marker"));
+            Dict().add("bday", Date(1970, 6, 3)).add("dis", "Bob").add("marker"));
         verifyZinc("dis  :  \"Bob\"  bday : 1970-06-03  marker",
             Dict().add("dis", "Bob").add("bday", new Date(1970, 6, 3)).add("marker"));
     }
@@ -124,8 +124,7 @@ TEST_CASE("Dict testcase", "[Dict]")
     SECTION("Dict testDis")
     {
         CHECK(Dict().add("id", new Ref("a")).dis() == "a");
-        CHECK(Dict().add("id", new Ref("a", "b")).dis() == "b");
-        CHECK(Dict().add("id", new Ref("a")).add("dis", "d").dis() == "d");
+        CHECK(Dict().add("id", Ref("a", "b")).dis() == "b");
+        CHECK(Dict().add("id", Ref("a")).add("dis", "d").dis() == "d");
     }
-
 }

@@ -22,6 +22,8 @@ namespace haystack {
         Time();
         // disable assignment
         Time& operator=(const Time &other);
+        friend class DateTime;
+        Time(const Time &other) : hour(other.hour), minutes(other.minutes), sec(other.sec), ms(other.ms)  { enforceInit(); }
     public:
         const char type() const { return TIME_TYPE; }
 
@@ -29,7 +31,7 @@ namespace haystack {
         const int hour;
 
         // Minute of hour as 0-59
-        const int min;
+        const int minutes;
 
         // Second of minute as 0-59
         const int sec;
@@ -38,10 +40,10 @@ namespace haystack {
         const int ms;
 
         // ctors
-        Time(int hour, int min, int sec, int ms) : hour(hour), min(min), sec(sec), ms(ms) { enforceInit(); };
-        Time(int hour, int min, int sec) : hour(hour), min(min), sec(sec), ms(0) { enforceInit(); };
-        Time(int hour, int min) : hour(hour), min(min), sec(0), ms(0) { enforceInit(); };
-        Time(const Time &other) : hour(other.hour), min(other.min), sec(other.sec), ms(other.ms)  { enforceInit(); };
+        Time(int hour, int minutes, int sec, int ms) : hour(hour), minutes(minutes), sec(sec), ms(ms) { enforceInit(); }
+        Time(int hour, int minutes, int sec) : hour(hour), minutes(minutes), sec(sec), ms(0) { enforceInit(); }
+        Time(int hour, int minutes) : hour(hour), minutes(minutes), sec(0), ms(0) { enforceInit(); }
+        
 
         // Encode as "hh:mm:ss.FFF"
         const std::string to_zinc() const;
@@ -65,7 +67,7 @@ namespace haystack {
         void enforceInit()
         {
             if (hour < 0 || hour > 23)  throw std::runtime_error("Invalid hour");
-            if (min < 0 || min  > 59)  throw std::runtime_error("Invalid min");
+            if (minutes < 0 || minutes  > 59)  throw std::runtime_error("Invalid min");
             if (sec < 0 || sec  > 59)  throw std::runtime_error("Invalid sec");
             if (ms < 0 || ms   > 999) throw std::runtime_error("Invalid ms");
         }

@@ -7,7 +7,6 @@
 //
 #include "grid.hpp"
 #include "str.hpp"
-#include <stdexcept>
 
 ////////////////////////////////////////////////
 // Grid
@@ -39,7 +38,13 @@ const Row& Grid::row(size_t row) const { return m_rows[row]; }
 const size_t Grid::num_cols() const { return m_cols.size(); }
 
 // Get a column by its index
-const Col& Grid::col(size_t index) const { return m_cols[index]; }
+const Col& Grid::col(size_t index) const
+{
+    if (index < m_cols.size())
+        return m_cols[index];
+    else
+        throw std::runtime_error("Col index out of bouds.");
+}
 
 // Convenience for "col(name, true)"
 const Col* const Grid::col(const std::string& name) const { return col(name, true); }
@@ -102,4 +107,88 @@ Grid& Grid::addRow(Val * valp[], size_t count)
     m_rows.push_back(new Row(*this, v));
 
     return *this;
+}
+
+// Add new row with array of cells which correspond to column
+// order.  Return this.
+Grid& Grid::addRow(const Dict& d)
+{
+    if (d.is_empty())
+        return *this;
+
+    std::auto_ptr<Row::val_vec_t> v(new Row::val_vec_t());
+
+    for (Dict::const_iterator it = d.begin(), end = d.end(); it != end; ++it)
+    {
+        if (col(it->first, false) == NULL)
+            throw std::runtime_error("Grid has no matching column name.");
+
+        Val* val = (Val*)it->second->clone().release();
+        if (val->is_empty())
+            val = NULL;
+
+        v->push_back(val);
+    }
+
+    m_rows.push_back(new Row(*this, v));
+
+    return *this;
+}
+
+Grid::auto_ptr_t Grid::make_err(const std::runtime_error& e)
+{
+    auto_ptr_t g(new Grid());
+    g->meta().add("err")
+        .add("dis", e.what())
+        .add("errTrace", "");
+    g->addCol("empty");
+
+    return g;
+}
+
+// Constructs grid from Dict
+Grid::auto_ptr_t Grid::make(const Dict& d)
+{
+    auto_ptr_t g(new Grid());
+    if (d.is_empty())
+        return g;
+
+    // add cols
+    for (Dict::const_iterator it = d.begin(), e = d.end(); it != e; ++it)
+        g->addCol(it->first);
+
+    g->addRow(d);
+
+    return g;
+}
+
+// Constructs grid from Dicts vector
+Grid::auto_ptr_t Grid::make(const boost::ptr_vector<Dict>& dicts)
+{
+    auto_ptr_t g(new Grid());
+
+    if (dicts.empty())
+        return g;
+
+    std::map<std::string, bool> col_names;
+
+    // add cols
+    for (boost::ptr_vector<Dict>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
+    {
+        for (Dict::const_iterator it = dit->begin(), e = dit->end(); it != e; ++it)
+        {
+            if (col_names.find(it->first) != col_names.end())
+            {
+                col_names[it->first] = true;
+                g->addCol(it->first);
+            }
+        }
+    }
+
+    for (boost::ptr_vector<Dict>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
+    {
+        g->addRow(*dit);
+    }
+
+    return g;
 }

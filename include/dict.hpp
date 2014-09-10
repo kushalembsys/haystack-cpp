@@ -19,12 +19,15 @@ namespace haystack {
     class Dict : boost::noncopyable
     {
     public:
+        typedef std::auto_ptr<Dict> auto_ptr_t;
         // dict internal type
         typedef boost::ptr_map < std::string, haystack::Val > dict_t;
         typedef dict_t::const_iterator const_iterator;
     private:
         dict_t m_map;
     public:
+
+        virtual ~Dict(){}
 
         // Singleton for empty set of tags.
         const static Dict& EMPTY;
@@ -52,7 +55,7 @@ namespace haystack {
             return to_zinc();
         }
 
-        // Encode value to zinc format
+        // Encode values to zinc format
         const std::string to_zinc() const;
 
         // Get display string for this entity:
@@ -63,6 +66,9 @@ namespace haystack {
         // Returns a dict with the value added, Val* is owned by this dict
         Dict& add(std::string name, const Val* val);
 
+        // Returns a dict with the value added, Val& is cloned
+        Dict& add(std::string name, const Val& val);
+
         // Returns a dict with the Marker added
         Dict& add(std::string name);
 
@@ -71,6 +77,12 @@ namespace haystack {
 
         // Returns a dict with the Num added
         Dict& add(std::string name, double val, const std::string &unit = "");
+
+        // Returns a dict with the Dict added
+        Dict& add(const Dict& other);
+
+        // Clones this Dict and its values
+        virtual auto_ptr_t clone();
 
         // Return if the given string is a legal tag name.  The
         // first char must be ASCII lower case letter.  Rest of

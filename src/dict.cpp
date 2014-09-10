@@ -54,7 +54,7 @@ Dict::const_iterator Dict::end() const
 // to zinc
 ////////////////////////////////////////////////
 
-// Encode as "T" or "F"
+// Encode values to zinc format
 const std::string Dict::to_zinc() const
 {
     std::stringstream os;
@@ -112,12 +112,18 @@ Dict& Dict::add(std::string name, const Val* val)
     return *this;
 }
 
+Dict& Dict::add(std::string name, const Val& val)
+{
+    std::string k = name;
+    Val* v = (Val*) val.clone().release();
+    m_map.insert(k, v);
+    return *this;
+}
+
 Dict& Dict::add(std::string name)
 {
     std::string k = name;
-    Marker::auto_ptr_t ma = Marker::VAL.clone();
-    m_map.insert(k, (Marker*)ma.get());
-    ma.release();
+    m_map.insert(k, (Marker*)Marker::VAL.clone().release());
     return *this;
 }
 
@@ -134,6 +140,28 @@ Dict& Dict::add(std::string name, double val, const std::string &unit)
     std::string k = name;
     m_map.insert(k, new Num(val, unit));
     return *this;
+}
+
+// Returns a dict with the Dict added
+Dict& Dict::add(const Dict& other)
+{
+    for (const_iterator it = other.begin(), e = other.end(); it != e; ++it)
+    {
+        add(it->first, *it->second);
+    }
+    return *this;
+}
+
+// Clones this Dict and its values
+Dict::auto_ptr_t Dict::clone()
+{
+    auto_ptr_t c(new Dict());
+    for (const_iterator it = begin(), e = end(); it != e; ++it)
+    {
+        c->add(it->first, it->second->clone().release());
+    }
+
+    return c;
 }
 
 ////////////////////////////////////////////////

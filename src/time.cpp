@@ -24,7 +24,7 @@ const std::string Time::to_zinc() const
 {
     std::stringstream os;
     if (hour < 10) os << '0'; os << hour << ':';
-    if (min < 10) os << '0'; os << min << ':';
+    if (minutes < 10) os << '0'; os << minutes << ':';
     if (sec < 10) os << '0'; os << sec;
     if (ms != 0)
     {
@@ -42,7 +42,7 @@ const std::string Time::to_zinc() const
 ////////////////////////////////////////////////
 bool Time::operator ==(const Time &other) const
 {
-    return (hour == other.hour && min == other.min && sec == other.sec && ms == other.ms);
+    return (hour == other.hour && minutes == other.minutes && sec == other.sec && ms == other.ms);
 }
 
 bool Time::operator==(const Val &other) const
@@ -78,7 +78,7 @@ Time::auto_ptr_t Time::clone() const
 int Time::compareTo(const Time &other) const
 {
     if (hour < other.hour) return -1; else if (hour > other.hour) return 1;
-    if (min < other.min)   return -1; else if (min > other.min)   return 1;
+    if (minutes < other.minutes)   return -1; else if (minutes > other.minutes)   return 1;
     if (sec < other.sec)   return -1; else if (sec > other.sec)   return 1;
     if (ms < other.ms)     return -1; else if (ms > other.ms)     return 1;
 
