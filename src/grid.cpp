@@ -120,9 +120,6 @@ Grid& Grid::addRow(const Dict& d)
 
     for (Dict::const_iterator it = d.begin(), end = d.end(); it != end; ++it)
     {
-        if (col(it->first, false) == NULL)
-            throw std::runtime_error("Grid has no matching column name.");
-
         Val* val = (Val*)it->second->clone().release();
         if (val->is_empty())
             val = NULL;
@@ -163,6 +160,37 @@ Grid::auto_ptr_t Grid::make(const Dict& d)
 }
 
 // Constructs grid from Dicts vector
+Grid::auto_ptr_t Grid::make(const std::vector<const Dict* const>& dicts)
+{
+    auto_ptr_t g(new Grid());
+
+    if (dicts.empty())
+        return g;
+
+    std::map<std::string, bool> col_names;
+
+    // add cols
+    for (std::vector<const Dict* const>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
+    {
+        for (Dict::const_iterator it = (**dit).begin(), e = (**dit).end(); it != e; ++it)
+        {
+            if (col_names.find(it->first) == col_names.end())
+            {
+                col_names[it->first] = true;
+                g->addCol(it->first);
+            }
+        }
+    }
+
+    for (std::vector<const Dict* const>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
+    {
+        g->addRow(**dit);
+    }
+
+    return g;
+}
+
+// Constructs grid from Dicts vector
 Grid::auto_ptr_t Grid::make(const boost::ptr_vector<Dict>& dicts)
 {
     auto_ptr_t g(new Grid());
@@ -177,7 +205,7 @@ Grid::auto_ptr_t Grid::make(const boost::ptr_vector<Dict>& dicts)
     {
         for (Dict::const_iterator it = dit->begin(), e = dit->end(); it != e; ++it)
         {
-            if (col_names.find(it->first) != col_names.end())
+            if (col_names.find(it->first) == col_names.end())
             {
                 col_names[it->first] = true;
                 g->addCol(it->first);

@@ -72,7 +72,7 @@ const Dict& TestProj::on_about() const
     return *m_about;
 }
 
-Dict::auto_ptr_t TestProj::on_read_by_id(const Ref& id)
+Dict::auto_ptr_t TestProj::on_read_by_id(const Ref& id) const
 {
     recs_t::const_iterator it = m_recs.find(id.value);
 
@@ -170,30 +170,5 @@ std::vector<const Op*>* TestProj::m_ops = NULL;
 // Reads
 //////////////////////////////////////////////////////////////////////////
 
-// Iterator
-test_iterator::test_iterator(iterator_t it) : m_it(it) {}
-
-void test_iterator::increment()
-{
-    m_it++;
-}
-
-bool test_iterator::equal(const_proj_iterator const& other) const
-{
-    return m_it == ((test_iterator&)other).m_it;
-}
-
-const Dict& test_iterator::dereference() const
-{
-    return *m_it->second;
-}
-
-const_proj_iterator TestProj::begin()
-{
-    return test_iterator(m_recs.begin());
-}
-
-const_proj_iterator TestProj::end()
-{
-    return test_iterator(m_recs.end());
-}
+Server::const_iterator TestProj::begin() const { return const_iterator(m_recs.begin()); }
+Server::const_iterator TestProj::end() const { return const_iterator(m_recs.end()); }

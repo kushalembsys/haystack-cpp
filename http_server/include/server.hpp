@@ -15,14 +15,21 @@ namespace haystack
         , boost::forward_traversal_tag
         >
     {
-        public:
+    public:
         friend class boost::iterator_core_access;
 
-        virtual void increment() {};
+        const_proj_iterator(boost::ptr_map<std::string, Dict>::const_iterator it) : m_it(it){}
 
-        virtual bool equal(const_proj_iterator const& other) const { return false; }
+        void increment() { ++m_it; }
 
-        virtual const Dict& dereference() const { return Dict::EMPTY; }
+        bool equal(const_proj_iterator const& other) const { return m_it == other.m_it; }
+
+        const Dict& dereference() const 
+        {
+            return (Dict*) m_it->second;
+        }
+    private:
+        boost::ptr_map<std::string, Dict>::const_iterator m_it;
     };
 
     // Server is the interface between HTTPRequestHandler and a database of
@@ -36,6 +43,8 @@ namespace haystack
 
         typedef const_proj_iterator iterator;
         typedef const_proj_iterator const_iterator;
+
+        Server() { boot_time(); }
 
         Dict::auto_ptr_t about() const;
         //////////////////////////////////////////////////////////////////////////
@@ -57,16 +66,17 @@ namespace haystack
         //  - moduleUri: Uri
         virtual const Dict& on_about() const = 0;
 
-        Grid::auto_ptr_t on_read_by_ids(const std::vector<Ref>& ids);
+        Grid::auto_ptr_t on_read_by_ids(const std::vector<Ref>& ids) const;
 
-        Grid::auto_ptr_t on_read_all(const std::string& filter, size_t limit);
+        Grid::auto_ptr_t on_read_all(const std::string& filter, size_t limit) const;
 
-        virtual const_iterator begin() = 0;
-        virtual const_iterator end() = 0;
+        virtual const_iterator begin() const = 0;
+        virtual const_iterator end() const = 0;
 
         static const DateTime& boot_time();
 
     private:
+
         static const DateTime* m_boot_time;
     };
 };

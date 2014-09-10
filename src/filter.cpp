@@ -172,7 +172,7 @@ PathFilter::PathFilter(Path::auto_ptr_t p) : m_path(p) {}
 
 bool PathFilter::include(const Dict& dict, const Pather& pather) const
 {
-    Val* val = (Val*)&dict.get(m_path->get(0));
+    Val* val = (Val*)&dict.get(m_path->get(0), false);
 
     if (m_path->size() != 1)
     {
@@ -182,7 +182,7 @@ bool PathFilter::include(const Dict& dict, const Pather& pather) const
             Dict& nt = (Dict&)pather.find(((Ref&)*val).value);
 
             if (nt.size() == 0) { return do_include(EmptyVal::DEF); }
-            val = (Val*)&nt.get(m_path->get(i));
+            val = (Val*)&nt.get(m_path->get(i), false);
         }
     }
     return do_include(*val);

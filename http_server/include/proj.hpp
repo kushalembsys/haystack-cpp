@@ -38,19 +38,19 @@ namespace haystack {
         /**
         * Convenience for "read_by_id(id, true)"
         */
-        virtual Dict::auto_ptr_t read_by_id(const Ref& id);
+        virtual Dict::auto_ptr_t read_by_id(const Ref& id) const;
 
         /**
         * Call "read" to lookup an entity record by it's unique identifier.
         * If not found then return null or throw an UnknownRecException based
         * on checked.
         */
-        virtual Dict::auto_ptr_t read_by_id(const Ref& id, bool checked);
+        virtual Dict::auto_ptr_t read_by_id(const Ref& id, bool checked) const;
 
         /**
         * Convenience for "read_by_ids(ids, true)"
         */
-        virtual Grid::auto_ptr_t read_by_ids(const std::vector<Ref>& ids);
+        virtual Grid::auto_ptr_t read_by_ids(const std::vector<Ref>& ids) const;
 
         /**
         * Read a list of entity records by their unique identifier.
@@ -60,18 +60,18 @@ namespace haystack {
         * not resolved.  If checked is false, then each id not found has a
         * row where every cell is null.
         */
-        virtual Grid::auto_ptr_t read_by_ids(const std::vector<Ref>& ids, bool checked);
+        virtual Grid::auto_ptr_t read_by_ids(const std::vector<Ref>& ids, bool checked) const;
 
         /**
         * Subclass hook for read_by_id, return null if not found.
         */
-        virtual Dict::auto_ptr_t on_read_by_id(const Ref& id) = 0;
+        virtual Dict::auto_ptr_t on_read_by_id(const Ref& id) const = 0;
 
         /**
         * Subclass hook for read_by_ids, return rows with nulls cells
         * for each id not found.
         */
-        virtual Grid::auto_ptr_t on_read_by_ids(const std::vector<Ref>& ids) = 0;
+        virtual Grid::auto_ptr_t on_read_by_ids(const std::vector<Ref>& ids) const = 0;
 
         //////////////////////////////////////////////////////////////////////////
         // Read by filter
@@ -80,7 +80,7 @@ namespace haystack {
         /**
         * Convenience for "read(filter, true)".
         */
-        virtual Dict::auto_ptr_t read(const std::string& filter);
+        virtual Dict::auto_ptr_t read(const std::string& filter) const;
 
         /**
         * Query one entity record that matches the given filter.  If
@@ -88,23 +88,23 @@ namespace haystack {
         * returned.  If there are no matches than return null or raise
         * UnknownRecException based on checked flag.
         */
-        virtual Dict::auto_ptr_t read(const std::string& filter, bool checked);
+        virtual Dict::auto_ptr_t read(const std::string& filter, bool checked) const;
 
         /**
         * Convenience for "read_all(filter, max)".
         */
-        virtual Grid::auto_ptr_t read_all(const std::string& filter);
+        virtual Grid::auto_ptr_t read_all(const std::string& filter) const;
 
         /**
         * Call "read" to query every entity record that matches given filter.
         * Clip number of results by "limit" parameter.
         */
-        virtual Grid::auto_ptr_t read_all(const std::string& filter, size_t limit);
+        virtual Grid::auto_ptr_t read_all(const std::string& filter, size_t limit) const;
 
         /**
         * Subclass hook for read and read_all.
         */
-        virtual Grid::auto_ptr_t on_read_all(const std::string& filter, size_t limit) = 0;
+        virtual Grid::auto_ptr_t on_read_all(const std::string& filter, size_t limit) const = 0;
 
     };
 

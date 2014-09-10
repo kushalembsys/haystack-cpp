@@ -1,4 +1,5 @@
 #pragma once
+#include "server.hpp"
 
 //
 // Copyright (c) 2014, J2 Innovations
@@ -8,31 +9,15 @@
 //   06 Jun 2011  Brian Frank  Creation
 //
 
-#include "server.hpp"
 namespace haystack
 {
     class Dict;
     
-    class test_iterator : public const_proj_iterator
-    {
-        friend class TestProj;
-        typedef  boost::ptr_map<std::string, Dict>::const_iterator iterator_t;
-        test_iterator(iterator_t it);
-    public:
-        void increment();
-
-        bool equal(const_proj_iterator const& other) const;
-
-        const Dict& dereference() const;
-    private:
-       iterator_t m_it;
-    };
-
     // TestProj provides a simple implementation of
     // Server with some test entities.
     class TestProj : public Server
     {
-        friend class test_iterator;
+
     public:
         typedef boost::ptr_map<std::string, Dict> recs_t;
         
@@ -46,10 +31,10 @@ namespace haystack
         //////////////////////////////////////////////////////////////////////////
         // Reads
         //////////////////////////////////////////////////////////////////////////
-        Dict::auto_ptr_t on_read_by_id(const Ref& id);
+        Dict::auto_ptr_t on_read_by_id(const Ref& id) const;
 
-        const_proj_iterator begin();
-        const_proj_iterator end();
+        const_iterator begin() const;
+        const_iterator end() const;
     private:
         void add_site(const std::string& dis, const std::string& geoCity, const std::string& geoState, int area);
         void add_meter(Dict& site, const std::string& dis);

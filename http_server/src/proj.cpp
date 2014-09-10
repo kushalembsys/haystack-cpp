@@ -2,12 +2,12 @@
 
 using namespace haystack;
 
-Dict::auto_ptr_t Proj::read_by_id(const Ref& id)
+Dict::auto_ptr_t Proj::read_by_id(const Ref& id) const
 {
     return read_by_id(id, true);
 }
 
-Dict::auto_ptr_t Proj::read_by_id(const Ref& id, bool checked)
+Dict::auto_ptr_t Proj::read_by_id(const Ref& id, bool checked) const
 {
     Dict::auto_ptr_t rec = on_read_by_id(id);
     if (!rec->is_empty()) return rec;
@@ -15,12 +15,12 @@ Dict::auto_ptr_t Proj::read_by_id(const Ref& id, bool checked)
     return Dict::auto_ptr_t();
 }
 
-Grid::auto_ptr_t Proj::read_by_ids(const std::vector<Ref>& ids)
+Grid::auto_ptr_t Proj::read_by_ids(const std::vector<Ref>& ids) const
 {
     return read_by_ids(ids, true);
 }
 
-Grid::auto_ptr_t Proj::read_by_ids(const std::vector<Ref>& ids, bool checked)
+Grid::auto_ptr_t Proj::read_by_ids(const std::vector<Ref>& ids, bool checked) const
 {
     Grid::auto_ptr_t grid = on_read_by_ids(ids);
     if (checked)
@@ -31,12 +31,12 @@ Grid::auto_ptr_t Proj::read_by_ids(const std::vector<Ref>& ids, bool checked)
     return grid;
 }
 
-Dict::auto_ptr_t Proj::read(const std::string& filter)
+Dict::auto_ptr_t Proj::read(const std::string& filter) const
 {
     return read(filter, true);
 }
 
-Dict::auto_ptr_t Proj::read(const std::string& filter, bool checked)
+Dict::auto_ptr_t Proj::read(const std::string& filter, bool checked) const
 {
     Grid::auto_ptr_t grid = read_all(filter, 1);
     if (grid->num_rows() > 0) return ((Dict&)grid->row(0)).clone();
@@ -44,12 +44,12 @@ Dict::auto_ptr_t Proj::read(const std::string& filter, bool checked)
     return Dict::auto_ptr_t();
 }
 
-Grid::auto_ptr_t Proj::read_all(const std::string& filter)
+Grid::auto_ptr_t Proj::read_all(const std::string& filter) const
 {
     return read_all(filter, (std::numeric_limits<std::size_t>::max()));
 }
 
-Grid::auto_ptr_t Proj::read_all(const std::string& filter, size_t limit)
+Grid::auto_ptr_t Proj::read_all(const std::string& filter, size_t limit) const
 {
     return on_read_all(filter, limit);
 }

@@ -46,7 +46,7 @@ TEST_CASE("Dict testcase", "[Dict]")
         // missing tag
         CHECK(!tags.has("foo"));
         CHECK(tags.missing("foo"));
-        CHECK(tags.get("foo").is_empty());
+        CHECK(tags.get("foo", false).is_empty());
     }
 
     SECTION("Dict is_tag_name")
@@ -84,7 +84,7 @@ TEST_CASE("Dict testcase", "[Dict]")
         // missing tag
         CHECK(!tags.has("foo"));
         CHECK(tags.missing("foo"));
-        CHECK(tags.get("foo") == EmptyVal::DEF);
+        CHECK(tags.get("foo", false) == EmptyVal::DEF);
     }
 
     SECTION("Dict testEquality")

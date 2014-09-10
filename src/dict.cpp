@@ -18,23 +18,32 @@
 using namespace haystack;
 
 // Return true if size is zero
-const bool Dict::is_empty() const { return m_map.size() == 0; }
+const bool Dict::is_empty() const { return size() == 0; }
 
 // Return number of tag name / value pairs
 const size_t Dict::size() const { return m_map.size(); }
 
 // Return if the given tag is present
-const bool Dict::has(const std::string& name) const { return m_map.count(name) > 0; }
+const bool Dict::has(const std::string& name) const 
+{ 
+    return !(get(name, false) == EmptyVal::DEF);
+}
 
 // Return if the given tag is not present
-const bool Dict::missing(const std::string& name) const { return !has(name); }
+const bool Dict::missing(const std::string& name) const
+{ 
+    return get(name, false) == EmptyVal::DEF;
+}
 
 // Get a tag by name
-const Val& Dict::get(const std::string& name) const
+const Val& Dict::get(const std::string& name, bool checked) const
 {
     dict_t::const_iterator it = m_map.find(name);
     if (it != end())
         return *it->second;
+
+    if (checked) 
+        throw std::runtime_error("Name not found: " + name);
     return EmptyVal::DEF;
 }
 
@@ -76,11 +85,11 @@ const std::string Dict::to_zinc() const
 // - id tag
 const std::string Dict::dis() const
 {
-    const Val& dis = get("dis");
+    const Val& dis = get("dis", false);
     if (dis.type() == STR_TYPE)
         return ((Str&)dis).value;
 
-    const Val& id = get("id");
+    const Val& id = get("id", false);
     if (!id.is_empty())
         return ((Ref&)id).dis();
 
@@ -94,7 +103,7 @@ bool Dict::operator == (const Dict &other) const
 
     for (dict_t::const_iterator it = begin(), e = end(); it != e; ++it)
     {
-        if (!(*it->second == other.get(it->first))) return false;
+        if (!(*it->second == other.get(it->first, false))) return false;
     }
     return true;
 }
@@ -115,7 +124,7 @@ Dict& Dict::add(std::string name, const Val* val)
 Dict& Dict::add(std::string name, const Val& val)
 {
     std::string k = name;
-    Val* v = (Val*) val.clone().release();
+    Val* v = (Val*)val.clone().release();
     m_map.insert(k, v);
     return *this;
 }

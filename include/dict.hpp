@@ -23,8 +23,6 @@ namespace haystack {
         // dict internal type
         typedef boost::ptr_map < std::string, haystack::Val > dict_t;
         typedef dict_t::const_iterator const_iterator;
-    private:
-        dict_t m_map;
     public:
 
         virtual ~Dict(){}
@@ -33,17 +31,17 @@ namespace haystack {
         const static Dict& EMPTY;
 
         // Return true if size is zero
-        const bool is_empty() const;
+        virtual const bool is_empty() const;
         // Return number of tag name / value pairs
-        const size_t size() const;
+        virtual const size_t size() const;
         // Return if the given tag is present
-        const bool has(const std::string& name) const;
+        virtual const bool has(const std::string& name) const;
 
         // Return if the given tag is not present
-        const bool missing(const std::string& name) const;
+        virtual const bool missing(const std::string& name) const;
 
         // Get a tag by name
-        const Val& get(const std::string& name) const;
+        virtual const Val& get(const std::string& name, bool checked = true) const;
 
         // Iteratator to walk each name / tag pair
         const_iterator begin() const;
@@ -92,5 +90,9 @@ namespace haystack {
         // Equality
         bool operator ==(const Dict &b) const;
         bool operator !=(const Dict &b) const;
+
+        // Members
+    private:
+        dict_t m_map;
     };
 };

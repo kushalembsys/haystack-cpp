@@ -14,7 +14,7 @@ Dict::auto_ptr_t Server::about() const
     return d;
 }
 
-Grid::auto_ptr_t Server::on_read_by_ids(const std::vector<Ref>& ids)
+Grid::auto_ptr_t Server::on_read_by_ids(const std::vector<Ref>& ids) const
 {
     boost::ptr_vector<Dict> v;
 
@@ -40,28 +40,30 @@ private:
     Dict::auto_ptr_t m_d;
 };
 
-Grid::auto_ptr_t Server::on_read_all(const std::string& filter, size_t limit)
+Grid::auto_ptr_t Server::on_read_all(const std::string& filter, size_t limit) const
 {
     Filter::auto_ptr_t f = Filter::make(filter);
     PathImpl pather(*this);
     
-    boost::ptr_vector<Dict> v;
+   // boost::ptr_vector<Dict> v;
+    std::vector<const Dict* const> v2;
 
     for (const_iterator it = begin(), e = end(); it != e; ++it)
     {
         const Dict& row = *it;
         if (row.is_empty())
-            break;
+            continue;
 
         if (f->include(row, pather))
         {
-            v.push_back((Dict*)&row);
-            if (v.size() > limit)
+            //v.push_back((Dict*)&row);
+            v2.push_back(&*it);
+            if (v2.size() > limit)
                 break;
         }
     }
 
-    return Grid::make(v);
+    return Grid::make(v2);
 }
 
 const DateTime& Server::boot_time()

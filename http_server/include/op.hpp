@@ -21,6 +21,9 @@ namespace haystack
     class Op : boost::noncopyable
     {
     public:
+
+        Op() : m_grid(new Grid){}
+
         // Programatic name of the operation.
         virtual std::string name() const = 0;
 
@@ -29,16 +32,22 @@ namespace haystack
 
         // Service the request and return response.
         // This method routes to "onService(HServer,HGrid)".
-        virtual void on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse& res);
+        void on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse& res);
 
         // Service the request and return response.
-        virtual Grid::auto_ptr_t on_service(const Server& db, const Grid& req);
+        virtual const Grid& on_service(const Server& db, const Grid& req);
+
+        // reset current Op state
+        virtual void reset();
+
     private:
         // Map the GET query parameters to grid with one row
         Grid::auto_ptr_t  get_to_grid(HTTPServerRequest& req);
 
         // Map the POST body to grid
         Grid::auto_ptr_t post_to_grid(HTTPServerRequest& req, HTTPServerResponse& res);
+
+        Grid::auto_ptr_t m_grid;
     };
 
     class StdOps
@@ -50,6 +59,8 @@ namespace haystack
         static const Op& ops;
         // List the registered grid formats.
         static const Op& formats;
+        // Read entity records in database.
+        static const Op& read;
 
         typedef std::map<std::string, const Op* const> ops_map_t;
         static const ops_map_t& ops_map();

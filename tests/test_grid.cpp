@@ -95,7 +95,7 @@ TEST_CASE("Grid testcase", "[Grid]")
         const Row& gr2 = g.row(1);
         CHECK(gr2.get("id") == Ref("b"));
         CHECK(gr2.get("dis") == Str("Beta"));
-        CHECK(gr2.get("area").is_empty());
+        CHECK(gr2.get("area", false).is_empty());
 
         // row it
         Row::const_iterator it = gr1.begin();

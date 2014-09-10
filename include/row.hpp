@@ -66,10 +66,16 @@ namespace haystack {
         const Grid& grid() const;
 
         // Number of columns in grid (which may map to null cells)
-        size_t size() const;
+        const size_t size() const;
 
         // Get a cell by column name. 
-        const Val& get(const std::string& name) const;
+        const Val& get(const std::string& name, bool checked = true) const;
+
+        // Get a string by column name. 
+        const std::string get_string(const std::string& name) const;
+        
+        // Get a int by column name. 
+        const double get_double(const std::string& name) const;
 
         // Get a cell by column.
         const Val& get(const Col& col) const;
