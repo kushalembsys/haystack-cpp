@@ -43,8 +43,8 @@ TEST_CASE("Grid testcase", "[Grid]")
     {
         Grid  g;
         g.meta().add("dis", "Title");
-        g.addCol("a").add("dis", "Alpha");
-        g.addCol("b");
+        g.add_col("a").add("dis", "Alpha");
+        g.add_col("b");
 
         // meta
         CHECK(g.meta().size() == 1);
@@ -66,14 +66,14 @@ TEST_CASE("Grid testcase", "[Grid]")
     SECTION("Grid testSimple")
     {
         Grid g;
-        g.addCol("id");
-        g.addCol("dis");
-        g.addCol("area");
+        g.add_col("id");
+        g.add_col("dis");
+        g.add_col("area");
         Val* r1[3] = { new Ref("a"), new Str("Alpha"), new Num(1200) };
-        g.addRow(r1, sizeof(r1) / sizeof(Val*));
+        g.add_row(r1, sizeof(r1) / sizeof(Val*));
 
         Val* r2[3] = { new Ref("b"), new Str("Beta"), NULL };
-        g.addRow(r2, sizeof(r2) / sizeof(Val*));
+        g.add_row(r2, sizeof(r2) / sizeof(Val*));
 
         // meta
         CHECK(g.meta().size() == 0);

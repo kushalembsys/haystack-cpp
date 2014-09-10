@@ -144,8 +144,8 @@ public:
     {
         Grid::auto_ptr_t g(new Grid);
         // lazy init the response grid
-        g->addCol("name");
-        g->addCol("summary");
+        g->add_col("name");
+        g->add_col("summary");
 
         StdOps::ops_map_t::const_iterator it = StdOps::ops_map().begin();
         StdOps::ops_map_t::const_iterator end = StdOps::ops_map().end();
@@ -153,7 +153,7 @@ public:
         for (; it != end; ++it)
         {
             Val* vals[2] = { new Str(it->second->name()), new Str(it->second->summary()) };
-            g->addRow(vals, sizeof(vals) / sizeof(Val*));
+            g->add_row(vals, sizeof(vals) / sizeof(Val*));
         }
 
         return g;
@@ -176,15 +176,15 @@ public:
         Grid::auto_ptr_t g(new Grid);
         
         // init the response grid
-        g->addCol("mime");
-        g->addCol("read");
-        g->addCol("write");
+        g->add_col("mime");
+        g->add_col("read");
+        g->add_col("write");
 
         Val* v[3] = {
             new Str("text/zinc"),
             new Marker(),
             new Marker() };
-        g->addRow(v, 3);
+        g->add_row(v, 3);
 
         return g;
     }

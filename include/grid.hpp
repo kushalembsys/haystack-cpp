@@ -81,11 +81,11 @@ namespace haystack {
 
         // Add new column and return builder for column metadata.
         //Columns cannot be added after adding the first row. */
-        Dict& addCol(const std::string& name);
+        Dict& add_col(const std::string& name);
 
         // Add new row with array of cells which correspond to column
         // order.  Return this.
-        Grid& addRow(Val *[], size_t count);
+        Grid& add_row(Val *[], size_t count);
 
         // Constructs an err grid
         static Grid::auto_ptr_t make_err(const std::runtime_error&);
@@ -99,7 +99,7 @@ namespace haystack {
         // Add new row with values from the Dict; Dict column
         // should match this grid columns, exception is thrown otherwise.
         // Return this.
-        Grid& addRow(const Dict&);
+        Grid& add_row(const Dict&);
 
         //////////////////////////////////////////////////////////////////////////
         // Rows

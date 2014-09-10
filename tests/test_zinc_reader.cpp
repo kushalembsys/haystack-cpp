@@ -73,7 +73,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
     SECTION("Grid verifyCol")
     {
         Grid e;
-        e.addCol("fooBar33");
+        e.add_col("fooBar33");
 
         verifyGrid("ver:\"2.0\"\nfooBar33\n\n", e);
 
@@ -84,9 +84,9 @@ TEST_CASE("ZincReader", "[ZincReader]")
 
         Grid e;
         e.meta().add("tag").add("foo", "bar");
-        e.addCol("xyz");
+        e.add_col("xyz");
         Val* r[1] = { new Str("val") };
-        e.addRow(r, sizeof(r) / sizeof(Val*));
+        e.add_row(r, sizeof(r) / sizeof(Val*));
 
         verifyGrid("ver:\"2.0\" tag foo:\"bar\"\nxyz\n\"val\"\n\n", e);
 
@@ -95,9 +95,9 @@ TEST_CASE("ZincReader", "[ZincReader]")
     SECTION("Grid verifyGrid2")
     {
         Grid e;
-        e.addCol("val");
+        e.add_col("val");
         Val* r[1] = { NULL };
-        e.addRow(r, 1);
+        e.add_row(r, 1);
 
         verifyGrid("ver:\"2.0\"\nval\nN\n\n", e);
     }
@@ -105,12 +105,12 @@ TEST_CASE("ZincReader", "[ZincReader]")
     SECTION("Grid verifyGrid3")
     {
         Grid e;
-        e.addCol("a");
-        e.addCol("b");
+        e.add_col("a");
+        e.add_col("b");
         Val* r1[2] = { new Num(1.0), new Num(2.0) };
         Val* r2[2] = { new Num(3.0), new Num(4.0) };
-        e.addRow(r1, sizeof(r1) / sizeof(Val*));
-        e.addRow(r2, sizeof(r2) / sizeof(Val*));
+        e.add_row(r1, sizeof(r1) / sizeof(Val*));
+        e.add_row(r2, sizeof(r2) / sizeof(Val*));
 
         verifyGrid("ver:\"2.0\"\na,b\n1,2\n3,4\n\n", e);
     }
@@ -121,14 +121,14 @@ TEST_CASE("ZincReader", "[ZincReader]")
 
         e.meta().add("bg", new Bin("image/jpeg")).add("mark");
 
-        e.addCol("file1").add("icon", new Bin("image/gif")).add("dis", "F1");
-        e.addCol("file2").add("icon", new Bin("image/jpg"));
+        e.add_col("file1").add("icon", new Bin("image/gif")).add("dis", "F1");
+        e.add_col("file2").add("icon", new Bin("image/jpg"));
         Val* r1[2] = { new Bin("text/plain"), NULL };
         Val* r2[2] = { new Num(4.0), new Bin("image/png") };
         Val* r3[2] = { new Bin("text/html; a=foo; bar=\"sep\""), new Bin("text/html; charset=utf8") };
-        e.addRow(r1, 2);
-        e.addRow(r2, 2);
-        e.addRow(r3, 2);
+        e.add_row(r1, 2);
+        e.add_row(r2, 2);
+        e.add_row(r3, 2);
 
         verifyGrid("ver:\"2.0\" bg: Bin(image/jpeg) mark\n"
             "file1 dis:\"F1\" icon: Bin(image/gif),file2 icon: Bin(image/jpg)\n"
@@ -141,10 +141,10 @@ TEST_CASE("ZincReader", "[ZincReader]")
     {
         Grid e;
 
-        e.addCol("a");
-        e.addCol("b");
-        e.addCol("c");
-        e.addCol("d");
+        e.add_col("a");
+        e.add_col("b");
+        e.add_col("c");
+        e.add_col("d");
 
         Val* r1[4] = { new Bool(true), new Bool(false), NULL, new Num(-99.0) };
         Val* r2[4] = { new Num(2.3), new Num(-5.0E-10), new Num(2.4E20), new Num(1.23E-8) };
@@ -155,14 +155,14 @@ TEST_CASE("ZincReader", "[ZincReader]")
         Val* r7[4] = { new Num(Num::POS_INF.value), new Num(Num::NEG_INF.value), new Str(""), new Num(Num::NaN.value) };
         Val* r8[4] = { new Coord(12.0, -34.0), new Coord(0.123, -0.789), new Coord(84.5, -77.45), new Coord(-90.0, 180.0) };
 
-        e.addRow(r1, 4);
-        e.addRow(r2, 4);
-        e.addRow(r3, 4);
-        e.addRow(r4, 4);
-        e.addRow(r5, 4);
-        e.addRow(r6, 4);
-        e.addRow(r7, 4);
-        e.addRow(r8, 4);
+        e.add_row(r1, 4);
+        e.add_row(r2, 4);
+        e.add_row(r3, 4);
+        e.add_row(r4, 4);
+        e.add_row(r5, 4);
+        e.add_row(r6, 4);
+        e.add_row(r7, 4);
+        e.add_row(r8, 4);
 
         verifyGrid("ver:\"2.0\"\n"
             "a,    b,      c,      d\n"
@@ -180,17 +180,17 @@ TEST_CASE("ZincReader", "[ZincReader]")
     SECTION("Grid verifyGrid6")
     {
         Grid e;
-        e.addCol("foo");
+        e.add_col("foo");
 
         Val* r1[1] = { new Uri("foo$20bar") };
         Val* r2[1] = { new Uri("foo`bar") };
         Val* r3[1] = { new Uri("file \\#2") };
         Val* r4[1] = { new Str("$15") };
 
-        e.addRow(r1, 1);
-        e.addRow(r2, 1);
-        e.addRow(r3, 1);
-        e.addRow(r4, 1);
+        e.add_row(r1, 1);
+        e.add_row(r2, 1);
+        e.add_row(r3, 1);
+        e.add_row(r4, 1);
 
         verifyGrid("ver:\"2.0\"\n"
             "foo\n"
@@ -203,18 +203,18 @@ TEST_CASE("ZincReader", "[ZincReader]")
     SECTION("Grid verifyGrid7")
     {
         Grid e;
-        e.addCol("a");
-        e.addCol("b");
+        e.add_col("a");
+        e.add_col("b");
 
         Val* r1[2] = { new Num(-3.1, "kg"), new Num(4.0, "kg") };
         Val* r2[2] = { new Num(5.0, "%"), new Num(3.2, "%") };
         Val* r3[2] = { new Num(5.0, "kWh/ft\xb2"), new Num(-15.0, "kWh/m\xb2") };
         Val* r4[2] = { new Num(1.23E14, "kJ/kg_dry"), new Num(74.0, "\xb2\xb2") };
 
-        e.addRow(r1, 2);
-        e.addRow(r2, 2);
-        e.addRow(r3, 2);
-        e.addRow(r4, 2);
+        e.add_row(r1, 2);
+        e.add_row(r2, 2);
+        e.add_row(r3, 2);
+        e.add_row(r4, 2);
 
         verifyGrid("ver:\"2.0\"\n"
             "a, b\n"
@@ -227,9 +227,9 @@ TEST_CASE("ZincReader", "[ZincReader]")
     SECTION("Grid verifyGrid8")
     {
         Grid e;
-        e.addCol("a");
-        e.addCol("b");
-        e.addCol("c");
+        e.add_col("a");
+        e.add_col("b");
+        e.add_col("c");
 
         Val* r1[3] = { NULL, new Num(1.0), new Num(2.0) };
         Val* r2[3] = { new Num(3.0), NULL, new Num(5.0) };
@@ -238,12 +238,12 @@ TEST_CASE("ZincReader", "[ZincReader]")
         Val* r5[3] = { NULL, NULL, NULL };
         Val* r6[3] = { new Num(14.0), NULL, NULL };
 
-        e.addRow(r1, 3);
-        e.addRow(r2, 3);
-        e.addRow(r3, 3);
-        e.addRow(r4, 3);
-        e.addRow(r5, 3);
-        e.addRow(r6, 3);
+        e.add_row(r1, 3);
+        e.add_row(r2, 3);
+        e.add_row(r3, 3);
+        e.add_row(r4, 3);
+        e.add_row(r5, 3);
+        e.add_row(r6, 3);
 
         verifyGrid("ver:\"2.0\"\n"
             "a, b, c\n"
@@ -259,12 +259,12 @@ TEST_CASE("ZincReader", "[ZincReader]")
     SECTION("Grid verifyGrid9")
     {
         Grid e;
-        e.addCol("a");
-        e.addCol("b");
+        e.add_col("a");
+        e.add_col("b");
 
         Val* r1[2] = { new DateTime(Date(2010, 3, 1), Time(23, 55, 0, 13), TimeZone("GMT+5")), new DateTime(Date(2010, 3, 1), Time(23, 55, 0, 13), TimeZone("GMT-10")) };
 
-        e.addRow(r1, 2);
+        e.add_row(r1, 2);
 
         verifyGrid("ver:\"2.0\"\n"
             "a,b\n"
@@ -281,7 +281,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
             .add("foo", new Marker())
             .add("bar", new Marker());
 
-        e.addCol("a");
+        e.add_col("a");
 
         Val* r1[1] = { new Num(3.814697265625E-6) };
         Val* r2[1] = { new DateTime(Date(2010, 12, 18), Time(14, 11, 30, 924), TimeZone("UTC")) };
@@ -292,14 +292,14 @@ TEST_CASE("ZincReader", "[ZincReader]")
         Val* r7[1] = { new Ref("12cbb08e-0c02ae73") };
         Val* r8[1] = { new Num(7.15625E-4, "kWh/ft\xb2") };
 
-        e.addRow(r1, 1);
-        e.addRow(r2, 1);
-        e.addRow(r3, 1);
-        e.addRow(r4, 1);
-        e.addRow(r5, 1);
-        e.addRow(r6, 1);
-        e.addRow(r7, 1);
-        e.addRow(r8, 1);
+        e.add_row(r1, 1);
+        e.add_row(r2, 1);
+        e.add_row(r3, 1);
+        e.add_row(r4, 1);
+        e.add_row(r5, 1);
+        e.add_row(r6, 1);
+        e.add_row(r7, 1);
+        e.add_row(r8, 1);
 
         verifyGrid("ver:\"2.0\" a: 2009-02-03T04:05:06Z foo b: 2010-02-03T04:05:06Z UTC bar c: 2009-12-03T04:05:06Z London baz\n"
             "a\n"

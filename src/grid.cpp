@@ -72,7 +72,7 @@ Grid::const_iterator Grid::end() const { return m_rows.end(); }
 
 // Add new column and return builder for column metadata.
 //Columns cannot be added after adding the first row.
-Dict& Grid::addCol(const std::string& name)
+Dict& Grid::add_col(const std::string& name)
 {
     if (m_rows.size() > 0)
         throw std::runtime_error("Cannot add cols after rows have been added");
@@ -95,7 +95,7 @@ Dict& Grid::addCol(const std::string& name)
 
 // Add new row with array of cells which correspond to column
 // order.  Return this.
-Grid& Grid::addRow(Val * valp[], size_t count)
+Grid& Grid::add_row(Val * valp[], size_t count)
 {
     std::auto_ptr<Row::val_vec_t> v(new Row::val_vec_t());
 
@@ -111,7 +111,7 @@ Grid& Grid::addRow(Val * valp[], size_t count)
 
 // Add new row with array of cells which correspond to column
 // order.  Return this.
-Grid& Grid::addRow(const Dict& d)
+Grid& Grid::add_row(const Dict& d)
 {
     if (d.is_empty())
         return *this;
@@ -138,7 +138,7 @@ Grid::auto_ptr_t Grid::make_err(const std::runtime_error& e)
     g->meta().add("err")
         .add("dis", e.what())
         .add("errTrace", "");
-    g->addCol("empty");
+    g->add_col("empty");
 
     return g;
 }
@@ -152,9 +152,9 @@ Grid::auto_ptr_t Grid::make(const Dict& d)
 
     // add cols
     for (Dict::const_iterator it = d.begin(), e = d.end(); it != e; ++it)
-        g->addCol(it->first);
+        g->add_col(it->first);
 
-    g->addRow(d);
+    g->add_row(d);
 
     return g;
 }
@@ -177,14 +177,14 @@ Grid::auto_ptr_t Grid::make(const std::vector<const Dict*>& dicts)
             if (col_names.find(it->first) == col_names.end())
             {
                 col_names[it->first] = true;
-                g->addCol(it->first);
+                g->add_col(it->first);
             }
         }
     }
 
     for (std::vector<const Dict*>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
     {
-        g->addRow(**dit);
+        g->add_row(**dit);
     }
 
     return g;
@@ -208,14 +208,14 @@ Grid::auto_ptr_t Grid::make(const boost::ptr_vector<Dict>& dicts)
             if (col_names.find(it->first) == col_names.end())
             {
                 col_names[it->first] = true;
-                g->addCol(it->first);
+                g->add_col(it->first);
             }
         }
     }
 
     for (boost::ptr_vector<Dict>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
     {
-        g->addRow(*dit);
+        g->add_row(*dit);
     }
 
     return g;

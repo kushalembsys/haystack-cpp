@@ -72,7 +72,7 @@ std::auto_ptr<Grid> ZincReader::read_grid()
         std::string name = read_id();
         skip_space();
         numCols++;
-        read_meta(g->addCol(name));
+        read_meta(g->add_col(name));
         if (m_cur != ',') break;
         consume();
         skip_space();
@@ -106,7 +106,7 @@ std::auto_ptr<Grid> ZincReader::read_grid()
         }
         consume_new_line();
         // Val** ownership transfered to the grid
-        g->addRow(cells.get(), numCols);
+        g->add_row(cells.get(), numCols);
     }
     if (m_cur == '\n') consume_new_line();
 
