@@ -160,7 +160,7 @@ Grid::auto_ptr_t Grid::make(const Dict& d)
 }
 
 // Constructs grid from Dicts vector
-Grid::auto_ptr_t Grid::make(const std::vector<const Dict* const>& dicts)
+Grid::auto_ptr_t Grid::make(const std::vector<const Dict*>& dicts)
 {
     auto_ptr_t g(new Grid());
 
@@ -170,7 +170,7 @@ Grid::auto_ptr_t Grid::make(const std::vector<const Dict* const>& dicts)
     std::map<std::string, bool> col_names;
 
     // add cols
-    for (std::vector<const Dict* const>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
+    for (std::vector<const Dict*>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
     {
         for (Dict::const_iterator it = (**dit).begin(), e = (**dit).end(); it != e; ++it)
         {
@@ -182,7 +182,7 @@ Grid::auto_ptr_t Grid::make(const std::vector<const Dict* const>& dicts)
         }
     }
 
-    for (std::vector<const Dict* const>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
+    for (std::vector<const Dict*>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
     {
         g->addRow(**dit);
     }

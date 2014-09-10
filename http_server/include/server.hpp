@@ -26,7 +26,7 @@ namespace haystack
 
         const Dict& dereference() const 
         {
-            return (Dict*) m_it->second;
+            return *m_it->second;
         }
     private:
         boost::ptr_map<std::string, Dict>::const_iterator m_it;

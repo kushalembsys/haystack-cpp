@@ -45,8 +45,7 @@ Grid::auto_ptr_t Server::on_read_all(const std::string& filter, size_t limit) co
     Filter::auto_ptr_t f = Filter::make(filter);
     PathImpl pather(*this);
     
-   // boost::ptr_vector<Dict> v;
-    std::vector<const Dict* const> v2;
+    std::vector<const Dict*> v;
 
     for (const_iterator it = begin(), e = end(); it != e; ++it)
     {
@@ -56,14 +55,13 @@ Grid::auto_ptr_t Server::on_read_all(const std::string& filter, size_t limit) co
 
         if (f->include(row, pather))
         {
-            //v.push_back((Dict*)&row);
-            v2.push_back(&*it);
-            if (v2.size() > limit)
+            v.push_back(&*it);
+            if (v.size() > limit)
                 break;
         }
     }
 
-    return Grid::make(v2);
+    return Grid::make(v);
 }
 
 const DateTime& Server::boot_time()

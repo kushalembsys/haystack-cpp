@@ -61,7 +61,7 @@ const double Row::get_double(const std::string& name) const
 // Get a cell by column.
 const Val& Row::get(const Col& col) const
 {
-    if (!m_cells->is_null(col._index))
+    if (col._index < m_cells->size() && !m_cells->is_null(col._index))
         return ((*m_cells)[col._index]);
 
     return EmptyVal::DEF;

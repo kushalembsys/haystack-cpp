@@ -92,7 +92,7 @@ namespace haystack {
         // Constructs grid from Dict
         static Grid::auto_ptr_t make(const Dict&);
         // Constructs grid from Dicts vector
-        static Grid::auto_ptr_t make(const std::vector<const Dict* const>&);
+        static Grid::auto_ptr_t make(const std::vector<const Dict*>&);
         static Grid::auto_ptr_t make(const boost::ptr_vector<Dict>&);
 
     private:

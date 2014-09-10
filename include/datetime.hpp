@@ -51,6 +51,8 @@ namespace haystack {
         DateTime(const Date& date, const Time& time, const TimeZone& tz, int tzOffset) : date(date), time(time), tz(tz), tz_offset(tzOffset), m_millis(-1) {};
 
         // construct from time_t
+        static DateTime make_time_t(const time_t& ts, const TimeZone& = TimeZone::DEFAULT);
+        // construct from millis
         static DateTime make(const int64_t& time, const TimeZone& = TimeZone::DEFAULT);
         // Get DateTime for current time in default timezone or optionaly for given timezone
         static DateTime now(const TimeZone& = TimeZone::DEFAULT);

@@ -46,7 +46,7 @@ void Op::on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse
     // route to onService(HServer, HGrid)
     try
     {
-        w.write_grid(on_service(db, *reqGrid));
+        w.write_grid(*on_service(db, *reqGrid));
         reset();
     }
     catch (std::runtime_error& e)
@@ -56,10 +56,10 @@ void Op::on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse
 }
 
 // Service the request and return response.
-const Grid& Op::on_service(const Server& db, const Grid& req)
+Grid::auto_ptr_t Op::on_service(const Server& db, const Grid& req)
 {
     throw std::runtime_error("Not implemented Op::on_service(const Server& db, const Grid& req)");
-    return *m_grid;
+    return  Grid::auto_ptr_t();
 }
 
 // reset current Op state
@@ -124,13 +124,10 @@ public:
     std::string name() const { return "about"; }
     std::string summary() const { return "Summary information for server"; }
 
-    const Grid& on_service(const Server& db, const Grid& req)
+    Grid::auto_ptr_t on_service(const Server& db, const Grid& req)
     {
-        m_grid = Grid::make(*db.about());
-        return *m_grid;
+        return Grid::make(*db.about());
     }
-
-    Grid::auto_ptr_t m_grid;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -143,18 +140,12 @@ public:
     std::string name() const { return "ops"; }
     std::string summary() const { return "Operations supported by this server"; }
 
-    OpsOp() : m_grid(Grid()), m_inited(false)
+    Grid::auto_ptr_t on_service(const Server& db, const Grid& req)
     {
-    }
-
-    const Grid& on_service(const Server& db, const Grid& req)
-    {
-        if (m_inited)
-            return m_grid;
-
+        Grid::auto_ptr_t g(new Grid);
         // lazy init the response grid
-        m_grid.addCol("name");
-        m_grid.addCol("summary");
+        g->addCol("name");
+        g->addCol("summary");
 
         StdOps::ops_map_t::const_iterator it = StdOps::ops_map().begin();
         StdOps::ops_map_t::const_iterator end = StdOps::ops_map().end();
@@ -162,14 +153,12 @@ public:
         for (; it != end; ++it)
         {
             Val* vals[2] = { new Str(it->second->name()), new Str(it->second->summary()) };
-            m_grid.addRow(vals, sizeof(vals) / sizeof(Val*));
+            g->addRow(vals, sizeof(vals) / sizeof(Val*));
         }
-        m_inited = true;
-        return m_grid;
+
+        return g;
     }
 
-    Grid m_grid;
-    bool m_inited;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -182,26 +171,24 @@ public:
     std::string name() const { return "formats"; }
     std::string summary() const { return "Grid data formats supported by this server"; }
 
-    FormatsOp()
+    Grid::auto_ptr_t on_service(const Server& db, const Grid& req)
     {
+        Grid::auto_ptr_t g(new Grid);
+        
         // init the response grid
-        m_grid.addCol("mime");
-        m_grid.addCol("read");
-        m_grid.addCol("write");
+        g->addCol("mime");
+        g->addCol("read");
+        g->addCol("write");
 
         Val* v[3] = {
             new Str("text/zinc"),
             new Marker(),
             new Marker() };
-        m_grid.addRow(v, 3);
+        g->addRow(v, 3);
+
+        return g;
     }
 
-    const Grid& on_service(const Server& db, const Grid& req)
-    {
-        return m_grid;
-    }
-
-    Grid m_grid;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -214,10 +201,7 @@ public:
     std::string name() const { return "read"; }
     std::string summary() const { return "Read entity records in database"; }
 
-    ReadOp() : m_grid(NULL), m_empty_grid(Grid())
-    {}
-
-    const Grid& on_service(const Server& db, const Grid& req)
+    Grid::auto_ptr_t on_service(const Server& db, const Grid& req)
     {
         // ensure we have one row
         if (req.is_empty())
@@ -231,21 +215,11 @@ public:
             // filter read
             const std::string& filter = row.get_string("filter");
             size_t limit = static_cast<size_t>(row.has("limit") ? row.get_double("limit") : (size_t)-1);
-            m_grid = db.read_all(filter, limit);
-            return *m_grid;
+            return db.read_all(filter, limit);
         }
 
-        return m_empty_grid;
+        return  Grid::auto_ptr_t();
     }
-
-    // reset current Op state
-    void reset()
-    {
-        m_grid.reset();
-    }
-
-    Grid::auto_ptr_t m_grid;
-    const Grid m_empty_grid;
 };
 
 // List the registered operations.

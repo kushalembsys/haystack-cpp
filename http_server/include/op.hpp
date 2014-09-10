@@ -35,7 +35,7 @@ namespace haystack
         void on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse& res);
 
         // Service the request and return response.
-        virtual const Grid& on_service(const Server& db, const Grid& req);
+        virtual Grid::auto_ptr_t on_service(const Server& db, const Grid& req);
 
         // reset current Op state
         virtual void reset();

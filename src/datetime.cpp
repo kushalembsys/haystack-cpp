@@ -29,17 +29,47 @@ DateTime DateTime::make(const int64_t& ts, const TimeZone& tz)
     }
 
     const std::tm *tm = std::localtime(&t);
+    int tz_offset = 0;
     if (tz != TimeZone::DEFAULT)
+    {
         tm = std::gmtime(&t);
+        tz_offset = tz.offset;
+    }
+    else
+    {
+        tz_offset = 0;
+    }
 
-    int offset = 3600 * (tz.offset - tm->tm_isdst);
 
-    return DateTime(Date(1900 + tm->tm_year, tm->tm_mon + 1, tm->tm_mday), Time(tm->tm_hour + tz.offset, tm->tm_min, tm->tm_sec, ms), tz, offset);
+    int offset = 3600 * (tz.offset + tm->tm_isdst);
+
+    return DateTime(Date(1900 + tm->tm_year, tm->tm_mon + 1, tm->tm_mday), Time(tm->tm_hour + tz_offset, tm->tm_min, tm->tm_sec, ms), tz, offset);
+}
+
+DateTime DateTime::make_time_t(const time_t& ts, const TimeZone& tz)
+{
+    const std::tm *tm = std::localtime(&ts);
+    
+    int offset_millis = 0;
+    int tz_offset = 0;
+    if (tz != TimeZone::DEFAULT)
+    {
+        tm = std::gmtime(&ts);
+        tz_offset = tz.offset;
+    }
+    else
+    {
+        tz_offset = 0;
+    }
+
+    offset_millis = 3600 * (tz.offset + tm->tm_isdst);
+
+    return DateTime(Date(1900 + tm->tm_year, tm->tm_mon + 1, tm->tm_mday), Time(tm->tm_hour + tz_offset, tm->tm_min, tm->tm_sec, 0), tz, offset_millis);
 }
 
 DateTime DateTime::now(const TimeZone& tz)
 {
-    return DateTime::make(std::time(NULL), tz);
+    return DateTime::make_time_t(std::time(NULL), tz);
 }
 
 ////////////////////////////////////////////////
