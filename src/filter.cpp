@@ -19,7 +19,7 @@ using namespace haystack;
 // Filter
 ////////////////////////////////////////////////
 
-Filter::auto_ptr_t Filter::make(const std::string& s, bool checked)
+Filter::shared_ptr_t Filter::make(const std::string& s, bool checked)
 {
     try
     {
@@ -30,75 +30,75 @@ Filter::auto_ptr_t Filter::make(const std::string& s, bool checked)
     catch (std::exception& e)
     {
         if (!checked)
-            return auto_ptr_t();
+            return shared_ptr_t();
         throw e;
     }
 }
 
 // Match records which have the specified tag path defined.
-Filter::auto_ptr_t Filter::has(const std::string& path)
+Filter::shared_ptr_t Filter::has(const std::string& path)
 {
-    return auto_ptr_t(new Has(Path::make(path)));
+    return shared_ptr_t(new Has(Path::make(path)));
 }
 
 // Match records which do not define the specified tag path.
-Filter::auto_ptr_t Filter::missing(const std::string&  path)
+Filter::shared_ptr_t Filter::missing(const std::string&  path)
 {
-    return auto_ptr_t(new Missing(Path::make(path)));
+    return shared_ptr_t(new Missing(Path::make(path)));
 }
 
 // Match records which have a tag are equal to the specified value.
 // If the path is not defined then it is unmatched.
-Filter::auto_ptr_t Filter::eq(const std::string& path, Val::auto_ptr_t val)
+Filter::shared_ptr_t Filter::eq(const std::string& path, Val::auto_ptr_t val)
 {
-    return auto_ptr_t(new Eq(Path::make(path), val));
+    return shared_ptr_t(new Eq(Path::make(path), val));
 }
 
 // Match records which have a tag not equal to the specified value.
 // If the path is not defined then it is unmatched.
-Filter::auto_ptr_t Filter::ne(const std::string& path, Val::auto_ptr_t val)
+Filter::shared_ptr_t Filter::ne(const std::string& path, Val::auto_ptr_t val)
 {
-    return auto_ptr_t(new Ne(Path::make(path), val));
+    return shared_ptr_t(new Ne(Path::make(path), val));
 }
 
 // Match records which have tags less than the specified value.
 // If the path is not defined then it is unmatched.
-Filter::auto_ptr_t Filter::lt(const std::string& path, Val::auto_ptr_t val)
+Filter::shared_ptr_t Filter::lt(const std::string& path, Val::auto_ptr_t val)
 {
-    return auto_ptr_t(new Lt(Path::make(path), val));
+    return shared_ptr_t(new Lt(Path::make(path), val));
 }
 
 // Match records which have tags less than or equals to specified value.
 // If the path is not defined then it is unmatched.
-Filter::auto_ptr_t Filter::le(const std::string& path, Val::auto_ptr_t val)
+Filter::shared_ptr_t Filter::le(const std::string& path, Val::auto_ptr_t val)
 {
-    return auto_ptr_t(new Le(Path::make(path), val));
+    return shared_ptr_t(new Le(Path::make(path), val));
 }
 
 // Match records which have tags greater than specified value.
 // If the path is not defined then it is unmatched.
-Filter::auto_ptr_t Filter::gt(const std::string& path, Val::auto_ptr_t val)
+Filter::shared_ptr_t Filter::gt(const std::string& path, Val::auto_ptr_t val)
 {
-    return auto_ptr_t(new Gt(Path::make(path), val));
+    return shared_ptr_t(new Gt(Path::make(path), val));
 }
 
 // Match records which have tags greater than or equal to specified value.
 // If the path is not defined then it is unmatched.
-Filter::auto_ptr_t Filter::ge(const std::string& path, Val::auto_ptr_t val)
+Filter::shared_ptr_t Filter::ge(const std::string& path, Val::auto_ptr_t val)
 {
-    return auto_ptr_t(new Ge(Path::make(path), val));
+    return shared_ptr_t(new Ge(Path::make(path), val));
 }
 
 // Return a query which is the logical-and of this and that query.
-Filter::auto_ptr_t Filter::AND(auto_ptr_t second)
+Filter::shared_ptr_t Filter::AND(shared_ptr_t second)
 {
-    return auto_ptr_t(new And(shared_from_this(), second));
+    return shared_ptr_t(new And(shared_from_this(), second));
 }
 
 // Return a query which is the logical-or of this and that query.
-Filter::auto_ptr_t Filter::OR(auto_ptr_t second)
+Filter::shared_ptr_t Filter::OR(shared_ptr_t second)
 {
-    return auto_ptr_t(new Or(shared_from_this(), second));
+    return shared_ptr_t(new Or(shared_from_this(), second));
 }
 
 std::string Filter::str() const
@@ -130,7 +130,7 @@ Path::auto_ptr_t Path::make(const std::string& path)
     {
         std::string n = path.substr(s, dash);
         if (n.size() == 0)
-            throw std::exception();
+            throw std::runtime_error("Invalid path expr.");
         acc.push_back(n);
         if (path[dash + 1] != '>')
             throw std::exception();
@@ -139,7 +139,7 @@ Path::auto_ptr_t Path::make(const std::string& path)
         if (dash == path.npos)
         {
             n = path.substr(s);
-            if (n.size() == 0) throw std::exception();
+            if (n.size() == 0) throw std::runtime_error("Invalid path expr.");
             acc.push_back(n);
             break;
         }
@@ -178,7 +178,7 @@ bool PathFilter::include(const Dict& dict, const Pather& pather) const
     {
         for (size_t i = 1; i < m_path->size(); ++i)
         {
-            if (val->type() != REF_TYPE) { return do_include(EmptyVal::DEF); }
+            if (val->type() != Val::REF_TYPE) { return do_include(EmptyVal::DEF); }
             Dict& nt = (Dict&)pather.find(((Ref&)*val).value);
 
             if (nt.size() == 0) { return do_include(EmptyVal::DEF); }
@@ -304,9 +304,9 @@ bool Ge::do_include(const Val& val) const
 //////////////////////////////////////////////////////////////////////////
 // Compound
 //////////////////////////////////////////////////////////////////////////
-CompoundFilter::CompoundFilter(Filter::auto_ptr_t a, Filter::auto_ptr_t b) : m_a(a), m_b(b) {}
+CompoundFilter::CompoundFilter(Filter::shared_ptr_t a, Filter::shared_ptr_t b) : m_a(a), m_b(b) {}
 
-char CompoundFilter::type() const { return COMPOUND_FILTER_TYPE; }
+Filter::Type CompoundFilter::type() const { return COMPOUND_FILTER_TYPE; }
 
 std::string CompoundFilter::str() const
 {
@@ -332,7 +332,7 @@ const Filter& CompoundFilter::b() const { return *m_b; }
 //////////////////////////////////////////////////////////////////////////
 // And
 //////////////////////////////////////////////////////////////////////////
-And::And(Filter::auto_ptr_t a, Filter::auto_ptr_t b) : CompoundFilter(a, b) {}
+And::And(Filter::shared_ptr_t a, Filter::shared_ptr_t b) : CompoundFilter(a, b) {}
 
 std::string And::keyword() const { return "and"; }
 
@@ -344,7 +344,7 @@ bool And::include(const Dict& dict, const Pather& pather) const
 //////////////////////////////////////////////////////////////////////////
 // Or
 //////////////////////////////////////////////////////////////////////////
-Or::Or(Filter::auto_ptr_t a, Filter::auto_ptr_t b) : CompoundFilter(a, b) {}
+Or::Or(Filter::shared_ptr_t a, Filter::shared_ptr_t b) : CompoundFilter(a, b) {}
 
 std::string Or::keyword() const { return "or"; }
 

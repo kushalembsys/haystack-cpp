@@ -23,7 +23,7 @@ namespace haystack {
         Bin& operator=(const Bin &other);
         Bin(const Bin& other) : value(other.value) {};
     public:
-        const char type() const { return BIN_TYPE; }
+        const Type type() const { return BIN_TYPE; }
 
         // This string value
         const std::string value;

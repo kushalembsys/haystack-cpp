@@ -62,7 +62,7 @@ void ZincWriter::write_meta(const Dict& meta)
 
     for (Dict::const_iterator it = meta.begin(), e = meta.end(); it != e; ++it)
     {
-        std::string name = it->first;
+        const std::string& name = it->first;
         const Val& val = *it->second;
         m_os << ' ';
         m_os << name;
@@ -80,6 +80,7 @@ void ZincWriter::write_col(const Col& col)
     m_os << col.name();
     write_meta(col.meta());
 }
+
 void ZincWriter::write_row(const Grid& grid, const Row& row)
 {
     for (size_t i = 0; i < grid.num_cols(); ++i)

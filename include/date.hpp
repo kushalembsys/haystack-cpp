@@ -25,7 +25,7 @@ namespace haystack {
         friend class DateTime;
         Date(const Date &other) : year(other.year), month(other.month), day(other.day) {};
     public:
-        const char type() const { return DATE_TYPE; }
+        const Type type() const { return DATE_TYPE; }
 
         // Four digit year such as 2014
         const int year;

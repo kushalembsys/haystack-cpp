@@ -25,7 +25,7 @@ namespace haystack {
         friend class DateTime;
         Time(const Time &other) : hour(other.hour), minutes(other.minutes), sec(other.sec), ms(other.ms)  { enforceInit(); }
     public:
-        const char type() const { return TIME_TYPE; }
+        const Type type() const { return TIME_TYPE; }
 
         // Hour of day as 0-23
         const int hour;

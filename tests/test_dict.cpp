@@ -80,6 +80,13 @@ TEST_CASE("Dict testcase", "[Dict]")
         CHECK(tags.get("geoAddr") == Str("Richmond, Va"));
         CHECK(tags.get("area") == Num(1200, "ft"));
         CHECK(tags.get("date") == Date(2000, 12, 3));
+        CHECK_NOTHROW(tags.get_ref("id"));
+        CHECK_THROWS(tags.get_double("id"));
+        CHECK(tags.id() == Ref("aaaa-bbbb"));
+
+        CHECK_NOTHROW(tags.get_double("area"));
+        CHECK_THROWS(tags.get_ref("area"));
+        CHECK(tags.get_int("area") == 1200);
 
         // missing tag
         CHECK(!tags.has("foo"));

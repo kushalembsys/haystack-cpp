@@ -1,5 +1,6 @@
 #include "server.hpp"
 #include "filter.hpp"
+#include "uri.hpp"
 
 using namespace haystack;
 
@@ -14,6 +15,11 @@ Dict::auto_ptr_t Server::about() const
     return d;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Operations
+//////////////////////////////////////////////////////////////////////////
+
+// Return the operations supported by this database.
 Grid::auto_ptr_t Server::on_read_by_ids(const std::vector<Ref>& ids) const
 {
     boost::ptr_vector<Dict> v;
@@ -23,6 +29,27 @@ Grid::auto_ptr_t Server::on_read_by_ids(const std::vector<Ref>& ids) const
         v.push_back(on_read_by_id(*it).release());
     }
     return Grid::make(v);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Navigation
+//////////////////////////////////////////////////////////////////////////
+
+// Return navigation children for given navId.
+Grid::auto_ptr_t Server::nav(const std::string& navId) const
+{
+    return on_nav(navId);
+}
+
+// Read a record from the database using a navigation path.
+// If not found then return NULL or raise runtime_exception
+// base on checked flag.
+Dict::auto_ptr_t Server::nav_read_by_uri(const Uri& uri, bool checked)
+{
+    Dict::auto_ptr_t rec = on_nav_read_by_uri(uri);
+    if (rec.get() != NULL) return rec;
+    if (checked) throw std::runtime_error(uri.to_string());
+    return Dict::auto_ptr_t();
 }
 
 class PathImpl : public Pather
@@ -42,7 +69,7 @@ private:
 
 Grid::auto_ptr_t Server::on_read_all(const std::string& filter, size_t limit) const
 {
-    Filter::auto_ptr_t f = Filter::make(filter);
+    Filter::shared_ptr_t f = Filter::make(filter);
     PathImpl pather(*this);
     
     std::vector<const Dict*> v;

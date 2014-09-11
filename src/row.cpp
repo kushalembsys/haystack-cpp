@@ -40,7 +40,7 @@ const std::string Row::get_string(const std::string& name) const
     if (col != NULL && !m_cells->is_null(col->_index))
     {
         const Str* val = (Str*)&(*m_cells)[col->_index];
-        if (!val->is_empty() && val->type() == STR_TYPE) 
+        if (!val->is_empty() && val->type() == Val::STR_TYPE)
             return val->value;
     }
     throw std::runtime_error("Column not found: " + name);
@@ -53,7 +53,7 @@ const double Row::get_double(const std::string& name) const
     if (col != NULL && !m_cells->is_null(col->_index))
     {
         const Num* val = (Num*)&(*m_cells)[col->_index];
-        if (!val->is_empty() && val->type() == NUM_TYPE) return val->value;
+        if (!val->is_empty() && val->type() == Val::NUM_TYPE) return val->value;
     }
     throw std::runtime_error("Column not found: " + name);
 }

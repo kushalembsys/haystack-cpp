@@ -47,7 +47,6 @@ void Op::on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse
     try
     {
         w.write_grid(*on_service(db, *reqGrid));
-        reset();
     }
     catch (std::runtime_error& e)
     {
@@ -60,12 +59,6 @@ Grid::auto_ptr_t Op::on_service(const Server& db, const Grid& req)
 {
     throw std::runtime_error("Not implemented Op::on_service(const Server& db, const Grid& req)");
     return  Grid::auto_ptr_t();
-}
-
-// reset current Op state
-void Op::reset()
-{
-
 }
 
 // Map the GET query parameters to grid with one row
@@ -85,15 +78,15 @@ Grid::auto_ptr_t  Op::get_to_grid(HTTPServerRequest& req)
     for (; it != end; ++it)
     {
         const std::string& name = it->first;
-        const std::string& valStr = it->second;
+        const std::string& val_str = it->second;
         Val::auto_ptr_t val;
         try
         {
-            val = ZincReader::make(valStr)->read_scalar();
+            val = ZincReader::make(val_str)->read_scalar();
         }
         catch (std::exception&)
         {
-            val = Str(valStr).clone();
+            val = Str(val_str).clone();
         }
 
         d.add(name, val.release());
@@ -117,7 +110,6 @@ Grid::auto_ptr_t Op::post_to_grid(HTTPServerRequest& req, HTTPServerResponse& re
 //////////////////////////////////////////////////////////////////////////
 // AboutOp
 //////////////////////////////////////////////////////////////////////////
-
 class AboutOp : public Op
 {
 public:
@@ -133,7 +125,6 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // OpsOp
 //////////////////////////////////////////////////////////////////////////
-
 class OpsOp : public Op
 {
 public:
@@ -164,7 +155,6 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // FormatsOp
 //////////////////////////////////////////////////////////////////////////
-
 class FormatsOp : public Op
 {
 public:
@@ -194,7 +184,6 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // ReadOp
 //////////////////////////////////////////////////////////////////////////
-
 class ReadOp : public Op
 {
 public:
@@ -222,12 +211,34 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////
+// NavOp
+//////////////////////////////////////////////////////////////////////////
+class NavOp : public Op
+{
+    std::string name() const { return "nav"; }
+    std::string summary() const { return "Navigate record tree"; }
+    Grid::auto_ptr_t on_service(const Server& db, const Grid& req)
+    {
+        // ensure we have one row
+        std::string nav_id;
+        if (!req.is_empty())
+        {
+            const Val& val = req.row(0).get("navId", false);
+            if (val.type() == Val::STR_TYPE) nav_id = ((Str&)val).value;
+        }
+        return db.nav(nav_id);
+    }
+};
+
 // List the registered operations.
 const Op& StdOps::about = *new AboutOp();
 // List the registered grid formats.
 const Op& StdOps::formats = *new FormatsOp();
 // Read entity records in database.
 const Op& StdOps::read = *new ReadOp();
+// Navigate tree structure of database.
+const Op& StdOps::nav = *new NavOp();
 
 // List the registered operations.
 const Op& StdOps::ops = *new OpsOp();
@@ -242,6 +253,7 @@ const StdOps::ops_map_t& StdOps::ops_map()
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::about.name(), &StdOps::about));
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::formats.name(), &StdOps::formats));
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::read.name(), &StdOps::read));
+    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::nav.name(), &StdOps::nav));
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::ops.name(), &StdOps::ops));
 
     return *m_ops_map;

@@ -22,7 +22,7 @@ namespace haystack {
         Uri& operator=(const Uri &other);
         Uri(const Uri &other) : value(other.value) {};
     public:
-        const char type() const { return URI_TYPE; }
+        const Type type() const { return URI_TYPE; }
         // This value
         const std::string value;
 

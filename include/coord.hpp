@@ -24,7 +24,7 @@ namespace haystack {
         Coord& operator=(const Coord &other);
         Coord(const Coord &other) : ulat(other.ulat), ulng(other.ulng) {};
     public:
-        const char type() const { return COORD_TYPE; }
+        const Type type() const { return COORD_TYPE; }
 
         // Latitude in micro-degrees
         const int32_t ulat;

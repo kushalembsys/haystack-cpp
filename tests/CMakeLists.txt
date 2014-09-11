@@ -3,7 +3,7 @@
 #   29 Aug 2014  Radu Racariu<radur@2inn.com> created.
 #
 
-#set(CMAKE_CXX_FLAGS "-Wall")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 set_property( GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Include files

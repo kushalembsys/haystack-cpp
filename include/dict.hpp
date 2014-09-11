@@ -11,6 +11,8 @@
 //
 
 namespace haystack {
+    
+    class Ref;
     /*
      Dict is a map of name/Val pairs
 
@@ -40,6 +42,9 @@ namespace haystack {
         // Return if the given tag is not present
         virtual const bool missing(const std::string& name) const;
 
+        // Get the "id" tag as Ref
+        const Ref& id() const;
+
         // Get a tag by name
         virtual const Val& get(const std::string& name, bool checked = true) const;
 
@@ -60,6 +65,26 @@ namespace haystack {
         // - dis tag
         // - id tag
         const std::string dis() const;
+
+        //////////////////////////////////////////////////////////////////////////
+        // Get Conveniences
+        //////////////////////////////////////////////////////////////////////////
+
+        // Get tag as Bool or raise runtime_exception.
+        bool get_bool(const std::string& name) const;
+
+        // Get tag as Str or raise runtime_exception.
+        const std::string& get_str(const std::string& name) const;
+
+        // Get tag as Ref or raise runtime_exception.
+        const Ref& get_ref(const std::string& name) const;
+
+        // Get tag as Num or raise runtime_exception.
+        long long get_int(const std::string& name) const;
+
+        // Get tag as Num or raise runtime_exception.
+        double get_double(const std::string& name) const;
+
 
         // Returns a dict with the value added, Val* is owned by this dict
         Dict& add(std::string name, const Val* val);

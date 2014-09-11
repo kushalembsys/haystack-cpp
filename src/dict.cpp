@@ -6,6 +6,7 @@
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "dict.hpp"
+#include "bool.hpp"
 #include "marker.hpp"
 #include "num.hpp"
 #include "ref.hpp"
@@ -33,6 +34,12 @@ const bool Dict::has(const std::string& name) const
 const bool Dict::missing(const std::string& name) const
 { 
     return get(name, false) == EmptyVal::DEF;
+}
+
+// Get the "id" tag as Ref
+const Ref& Dict::id() const
+{
+    return get_ref("id");
 }
 
 // Get a tag by name
@@ -86,7 +93,7 @@ const std::string Dict::to_zinc() const
 const std::string Dict::dis() const
 {
     const Val& dis = get("dis", false);
-    if (dis.type() == STR_TYPE)
+    if (dis.type() == Val::STR_TYPE)
         return ((Str&)dis).value;
 
     const Val& id = get("id", false);
@@ -94,6 +101,51 @@ const std::string Dict::dis() const
         return ((Ref&)id).dis();
 
     return "????";
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Get Conveniences
+//////////////////////////////////////////////////////////////////////////
+
+// Get tag as Bool or raise runtime_exception.
+bool Dict::get_bool(const std::string& name) const
+{
+    const Val& v = get(name);
+    if (v.type() == Val::BOOL_TYPE) return ((Bool&)v).value;
+
+    throw std::runtime_error("Value type not a BOOL_TYPE");
+}
+
+// Get tag as Str or raise runtime_exception.
+const std::string& Dict::get_str(const std::string& name) const
+{
+    const Val& v = get(name);
+    if (v.type() == Val::STR_TYPE) return ((Str&)v).value;
+
+    throw std::runtime_error("Value type not a STR_TYPE");
+}
+// Get tag as Ref or raise runtime_exception.
+const Ref& Dict::get_ref(const std::string& name) const
+{
+    const Val& v = get(name);
+    if (v.type() == Val::REF_TYPE) return ((Ref&)v);
+
+    throw std::runtime_error("Value type not a REF_TYPE");
+}
+
+// Get tag as Num or raise runtime_exception.
+long long Dict::get_int(const std::string& name) const
+{
+    return static_cast<long long>(get_double(name));
+}
+
+// Get tag as Num or raise runtime_exception.
+double Dict::get_double(const std::string& name) const
+{
+    const Val& v = get(name);
+    if (v.type() == Val::NUM_TYPE) return ((Num&)v).value;
+
+    throw std::runtime_error("Value type not a NUM_TYPE");
 }
 
 // Equality

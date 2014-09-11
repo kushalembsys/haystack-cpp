@@ -28,10 +28,20 @@ namespace haystack
         const std::vector<const Op*>& ops();
         const Op* const op(const std::string& name, bool checked = true) const;
         const Dict& on_about() const;
+    protected:
         //////////////////////////////////////////////////////////////////////////
         // Reads
         //////////////////////////////////////////////////////////////////////////
+        
         Dict::auto_ptr_t on_read_by_id(const Ref& id) const;
+       
+        //////////////////////////////////////////////////////////////////////////
+        // Navigation
+        //////////////////////////////////////////////////////////////////////////
+
+        Grid::auto_ptr_t on_nav(const std::string& nav_id) const;
+
+        Dict::auto_ptr_t on_nav_read_by_uri(const Uri& uri) const;
 
         const_iterator begin() const;
         const_iterator end() const;

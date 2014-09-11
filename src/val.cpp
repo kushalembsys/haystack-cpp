@@ -14,7 +14,7 @@ using namespace haystack;
 
 const EmptyVal& EmptyVal::DEF = *(new EmptyVal());
 
-const char EmptyVal::type() const { return EMPTY_TYPE; }
+const Val::Type EmptyVal::type() const { return EMPTY_TYPE; }
 
 ////////////////////////////////////////////////
 // to string
@@ -23,7 +23,7 @@ const char EmptyVal::type() const { return EMPTY_TYPE; }
 // Encode as "marker"
 const std::string EmptyVal::to_string() const
 {
-    assert(false); return "";
+   return "";
 }
 
 ////////////////////////////////////////////////
@@ -32,7 +32,7 @@ const std::string EmptyVal::to_string() const
 
 const std::string EmptyVal::to_zinc() const
 {
-    assert(false);  return "";
+   return "";
 }
 
 ////////////////////////////////////////////////

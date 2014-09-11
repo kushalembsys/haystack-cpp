@@ -33,7 +33,7 @@ namespace haystack {
         // Read a grid
         std::auto_ptr<Grid> read_grid();
         // Parses a filter
-        Filter::auto_ptr_t read_filter();
+        Filter::shared_ptr_t read_filter();
         // Read set of name/value tags as dictionary
         std::auto_ptr<Dict> read_dict();
         // Read scalar value.
@@ -60,10 +60,10 @@ namespace haystack {
         Val::auto_ptr_t read_uri_val();
         Val::auto_ptr_t read_word_val();
 
-        Filter::auto_ptr_t read_filter_or();
-        Filter::auto_ptr_t read_filter_and();
-        Filter::auto_ptr_t read_filter_atomic();
-        Filter::auto_ptr_t read_filter_parens();
+        Filter::shared_ptr_t read_filter_or();
+        Filter::shared_ptr_t read_filter_and();
+        Filter::shared_ptr_t read_filter_atomic();
+        Filter::shared_ptr_t read_filter_parens();
 
         void consume_cmp();
         std::string read_filter_path();

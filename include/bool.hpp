@@ -22,7 +22,7 @@ namespace haystack {
         Bool& operator=(const Bool &other);
         Bool(const Bool &other) : value(other.value){};
     public:
-        const char type() const { return BOOL_TYPE; }
+        const Type type() const { return BOOL_TYPE; }
 
         // This bool value
         const bool value;

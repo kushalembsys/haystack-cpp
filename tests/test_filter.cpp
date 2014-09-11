@@ -25,7 +25,7 @@ using namespace haystack;
 ///////////////////////////////////////////////////////////
 
 
-#define verifyParse(str, expected)  { Filter::auto_ptr_t actual = Filter::make(str); CHECK(*actual == expected); }
+#define verifyParse(str, expected)  { Filter::shared_ptr_t actual = Filter::make(str); CHECK(*actual == expected); }
 
 Val::auto_ptr_t n(double v, std::string u = "")
 {
@@ -52,7 +52,7 @@ void verifyInclude(const boost::ptr_map<std::string, Dict>& map, const std::stri
 {
     PathTest db(map);
 
-    Filter::auto_ptr_t q = Filter::make(query);
+    Filter::shared_ptr_t q = Filter::make(query);
 
     std::stringstream actual;
     for (int c = 'a'; c <= 'c'; ++c)
@@ -144,10 +144,10 @@ TEST_CASE("Filter testcase", "[Filter]")
         verifyParse("(a or b) or (c == 3)", *Filter::has("a")->OR(Filter::has("b"))->OR(Filter::eq("c", n(3))));
 
         // combo
-        Filter::auto_ptr_t isA = Filter::has("a");
-        Filter::auto_ptr_t isB = Filter::has("b");
-        Filter::auto_ptr_t isC = Filter::has("c");
-        Filter::auto_ptr_t isD = Filter::has("d");
+        Filter::shared_ptr_t isA = Filter::has("a");
+        Filter::shared_ptr_t isB = Filter::has("b");
+        Filter::shared_ptr_t isC = Filter::has("c");
+        Filter::shared_ptr_t isD = Filter::has("d");
 
         verifyParse("a and b or c", *isA->AND(isB)->OR(isC));
         verifyParse("a or b and c", *isA->OR(isB->AND(isC)));

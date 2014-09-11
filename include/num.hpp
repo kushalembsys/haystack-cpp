@@ -24,7 +24,7 @@ namespace haystack {
         Num operator=(const Num &other) { return Num(other.value, other.unit); };
 
     public:
-        const char type() const { return NUM_TYPE; }
+        const Type type() const { return NUM_TYPE; }
 
         // This double value
         const double		value;

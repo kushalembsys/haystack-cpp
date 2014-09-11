@@ -7,6 +7,8 @@
 //
 #include "grid.hpp"
 #include "str.hpp"
+#include "marker.hpp"
+#include <boost/scoped_ptr.hpp>
 
 ////////////////////////////////////////////////
 // Grid
@@ -97,7 +99,7 @@ Dict& Grid::add_col(const std::string& name)
 // order.  Return this.
 Grid& Grid::add_row(Val * valp[], size_t count)
 {
-    std::auto_ptr<Row::val_vec_t> v(new Row::val_vec_t());
+    std::auto_ptr<Row::val_vec_t> v(new Row::val_vec_t(count));
 
     for (size_t i = 0; i < count; i++)
     {
@@ -109,6 +111,12 @@ Grid& Grid::add_row(Val * valp[], size_t count)
     return *this;
 }
 
+// Tell grid to allocate space for this abount of rows entries.
+void Grid::reserve_rows(size_t count)
+{
+    m_rows.reserve(count);
+}
+
 // Add new row with array of cells which correspond to column
 // order.  Return this.
 Grid& Grid::add_row(const Dict& d)
@@ -116,18 +124,19 @@ Grid& Grid::add_row(const Dict& d)
     if (d.is_empty())
         return *this;
 
-    std::auto_ptr<Row::val_vec_t> v(new Row::val_vec_t());
-
-    for (Dict::const_iterator it = d.begin(), end = d.end(); it != end; ++it)
+    boost::scoped_ptr<Val*> v(new Val*[m_cols_by_name.size()]);
+    
+    for (name_col_map_t::const_iterator it = m_cols_by_name.begin(), e = m_cols_by_name.end(); it != e; ++it)
     {
-        Val* val = (Val*)it->second->clone().release();
-        if (val->is_empty())
-            val = NULL;
+        const Val& val = d.get(it->first, false);
 
-        v->push_back(val);
+        if (!val.is_empty())
+            (v.get())[it->second] = (Val*)val.clone().release();
+        else
+            (v.get())[it->second] = NULL;
     }
 
-    m_rows.push_back(new Row(*this, v));
+    add_row(v.get(), m_cols_by_name.size());
 
     return *this;
 }
@@ -172,19 +181,22 @@ Grid::auto_ptr_t Grid::make(const std::vector<const Dict*>& dicts)
     // add cols
     for (std::vector<const Dict*>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
     {
-        for (Dict::const_iterator it = (**dit).begin(), e = (**dit).end(); it != e; ++it)
+        for (Dict::const_iterator vit = (**dit).begin(), e = (**dit).end(); vit != e; ++vit)
         {
-            if (col_names.find(it->first) == col_names.end())
+            const std::string& col_name = vit->first;
+            if (col_names.find(col_name) == col_names.end())
             {
-                col_names[it->first] = true;
-                g->add_col(it->first);
+                col_names[col_name] = true;
+                g->add_col(col_name);
             }
         }
     }
 
-    for (std::vector<const Dict*>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
+    g->reserve_rows(dicts.size());
+
+    for (std::vector<const Dict*>::const_iterator it = dicts.begin(), e = dicts.end(); it != e; ++it)
     {
-        g->add_row(**dit);
+        g->add_row(**it);
     }
 
     return g;
@@ -203,19 +215,22 @@ Grid::auto_ptr_t Grid::make(const boost::ptr_vector<Dict>& dicts)
     // add cols
     for (boost::ptr_vector<Dict>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
     {
-        for (Dict::const_iterator it = dit->begin(), e = dit->end(); it != e; ++it)
+        for (Dict::const_iterator vit = dit->begin(), e = dit->end(); vit != e; ++vit)
         {
-            if (col_names.find(it->first) == col_names.end())
+            const std::string& col_name = vit->first;
+            if (col_names.find(col_name) == col_names.end())
             {
-                col_names[it->first] = true;
-                g->add_col(it->first);
+                col_names[col_name] = true;
+                g->add_col(col_name);
             }
         }
     }
 
-    for (boost::ptr_vector<Dict>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
+    g->reserve_rows(dicts.size());
+
+    for (boost::ptr_vector<Dict>::const_iterator it = dicts.begin(), e = dicts.end(); it != e; ++it)
     {
-        g->add_row(*dit);
+        g->add_row(*it);
     }
 
     return g;

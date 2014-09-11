@@ -18,11 +18,13 @@ using Poco::Net::HTTPServerResponse;
 namespace haystack
 {
     class Server;
+
+    // Op is the base class for server side operations exposed by the REST API.
+    // All methods on Op must be thread safe.
+    // @see <a href = 'http://project-haystack.org/doc/Ops'>Project Haystack< / a>
     class Op : boost::noncopyable
     {
     public:
-
-        Op() : m_grid(new Grid){}
 
         // Programatic name of the operation.
         virtual std::string name() const = 0;
@@ -37,17 +39,12 @@ namespace haystack
         // Service the request and return response.
         virtual Grid::auto_ptr_t on_service(const Server& db, const Grid& req);
 
-        // reset current Op state
-        virtual void reset();
-
     private:
         // Map the GET query parameters to grid with one row
         Grid::auto_ptr_t  get_to_grid(HTTPServerRequest& req);
 
         // Map the POST body to grid
         Grid::auto_ptr_t post_to_grid(HTTPServerRequest& req, HTTPServerResponse& res);
-
-        Grid::auto_ptr_t m_grid;
     };
 
     class StdOps
@@ -61,6 +58,8 @@ namespace haystack
         static const Op& formats;
         // Read entity records in database.
         static const Op& read;
+        // Navigate tree structure of database.
+        static const Op& nav;
 
         typedef std::map<std::string, const Op* const> ops_map_t;
         static const ops_map_t& ops_map();

@@ -22,7 +22,7 @@ namespace haystack {
         Ref& operator=(const Ref &other);
         Ref(const Ref &other) : value(other.value), m_dis(other.m_dis) { Ref::enforceId(); };
     public:
-        const char type() const { return REF_TYPE; }
+        const Type type() const { return REF_TYPE; }
 
         // This string value
         const std::string	value;
@@ -30,6 +30,9 @@ namespace haystack {
 
         Ref(const std::string& val) : value(val), m_dis("") { Ref::enforceId(); };
         Ref(const std::string& val, const std::string &unit) : value(val), m_dis(unit) { Ref::enforceId(); };
+
+        // Encode as "@id"
+        const std::string to_code() const { return "@" + value; }
 
         // Return the val string
         const std::string to_string() const;

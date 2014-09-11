@@ -23,7 +23,6 @@ namespace haystack {
     {
     public:
 
-
         typedef boost::ptr_vector<Row> row_vec_t;
         typedef boost::ptr_vector<Col> col_vec_t;
         typedef std::map<std::string, size_t> name_col_map_t;
@@ -71,7 +70,7 @@ namespace haystack {
         // Iterator
         //////////////////////////////////////////////////////////////////////////
 
-        // Return name/value iterator which only includes
+        // Return rows iterator
         const_iterator begin() const;
         const_iterator end() const;
 
@@ -86,6 +85,9 @@ namespace haystack {
         // Add new row with array of cells which correspond to column
         // order.  Return this.
         Grid& add_row(Val *[], size_t count);
+
+        // Tell grid to allocate space for this abount of rows entries.
+        void reserve_rows(size_t count);
 
         // Constructs an err grid
         static Grid::auto_ptr_t make_err(const std::runtime_error&);

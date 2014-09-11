@@ -27,7 +27,7 @@ namespace haystack {
         DateTime& operator=(const DateTime &other);
         DateTime(const DateTime &other) : date(other.date), time(other.time), tz(TimeZone::DEFAULT), tz_offset(tz.offset * 3600), m_millis(-1)  {};
     public:
-        const char type() const { return DATE_TIME_TYPE; }
+        const Type type() const { return DATE_TIME_TYPE; }
 
         // Date component of the timestamp
         const Date date;

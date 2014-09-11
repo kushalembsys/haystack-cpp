@@ -5,7 +5,7 @@
 #include "ref.hpp"
 #include "uri.hpp"
 #include "op.hpp"
-
+#include <boost/scoped_ptr.hpp>
 //
 // Copyright (c) 2014, J2 Innovations
 // Copyright (c) 2012 Brian Frank
@@ -82,6 +82,67 @@ Dict::auto_ptr_t TestProj::on_read_by_id(const Ref& id) const
         return ((Dict&)Dict::EMPTY).clone();
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Navigation
+//////////////////////////////////////////////////////////////////////////
+
+Grid::auto_ptr_t TestProj::on_nav(const std::string& nav_id) const
+{
+    // test database navId is record id
+    Dict::auto_ptr_t base;
+    if (!nav_id.empty()) base = read_by_id(Ref(nav_id));
+
+    // map base record to site, equip, or point
+    std::string filter = "site";
+    if (base.get() != NULL)
+    {
+        if (base->has("site")) filter = "equip and siteRef==" + base->id().to_code();
+        else if (base->has("equip")) filter = "point and equipRef==" + base->id().to_code();
+        else filter = "navNoChildren";
+    }
+
+    // read children of base record
+    Grid::auto_ptr_t read = read_all(filter);
+
+    Grid::auto_ptr_t res(new Grid);
+    res->reserve_rows(read->num_rows());
+
+    // copy columns
+    for (size_t i = 0; i < read->num_cols(); i++)
+    {
+        const Col& srcCol = read->col(i);
+        res->add_col(srcCol.name()).add(srcCol.meta());
+    }
+    // add a new colum
+    res->add_col("navId");
+    // copy rows
+    for (Grid::const_iterator row = read->begin(), e = read->end(); row != e; ++row)
+    {
+        const std::string& id = row->id().value;
+        boost::scoped_ptr<Val*> v(new Val*[res->num_cols()]);
+        // copy each Val from the row
+        for (size_t i = 0; i < res->num_cols() - 1; i++)
+        {
+            (v.get())[i] = (Val*)row->get(res->col(i).name(), false).clone().release();
+        }
+        // add the new 'navId' tag
+        (v.get())[res->num_cols() - 1] = (Val*) Str(row->id().value).clone().release();
+        // add the new row to the result grid
+        res->add_row(v.get(), res->num_cols());
+    }
+
+    return res;
+}
+
+Dict::auto_ptr_t TestProj::on_nav_read_by_uri(const Uri& uri) const
+{
+    return Dict::auto_ptr_t();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Impl
+//////////////////////////////////////////////////////////////////////////
+
 void TestProj::add_site(const std::string& dis, const std::string& geoCity, const std::string& geoState, int area)
 {
     Dict::auto_ptr_t site(new Dict);
@@ -100,7 +161,7 @@ void TestProj::add_site(const std::string& dis, const std::string& geoCity, cons
     add_ahu(*site, dis + "-AHU2");
 
     std::string k = dis;
-    m_recs.insert(k, site.release());
+    m_recs.insert(k, site);
 }
 
 void TestProj::add_meter(Dict& site, const std::string& dis)
@@ -117,7 +178,7 @@ void TestProj::add_meter(Dict& site, const std::string& dis)
     add_point(*equip, dis + "-KWH", "kWh", "elecKwh");
 
     std::string k = dis;
-    m_recs.insert(k, equip.release());
+    m_recs.insert(k, equip);
 }
 
 void TestProj::add_ahu(Dict& site, const std::string& dis)
@@ -137,7 +198,7 @@ void TestProj::add_ahu(Dict& site, const std::string& dis)
     add_point(*equip, dis + "-ZoneSP", "\u00B0F", "zone air temp sp writable");
 
     std::string k = dis;
-    m_recs.insert(k, equip.release());
+    m_recs.insert(k, equip);
 }
 
 void TestProj::add_point(Dict& equip, const std::string& dis, const std::string& unit, const std::string& markers)

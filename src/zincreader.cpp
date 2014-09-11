@@ -89,9 +89,8 @@ std::auto_ptr<Grid> ZincReader::read_grid()
             skip_space();
             if (m_cur != ',' && m_cur != '\n')
             {
-                Val::auto_ptr_t v = read_val();
                 // ownership transfered to cells vector
-                (cells.get())[i] = (Val*)v.release();
+                (cells.get())[i] = (Val*) read_val().release();
             }
             else
                 (cells.get())[i] = NULL;
@@ -113,11 +112,11 @@ std::auto_ptr<Grid> ZincReader::read_grid()
     return g;
 }
 
-Filter::auto_ptr_t ZincReader::read_filter()
+Filter::shared_ptr_t ZincReader::read_filter()
 {
     m_is_filter = true;
     skip_space();
-    Filter::auto_ptr_t q = read_filter_or();
+    Filter::shared_ptr_t q = read_filter_or();
     skip_space();
     if (m_cur >= 0) throw std::runtime_error("Expected end of stream");
     return q;
@@ -332,7 +331,7 @@ Val::auto_ptr_t ZincReader::read_num_val()
         hour = read_two_digits("Invalid digit for hour in date time value");
     }
 
-    // HTime - check for colon
+    // Time - check for colon
     if (m_cur == ':')
     {
         // hour (may have been parsed already in date time)
@@ -597,9 +596,9 @@ void ZincReader::consume()
 // HFilter
 //////////////////////////////////////////////////////////////////////////
 
-Filter::auto_ptr_t ZincReader::read_filter_or()
+Filter::shared_ptr_t ZincReader::read_filter_or()
 {
-    Filter::auto_ptr_t q = read_filter_and();
+    Filter::shared_ptr_t q = read_filter_and();
     skip_space();
     if (m_cur != 'o') return q;
     if (read_id() != "or") throw std::runtime_error("Expecting 'or' keyword");
@@ -607,9 +606,9 @@ Filter::auto_ptr_t ZincReader::read_filter_or()
     return q->OR(read_filter_or());
 }
 
-Filter::auto_ptr_t ZincReader::read_filter_and()
+Filter::shared_ptr_t ZincReader::read_filter_and()
 {
-    Filter::auto_ptr_t q = read_filter_atomic();
+    Filter::shared_ptr_t q = read_filter_atomic();
     skip_space();
     if (m_cur != 'a') return q;
     if (read_id() != "and") throw std::runtime_error("Expecting 'and' keyword");
@@ -617,7 +616,7 @@ Filter::auto_ptr_t ZincReader::read_filter_and()
     return q->AND(read_filter_and());
 }
 
-Filter::auto_ptr_t ZincReader::read_filter_atomic()
+Filter::shared_ptr_t ZincReader::read_filter_atomic()
 {
     skip_space();
     if (m_cur == '(') return read_filter_parens();
@@ -637,11 +636,11 @@ Filter::auto_ptr_t ZincReader::read_filter_atomic()
     return Filter::has(path);
 }
 
-Filter::auto_ptr_t ZincReader::read_filter_parens()
+Filter::shared_ptr_t ZincReader::read_filter_parens()
 {
     consume();
     skip_space();
-    Filter::auto_ptr_t q = read_filter_or();
+    Filter::shared_ptr_t q = read_filter_or();
     if (m_cur != ')') std::runtime_error("Expecting ')'");
     consume();
     return q;

@@ -23,7 +23,7 @@ namespace haystack {
         friend class Ref;
         Str(const Str &other) : value(other.value) {};
     public:
-        const char type() const { return STR_TYPE; }
+        const Type type() const { return STR_TYPE; }
 
         // This string value
         const std::string value;

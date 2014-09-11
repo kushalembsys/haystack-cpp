@@ -24,7 +24,7 @@ namespace haystack {
         Marker& operator=(const Marker &other);
     public:
         Marker() {};
-        const char type() const { return MARKER_TYPE; }
+        const Type type() const { return MARKER_TYPE; }
 
         // default marker value
         static const Marker& VAL;

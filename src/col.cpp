@@ -26,7 +26,7 @@ const std::string Col::name() const { return _name; }
 const std::string Col::dis() const
 {
     const Val& dis = _meta->get("dis");
-    if (dis.type() == STR_TYPE)
+    if (dis.type() == Val::STR_TYPE)
         return ((Str&)dis).value;
     return _name;
 }

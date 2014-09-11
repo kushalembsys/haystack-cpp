@@ -7,6 +7,7 @@
 namespace haystack
 {
     class Op;
+    class Uri;
 
     class const_proj_iterator
         : public boost::iterator_facade <
@@ -54,6 +55,18 @@ namespace haystack
         // Return the operations supported by this database.
         virtual const std::vector<const Op*>& ops() = 0;
 
+        //////////////////////////////////////////////////////////////////////////
+        // Navigation
+        //////////////////////////////////////////////////////////////////////////
+
+        // Return navigation children for given navId.
+        Grid::auto_ptr_t nav(const std::string& navId) const;
+
+        // Read a record from the database using a navigation path.
+        // If not found then return NULL or raise runtime_exception
+        // base on checked flag.
+        Dict::auto_ptr_t nav_read_by_uri(const Uri& uri, bool checked);
+
     protected:
         // Implementation hook for "about" method.
         // Should return these tags:
@@ -72,6 +85,14 @@ namespace haystack
 
         virtual const_iterator begin() const = 0;
         virtual const_iterator end() const = 0;
+
+        // Return navigation tree children for given navId.
+        // The grid must define the "navId" column.
+        virtual Grid::auto_ptr_t on_nav(const std::string& nav_id) const = 0;
+        
+        // Implementation hook for nav_read_by_uri.  Return null if not
+        // found.  Do NOT raise any exceptions.
+        virtual Dict::auto_ptr_t on_nav_read_by_uri(const Uri& uri) const = 0;
 
         static const DateTime& boot_time();
 

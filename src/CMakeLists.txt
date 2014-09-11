@@ -3,10 +3,13 @@
 #   29 Aug 2014  Radu Racariu<radur@2inn.com> created.
 #
 if (MSVC)
-	set(CMAKE_CXX_FLAGS "-Wall /EHsc -D_CRT_SECURE_NO_WARNINGS")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall /EHsc -D_CRT_SECURE_NO_WARNINGS")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
+    set( STATIC_LIBRARY_FLAGS "${STATIC_LIBRARY_FLAGS} /LTCG")
 else (MSVC)
-	set(CMAKE_CXX_FLAGS "-Wall")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 endif(MSVC)
+
 
 set_property( GLOBAL PROPERTY USE_FOLDERS ON)
 
