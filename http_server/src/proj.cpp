@@ -10,7 +10,7 @@ Dict::auto_ptr_t Proj::read_by_id(const Ref& id) const
 Dict::auto_ptr_t Proj::read_by_id(const Ref& id, bool checked) const
 {
     Dict::auto_ptr_t rec = on_read_by_id(id);
-    if (!rec->is_empty()) return rec;
+    if (rec.get() != NULL) return rec;
     if (checked) throw std::runtime_error("Unknown id: " + id.to_string());
     return Dict::auto_ptr_t();
 }

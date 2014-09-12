@@ -1,10 +1,13 @@
 //
 // haystack_server.cpp
-//
-// Base on:
+// 
+// Copyright (c) 2014, J2 Innovations
+// Author: Radu Racariu <radur@j2inn.com>
+// 
+// Based on (original notes):
 // $Id: //poco/1.4/Net/samples/HTTPTimeServer/src/HTTPTimeServer.cpp#1 $
 //
-// This sample demonstrates the HTTPHaystackServer and related classes.
+// This sample demonstrates the HTTPTimeServer and related classes.
 //
 // Copyright (c) 2005-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -59,6 +62,10 @@
 #include "op.hpp"
 
 
+using Poco::Timestamp;
+using Poco::DateTimeFormatter;
+using Poco::DateTimeFormat;
+using Poco::ThreadPool;
 using Poco::Net::ServerSocket;
 using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPRequestHandlerFactory;
@@ -66,10 +73,6 @@ using Poco::Net::HTTPServer;
 using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Net::HTTPServerParams;
-using Poco::Timestamp;
-using Poco::DateTimeFormatter;
-using Poco::DateTimeFormat;
-using Poco::ThreadPool;
 using Poco::Util::ServerApplication;
 using Poco::Util::Application;
 using Poco::Util::Option;
@@ -88,11 +91,9 @@ public:
     void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
     {
         Application& app = Application::instance();
-        app.logger().information("Request from " + request.clientAddress().toString());
-
-        response.setChunkedTransferEncoding(true);
-
-        std::string path = Poco::URI(request.getURI()).getPath();
+        
+        const std::string path = Poco::URI(request.getURI()).getPath();
+        app.logger().information("Request: " + path + " from: " + request.clientAddress().toString());
 
         if (path == "" || path == "/")
         {
@@ -104,6 +105,7 @@ public:
         if (slash == path.npos)
             slash = path.size();
 
+        response.setChunkedTransferEncoding(true);
         std::string op_name = path.substr(1, slash);
 
         haystack::Op* op = (haystack::Op*)_proj.op(op_name, false);

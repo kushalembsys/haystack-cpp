@@ -7,10 +7,11 @@
 //
 #include "val.hpp"
 
+using namespace haystack;
+
 ////////////////////////////////////////////////
 // EmptyVal
 ////////////////////////////////////////////////
-using namespace haystack;
 
 const EmptyVal& EmptyVal::DEF = *(new EmptyVal());
 

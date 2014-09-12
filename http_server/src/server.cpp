@@ -1,6 +1,7 @@
 #include "server.hpp"
 #include "filter.hpp"
 #include "uri.hpp"
+#include <boost/algorithm/string.hpp>
 
 using namespace haystack;
 
@@ -22,7 +23,7 @@ Dict::auto_ptr_t Server::about() const
 // Return the operations supported by this database.
 Grid::auto_ptr_t Server::on_read_by_ids(const std::vector<Ref>& ids) const
 {
-    boost::ptr_vector<Dict> v;
+    boost::ptr_vector<Dict> v(ids.size());
 
     for (std::vector<Ref>::const_iterator it = ids.begin(), end = ids.end(); it != end; ++it)
     {
@@ -44,17 +45,84 @@ Grid::auto_ptr_t Server::nav(const std::string& navId) const
 // Read a record from the database using a navigation path.
 // If not found then return NULL or raise runtime_exception
 // base on checked flag.
-Dict::auto_ptr_t Server::nav_read_by_uri(const Uri& uri, bool checked)
+Dict::auto_ptr_t Server::nav_read_by_uri(const Uri& uri, bool checked) const
 {
     Dict::auto_ptr_t rec = on_nav_read_by_uri(uri);
     if (rec.get() != NULL) return rec;
     if (checked) throw std::runtime_error(uri.to_string());
     return Dict::auto_ptr_t();
 }
+//////////////////////////////////////////////////////////////////////////
+// Watches
+//////////////////////////////////////////////////////////////////////////
+
+// Create a new watch with an empty subscriber list.  The dis
+// string is a debug string to keep track of who created the watch.
+const Watch::shared_ptr Server::watch_open(const std::string& dis)
+{
+    std::string watch = dis; 
+    boost::algorithm::trim(watch);
+    if (watch.size() == 0) throw std::runtime_error("dis is empty");
+    return on_watch_open(watch);
+}
+// List the open watches.
+const std::vector<Watch::shared_ptr> Server::watches()
+{
+    return on_watches();
+}
+
+// Lookup a watch by its unique identifier.  If not found then
+// raise runtime_error or return NULL based on checked flag.
+Watch::shared_ptr Server::watch(const std::string& id, bool checked/* = true*/)
+{
+    Watch::shared_ptr w = on_watch(id);
+    if (w.get() != NULL) return w;
+    if (checked) throw std::runtime_error(id);
+    return Watch::shared_ptr();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Point Writes
+//////////////////////////////////////////////////////////////////////////
+
+// Return priority array for writable point identified by id.
+// The grid contains 17 rows with following columns:
+//   - level: number from 1 - 17 (17 is default)
+//   - levelDis: human description of level
+//   - val: current value at level or null
+//   - who: who last controlled the value at this level
+Grid::auto_ptr_t Server::point_write_array(const Ref& id)
+{
+    // lookup entity
+    Dict::auto_ptr_t rec = read_by_id(id);
+
+    // check that entity has "writable" tag
+    if (rec->missing("writable"))
+        throw std::runtime_error("Rec missing 'writable' tag: " + rec->dis());
+
+    return on_point_write_array(*rec);
+}
+
+// Write to the given priority array level.
+void Server::point_write(const Ref& id, int level, const Val& val, const std::string& who, const Num& dur)
+{
+    // argument checks
+    if (level < 1 || level > 17) throw std::runtime_error("Invalid level 1-17: " + level);
+    if (who.empty()) throw std::runtime_error("who is empty ''");
+
+    // lookup entity
+    Dict::auto_ptr_t rec = read_by_id(id);
+
+    // check that entity has "writable" tag
+    if (rec->missing("writable"))
+        throw std::runtime_error("Rec missing 'writable' tag: " + rec->dis());
+
+    on_point_write(*rec, level, val, who, dur);
+}
 
 class PathImpl : public Pather
 {
- public:
+public:
     PathImpl(const Server& s) : m_s(s) {}
     const Dict& find(const std::string& ref) const
     {
@@ -71,7 +139,7 @@ Grid::auto_ptr_t Server::on_read_all(const std::string& filter, size_t limit) co
 {
     Filter::shared_ptr_t f = Filter::make(filter);
     PathImpl pather(*this);
-    
+
     std::vector<const Dict*> v;
 
     for (const_iterator it = begin(), e = end(); it != e; ++it)
@@ -96,7 +164,7 @@ const DateTime& Server::boot_time()
     if (m_boot_time != NULL)
         return *m_boot_time;
 
-    m_boot_time = (DateTime*) DateTime::now().clone().release();
+    m_boot_time = (DateTime*)DateTime::now().clone().release();
     return *m_boot_time;
 }
 

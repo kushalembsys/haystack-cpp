@@ -3,6 +3,7 @@
 #include "Poco/Net/HTTPServerRequest.h"
 #include "Poco/Net/HTTPServerResponse.h"
 #include "grid.hpp"
+#include "ref.hpp"
 
 //
 // Copyright (c) 2014, J2 Innovations
@@ -18,6 +19,9 @@ using Poco::Net::HTTPServerResponse;
 namespace haystack
 {
     class Server;
+    class Uri;
+    class Ref;
+    class Val;
 
     // Op is the base class for server side operations exposed by the REST API.
     // All methods on Op must be thread safe.
@@ -37,7 +41,12 @@ namespace haystack
         void on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse& res);
 
         // Service the request and return response.
-        virtual Grid::auto_ptr_t on_service(const Server& db, const Grid& req);
+        virtual Grid::auto_ptr_t on_service(Server& db, const Grid& req);
+
+    protected:
+        Row::val_vec_t grid_to_ids(const Server& db, const Grid& grid) const;
+
+        Ref::auto_ptr_t val_to_id(const Server& db, const Val& val) const;
 
     private:
         // Map the GET query parameters to grid with one row
@@ -60,6 +69,14 @@ namespace haystack
         static const Op& read;
         // Navigate tree structure of database.
         static const Op& nav;
+        // Watch subscription.
+        static const Op& watchSub;
+        // Watch unsubscription.
+        static const Op& watchUnsub;
+        // Watch poll cov or refresh.
+        static const Op& watchPoll;
+        // Read/write writable point priority array.
+        static const Op& pointWrite;
 
         typedef std::map<std::string, const Op* const> ops_map_t;
         static const ops_map_t& ops_map();

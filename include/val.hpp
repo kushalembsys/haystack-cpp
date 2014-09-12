@@ -80,4 +80,10 @@ namespace haystack {
 
         auto_ptr_t clone() const;
     };
-};
+
+    // generic clone function
+    inline Val* new_clone(const Val& other) 
+    {
+        return (Val*)other.clone().release();
+    }
+}

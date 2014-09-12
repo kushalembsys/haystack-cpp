@@ -99,7 +99,7 @@ namespace haystack {
 
     private:
         // Add new row with values from the Dict; Dict column
-        // should match this grid columns, exception is thrown otherwise.
+        // should match this grid columns.
         // Return this.
         Grid& add_row(const Dict&);
 

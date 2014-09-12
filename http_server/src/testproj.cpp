@@ -56,11 +56,11 @@ const Op* const TestProj::op(const std::string& name, bool checked) const
         return it == StdOps::ops_map().end() ? NULL : it->second;
 }
 
-const Dict& TestProj::on_about() const 
+const Dict& TestProj::on_about() const
 {
     if (m_about != NULL)
-        return *m_about; 
-    
+        return *m_about;
+
     m_about = new Dict();
     m_about->add("serverName", Poco::Net::DNS::hostName())
         .add("vendorName", "Haystack C++ Toolkit")
@@ -79,7 +79,7 @@ Dict::auto_ptr_t TestProj::on_read_by_id(const Ref& id) const
     if (it != m_recs.end())
         return ((Dict*)it->second)->clone();
     else
-        return ((Dict&)Dict::EMPTY).clone();
+        return Dict::auto_ptr_t();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -118,15 +118,14 @@ Grid::auto_ptr_t TestProj::on_nav(const std::string& nav_id) const
     // copy rows
     for (Grid::const_iterator row = read->begin(), e = read->end(); row != e; ++row)
     {
-        const std::string& id = row->id().value;
         boost::scoped_ptr<Val*> v(new Val*[res->num_cols()]);
         // copy each Val from the row
         for (size_t i = 0; i < res->num_cols() - 1; i++)
         {
-            (v.get())[i] = (Val*)row->get(res->col(i).name(), false).clone().release();
+            (v.get())[i] = new_clone(row->get(res->col(i).name(), false));
         }
         // add the new 'navId' tag
-        (v.get())[res->num_cols() - 1] = (Val*) Str(row->id().value).clone().release();
+        (v.get())[res->num_cols() - 1] = new_clone(Str(row->id().value));
         // add the new row to the result grid
         res->add_row(v.get(), res->num_cols());
     }
@@ -134,9 +133,62 @@ Grid::auto_ptr_t TestProj::on_nav(const std::string& nav_id) const
     return res;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Watches
+//////////////////////////////////////////////////////////////////////////
+
+
+Watch::shared_ptr TestProj::on_watch_open(const std::string& dis)
+{
+    throw std::runtime_error("Unsuported op on_watch_open");
+}
+
+const std::vector<Watch::shared_ptr> TestProj::on_watches()
+{
+    throw std::runtime_error("Unsuported op on_watches");
+}
+
+Watch::shared_ptr TestProj::on_watch(const std::string& id)
+{
+    throw std::runtime_error("Unsuported op on_watch");
+}
+
 Dict::auto_ptr_t TestProj::on_nav_read_by_uri(const Uri& uri) const
 {
     return Dict::auto_ptr_t();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Point Write
+//////////////////////////////////////////////////////////////////////////
+
+Grid::auto_ptr_t TestProj::on_point_write_array(const Dict& rec)
+{
+    Grid::auto_ptr_t g(new Grid);
+
+    g->add_col("level");
+    g->add_col("levelDis");
+    g->add_col("val");
+    g->add_col("who");
+
+    for (int i = 0; i < 17; ++i)
+    {
+        Val* v[4] = {
+            new Num(i + 1),
+            new Str("" + (i + 1)),
+            new Num(i + 1),
+            new Str("boo"),
+        };
+        g->add_row(v, 4);
+
+    }
+
+    return g;
+}
+
+void TestProj::on_point_write(const Dict& rec, int level, const Val& val, const std::string& who, const Num& dur)
+{
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -153,7 +205,7 @@ void TestProj::add_site(const std::string& dis, const std::string& geoCity, cons
         .add("geoState", geoState)
         .add("geoAddr", "" + geoCity + "," + geoState)
         .add("tz", "New_York")
-        .add("area", Num(area, "ft\x00B2"));
+        .add("area", Num(area, "ft\xc2\xb2"));
 
 
     add_meter(*site, dis + "-Meter");
@@ -209,6 +261,7 @@ void TestProj::add_point(Dict& equip, const std::string& dis, const std::string&
         .add("dis", dis)
         .add("point", Marker::VAL)
         .add("his", Marker::VAL)
+        .add("cur", Marker::VAL)
         .add("siteRef", equip.get("siteRef"))
         .add("equipRef", equip.get("id"))
         .add("kind", unit.empty() ? "Bool" : "Number")

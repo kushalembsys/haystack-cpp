@@ -124,19 +124,22 @@ Grid& Grid::add_row(const Dict& d)
     if (d.is_empty())
         return *this;
 
-    boost::scoped_ptr<Val*> v(new Val*[m_cols_by_name.size()]);
-    
+    // preallocate a fixed Val* vector
+    std::auto_ptr<Row::val_vec_t> v(new Row::val_vec_t(m_cols_by_name.size()));
+    v->resize(m_cols_by_name.size(), NULL);
+
     for (name_col_map_t::const_iterator it = m_cols_by_name.begin(), e = m_cols_by_name.end(); it != e; ++it)
     {
         const Val& val = d.get(it->first, false);
+        const size_t index = it->second;
 
         if (!val.is_empty())
-            (v.get())[it->second] = (Val*)val.clone().release();
+            v->replace(index, new_clone(val));
         else
-            (v.get())[it->second] = NULL;
+            v->replace(index, NULL);
     }
 
-    add_row(v.get(), m_cols_by_name.size());
+    m_rows.push_back(new Row(*this, v));
 
     return *this;
 }

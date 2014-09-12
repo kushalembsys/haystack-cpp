@@ -43,6 +43,27 @@ namespace haystack
 
         Dict::auto_ptr_t on_nav_read_by_uri(const Uri& uri) const;
 
+        //////////////////////////////////////////////////////////////////////////
+        // Watches
+        //////////////////////////////////////////////////////////////////////////
+
+        Watch::shared_ptr on_watch_open(const std::string& dis);
+        
+        const std::vector<Watch::shared_ptr> on_watches();
+
+        Watch::shared_ptr on_watch(const std::string& id);
+        
+        //////////////////////////////////////////////////////////////////////////
+        // Point Write
+        //////////////////////////////////////////////////////////////////////////
+
+        Grid::auto_ptr_t on_point_write_array(const Dict& rec);
+
+        void on_point_write(const Dict& rec, int level, const Val& val, const std::string& who, const Num& dur);
+    
+    public:
+
+
         const_iterator begin() const;
         const_iterator end() const;
     private:

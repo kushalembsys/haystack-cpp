@@ -63,7 +63,7 @@ static const TimeZone currentTZ()
     int offset = local - gmt - dst;
 
     std::stringstream os;
-    os << "Etc/GMT";
+    os << "GMT";
     if (offset >= 0)
         os << '+';
     else
