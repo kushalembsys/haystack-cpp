@@ -60,6 +60,19 @@ namespace haystack
         Grid::auto_ptr_t on_point_write_array(const Dict& rec);
 
         void on_point_write(const Dict& rec, int level, const Val& val, const std::string& who, const Num& dur);
+        
+        //////////////////////////////////////////////////////////////////////////
+        // History
+        //////////////////////////////////////////////////////////////////////////
+
+        std::vector<HisItem> on_his_read(const Dict& entity, const DateTimeRange& range);
+        void on_his_write(const Dict& rec, const std::vector<HisItem>& items);
+        
+        //////////////////////////////////////////////////////////////////////////
+        // Actions
+        //////////////////////////////////////////////////////////////////////////
+        
+        Grid::auto_ptr_t on_invoke_action(const Dict& rec, const std::string& action, const Dict& args);
     
     public:
 

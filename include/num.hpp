@@ -1,6 +1,5 @@
 #pragma once
 #include "val.hpp"
-#include <stdint.h>
 #include <stdexcept>
 //
 // Copyright (c) 2014, J2 Innovations
@@ -35,8 +34,8 @@ namespace haystack {
         Num(double val) : value(val), unit("") { enforceUnit(); };
         Num(int val, const std::string &unit) : value(val), unit(unit) { enforceUnit(); };
         Num(int val) : value(val), unit("") { enforceUnit(); };
-        Num(int64_t val, const std::string &unit) : value(static_cast<double>(val)), unit(unit) { enforceUnit(); };
-        Num(int64_t val) : value(static_cast<double>(val)), unit("") { enforceUnit(); };
+        Num(long long val, const std::string &unit) : value(static_cast<double>(val)), unit(unit) { enforceUnit(); };
+        Num(long long val) : value(static_cast<double>(val)), unit("") { enforceUnit(); };
         // special values
         static const Num ZERO;
         static const Num POS_INF;
@@ -53,7 +52,7 @@ namespace haystack {
         bool operator < (const Val &other) const;
         bool operator ==(double other) const;
         bool operator ==(int other) const;
-        bool operator ==(int64_t other) const;
+        bool operator ==(long long other) const;
         bool operator==(const Val &other) const;
         auto_ptr_t clone() const;
 

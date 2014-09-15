@@ -1,6 +1,9 @@
 #include "server.hpp"
+#include "hisitem.hpp"
 #include "filter.hpp"
 #include "uri.hpp"
+#include "datetimerange.hpp"
+#include <boost/scoped_ptr.hpp>
 #include <boost/algorithm/string.hpp>
 
 using namespace haystack;
@@ -60,7 +63,7 @@ Dict::auto_ptr_t Server::nav_read_by_uri(const Uri& uri, bool checked) const
 // string is a debug string to keep track of who created the watch.
 const Watch::shared_ptr Server::watch_open(const std::string& dis)
 {
-    std::string watch = dis; 
+    std::string watch = dis;
     boost::algorithm::trim(watch);
     if (watch.size() == 0) throw std::runtime_error("dis is empty");
     return on_watch_open(watch);
@@ -119,6 +122,87 @@ void Server::point_write(const Ref& id, int level, const Val& val, const std::st
 
     on_point_write(*rec, level, val, who, dur);
 }
+
+//////////////////////////////////////////////////////////////////////////
+// History
+//////////////////////////////////////////////////////////////////////////
+
+Grid::auto_ptr_t Server::his_read(const Ref& id, const std::string& range)
+{
+    // lookup entity
+    Dict::auto_ptr_t rec = read_by_id(id);
+
+    // check that entity has "his" tag
+    if (rec->missing("his"))
+        throw std::runtime_error("Rec missing 'his' tag: " + rec->dis());
+
+    // lookup "tz" on entity
+    boost::scoped_ptr<TimeZone> tz;
+    if (rec->has("tz")) tz.reset(new TimeZone(rec->get_str("tz"), false));
+    if (tz.get() == NULL)
+        throw std::runtime_error("Rec missing or invalid 'tz' tag: " + rec->dis());
+
+    // check or parse date range
+    DateTimeRange::auto_ptr_t r;
+    try
+    {
+        r = DateTimeRange::make(range, *tz);
+    }
+    catch (std::exception&)
+    {
+        throw std::runtime_error("Invalid date time range: " + range);
+    }
+
+    // checking
+    if (!(r->start().tz == *tz))
+        throw std::runtime_error("range.tz != rec: " + r->start().tz.name + " != " + tz->name);
+
+    // route to subclass
+    std::vector<HisItem> items = on_his_read(*rec, *r);
+
+    // check items
+    if (items.size() > 0)
+    {
+        if (r->start().millis() >= items[0].ts->millis()) throw std::runtime_error("start range not met");
+        if (r->end().millis() < items[items.size() - 1].ts->millis()) std::runtime_error("end range not met");
+    }
+
+    // build and return result grid
+    Dict meta;
+    meta.add("id", id)
+        .add("hisStart", r->start())
+        .add("hisEnd", r->end());
+    return HisItem::his_items_to_grid(meta, items);
+}
+
+void Server::his_write(const Ref& id, const std::vector<HisItem>& items)
+{
+    // lookup entity
+    Dict::auto_ptr_t rec = read_by_id(id);
+
+    // check that entity has "his" tag
+    if (rec->missing("his"))
+        throw std::runtime_error("Entity missing 'his' tag: " + rec->dis());
+
+    // lookup "tz" on entity
+    boost::scoped_ptr<TimeZone> tz;
+    if (rec->has("tz")) tz.reset(new TimeZone(rec->get_str("tz"), false));
+    if (tz.get() == NULL)
+        throw std::runtime_error("Rec missing or invalid 'tz' tag: " + rec->dis());
+
+    // check tz of items
+    if (items.size() == 0) return;
+
+    for (std::vector<HisItem>::const_iterator it = items.begin(), e = items.end(); it != e; ++it)
+    {
+        if (!(it->ts->tz == *tz)) 
+            throw std::runtime_error("item.tz != rec.tz: " + it->ts->tz.name + " != " + tz->name);
+    }
+
+    // route to subclass
+    on_his_write(*rec, items);
+}
+
 
 class PathImpl : public Pather
 {

@@ -6,7 +6,9 @@
 //   06 Jun 2011  Brian Frank  Creation
 //
 
+#include "datetimerange.hpp"
 #include "op.hpp"
+#include "hisitem.hpp"
 #include "str.hpp"
 #include "marker.hpp"
 #include "num.hpp"
@@ -63,14 +65,14 @@ Grid::auto_ptr_t Op::on_service(Server& db, const Grid& req)
     return  Grid::auto_ptr_t();
 }
 
-Row::val_vec_t Op::grid_to_ids(const Server& db, const Grid& grid) const
+Op::refs_t Op::grid_to_ids(const Server& db, const Grid& grid) const
 {
-    Row::val_vec_t ids(grid.num_rows());
+    refs_t ids(grid.num_rows());
 
     for (Grid::const_iterator it = grid.begin(), e = grid.end(); it != e; ++it)
     {
-        const Val& val = it->get("id");
-        ids.push_back((Val*)val_to_id(db, val).release());
+        const Ref& val = it->get_ref("id");
+        ids.push_back((Ref*)val_to_id(db, val).release());
     }
     return ids;
 }
@@ -284,7 +286,7 @@ public:
             db.watch(watchId);
 
         // map grid to ids
-        const Row::val_vec_t& ids = grid_to_ids(db, req);
+        const Op::refs_t& ids = grid_to_ids(db, req);
 
         // subscribe and return resulting grid
         return watch->sub(ids);
@@ -370,6 +372,68 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////
+// HisReadOp
+//////////////////////////////////////////////////////////////////////////
+class HisReadOp : public Op
+{
+public:
+    std::string name() const  { return "hisRead"; }
+    std::string summary() const { return "Read time series from historian"; }
+
+    Grid::auto_ptr_t on_service(Server& db, const Grid& req)
+    {
+        if (req.is_empty()) throw std::runtime_error("Request has no rows");
+        const Row& row = req.row(0);
+        Ref::auto_ptr_t id = val_to_id(db, row.get("id"));
+
+        const std::string& r = row.get_str("range");
+        return db.his_read((Ref&)*id, r);
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////
+// HisWriteOp
+//////////////////////////////////////////////////////////////////////////
+class HisWriteOp : public Op
+{
+public:
+    std::string name() const  { return "hisWrite"; }
+    std::string summary() const  { return "Write time series data to historian"; }
+
+    Grid::auto_ptr_t on_service(Server& db, const Grid& req)
+    {
+        if (req.is_empty()) throw std::runtime_error("Request has no rows");
+        Ref::auto_ptr_t id = val_to_id(db, req.meta().get("id"));
+
+        std::vector<HisItem> items = HisItem::grid_to_items(req);
+        db.his_write((Ref&)*id, items);
+
+        return Grid::auto_ptr_t();
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////
+// InvokeActionOp
+//////////////////////////////////////////////////////////////////////////
+class InvokeActionOp : public Op
+{
+public:
+    std::string name() const { return "invokeAction"; }
+    std::string summary() const { return "Invoke action on target entity"; }
+    Grid::auto_ptr_t on_service(Server& db, const Grid& req)
+    {
+        Ref::auto_ptr_t id = val_to_id(db, req.meta().get("id"));
+
+        const std::string& action = req.meta().get_str("action");
+        
+        if (req.num_rows() > 0) 
+            return db.invoke_action((Ref&)*id, action, req.row(0));
+        else
+            return db.invoke_action((Ref&)*id, action, Dict::EMPTY);
+    }
+};
+
 // List the registered operations.
 const Op& StdOps::about = *new AboutOp();
 // List the registered grid formats.
@@ -379,13 +443,19 @@ const Op& StdOps::read = *new ReadOp();
 // Navigate tree structure of database.
 const Op& StdOps::nav = *new NavOp();
 // Watch subscription.
-const Op& StdOps::watchSub = *new WatchSubOp();
+const Op& StdOps::watch_sub = *new WatchSubOp();
 // Watch unsubscription.
-const Op& StdOps::watchUnsub = *new WatchUnsubOp();
+const Op& StdOps::watch_unsub = *new WatchUnsubOp();
 // Watch poll cov or refresh.
-const Op& StdOps::watchPoll = *new WatchPollOp();
+const Op& StdOps::watch_poll = *new WatchPollOp();
 // Read/write writable point priority array.
-const Op& StdOps::pointWrite = * new PointWriteOp();
+const Op& StdOps::point_write = *new PointWriteOp();
+// Read time series history data.
+const Op& StdOps::his_read = *new HisReadOp();
+// Write time series history data.
+const Op& StdOps::his_write = *new HisWriteOp();
+// Invoke action.
+const Op& StdOps::invoke_action = *new InvokeActionOp();
 
 // List the registered operations.
 const Op& StdOps::ops = *new OpsOp();
@@ -401,10 +471,13 @@ const StdOps::ops_map_t& StdOps::ops_map()
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::formats.name(), &StdOps::formats));
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::read.name(), &StdOps::read));
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::nav.name(), &StdOps::nav));
-    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::watchSub.name(), &StdOps::watchSub));
-    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::watchUnsub.name(), &StdOps::watchUnsub));
-    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::watchPoll.name(), &StdOps::watchPoll));
-    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::pointWrite.name(), &StdOps::pointWrite));
+    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::watch_sub.name(), &StdOps::watch_sub));
+    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::watch_unsub.name(), &StdOps::watch_unsub));
+    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::watch_poll.name(), &StdOps::watch_poll));
+    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::point_write.name(), &StdOps::point_write));
+    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::his_read.name(), &StdOps::his_read));
+    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::his_write.name(), &StdOps::his_write));
+    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::invoke_action.name(), &StdOps::invoke_action));
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::ops.name(), &StdOps::ops));
 
     return *m_ops_map;

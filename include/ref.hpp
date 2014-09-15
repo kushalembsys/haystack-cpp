@@ -66,4 +66,10 @@ namespace haystack {
                 throw std::runtime_error("invalid id");
         }
     };
+
+    // generic clone function
+    inline Ref* new_clone(const Ref& other)
+    {
+        return (Ref*)other.clone().release();
+    }
 };

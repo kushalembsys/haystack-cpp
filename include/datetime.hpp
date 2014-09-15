@@ -25,7 +25,10 @@ namespace haystack {
         DateTime();
         // disable assignment
         DateTime& operator=(const DateTime &other);
-        DateTime(const DateTime &other) : date(other.date), time(other.time), tz(TimeZone::DEFAULT), tz_offset(tz.offset * 3600), m_millis(-1)  {};
+        friend class DateTimeRange;
+        DateTime(const DateTime &other) : date(other.date), time(other.time),
+            tz(other.tz), tz_offset(tz.offset * 3600),
+            m_millis(other.m_millis)  {};
     public:
         const Type type() const { return DATE_TIME_TYPE; }
 
@@ -70,8 +73,9 @@ namespace haystack {
         bool operator <(const Val &) const;
         bool operator >(const Val &) const;
 
-        // Get this date time as Java milliseconds since epoch * /
+        // Get this date time as Java milliseconds since epoch
         const int64_t millis() const;
+
         auto_ptr_t clone() const;
 
         // utils

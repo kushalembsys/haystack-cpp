@@ -1,5 +1,5 @@
 #pragma once
-#include "grid.hpp"
+//#include "grid.hpp"
 #include <boost/shared_ptr.hpp>
 
 //
@@ -19,6 +19,7 @@ namespace haystack {
     {
     public:
         typedef boost::shared_ptr<Watch> shared_ptr;
+        typedef boost::ptr_vector<Ref> refs_t;
 
         // Unique watch identifier within a project database.
         // The id may not be assigned until after the first call
@@ -32,7 +33,7 @@ namespace haystack {
         virtual const size_t lease() const = 0;
 
         // Convenience for "sub(ids, true)"
-        Grid::auto_ptr_t sub(const Row::val_vec_t& ids){ return sub(ids, true); }
+        Grid::auto_ptr_t sub(const refs_t& ids){ return sub(ids, true); }
 
         // Add a list of records to the subscription list and return their
         // current representation.  If checked is true and any one of the
@@ -41,11 +42,11 @@ namespace haystack {
         // row where every cell is null.
         // The Grid that is returned must contain metadata entries
         // for 'watchId' and 'lease'.
-        virtual Grid::auto_ptr_t sub(const Row::val_vec_t& ids, bool checked) = 0;
+        virtual Grid::auto_ptr_t sub(const refs_t& ids, bool checked) = 0;
 
         // Remove a list of records from watch.  Silently ignore
         // any invalid ids.
-        virtual void unsub(const Row::val_vec_t& ids) = 0;
+        virtual void unsub(const refs_t& ids) = 0;
 
         // Poll for any changes to the subscribed records.
         virtual Grid::auto_ptr_t poll_changes() = 0;

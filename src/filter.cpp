@@ -133,7 +133,7 @@ Path::auto_ptr_t Path::make(const std::string& path)
             throw std::runtime_error("Invalid path expr.");
         acc.push_back(n);
         if (path[dash + 1] != '>')
-            throw std::exception();
+            throw std::runtime_error("Missing '>' on de-ref.");
         s = dash + 2;
         dash = path.find('-', s);
         if (dash == path.npos)
@@ -160,7 +160,7 @@ std::string Path1::str() const { return m_name; }
 // PathN
 //////////////////////////////////////////////////////////////////////////
 
-PathN::PathN(const std::string& s, std::vector<std::string> v) : m_string(s), m_names(v) {}
+PathN::PathN(const std::string& s, const std::vector<std::string>& v) : m_string(s), m_names(v) {}
 size_t PathN::size() const { return m_names.size(); }
 std::string PathN::get(size_t i) const { return m_names[i]; }
 std::string PathN::str() const { return m_string; }

@@ -25,11 +25,11 @@ namespace haystack {
         // Define Val type enumeration for all types
         enum Type
         {
-            BIN_TYPE = 'b',
             BOOL_TYPE = 'B',
+            BIN_TYPE = 'b',
             COORD_TYPE = 'C',
-            DATE_TYPE = 'D',
             DATE_TIME_TYPE = 'd',
+            DATE_TYPE = 'D',
             MARKER_TYPE = 'M',
             NUM_TYPE = 'N',
             REF_TYPE = 'R',
@@ -47,7 +47,7 @@ namespace haystack {
 
         // Encode value to zinc format
         virtual const std::string to_zinc() const = 0;
-
+        // Return this Val type
         virtual const Type type() const = 0;
 
         virtual bool operator==(const Val &other) const = 0;
@@ -56,7 +56,7 @@ namespace haystack {
 
         // creates an auto_ptr pointer to the cloned Val
         virtual auto_ptr_t clone() const = 0;
-
+        // Check if this Val's Type is EMPTY_TYPE
         const bool is_empty() const { return type() == EMPTY_TYPE; }
     };
 

@@ -84,7 +84,7 @@ bool Num::operator ==(int other) const
     return value == other && unit == "";
 }
 
-bool Num::operator ==(int64_t other) const
+bool Num::operator ==(long long other) const
 {
     return value == other && unit == "";
 }

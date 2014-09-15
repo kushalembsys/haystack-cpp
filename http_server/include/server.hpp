@@ -7,9 +7,11 @@
 
 namespace haystack
 {
-    class Op;
-    class Uri;
     class Num;
+    class Op;
+    class DateTimeRange;
+    class HisItem;
+    class Uri;
 
     class const_proj_iterator
         : public boost::iterator_facade <
@@ -142,6 +144,55 @@ namespace haystack
         // Implementation hook for pointWrite
         virtual void on_point_write(const Dict& rec, int level, const Val& val, const std::string& who, const Num& dur) = 0;
 
+    public:
+        //////////////////////////////////////////////////////////////////////////
+        // History
+        //////////////////////////////////////////////////////////////////////////
+
+        // Read history time-series data for given record and time range. The
+        // items returned are exclusive of start time and inclusive of end time.
+        // Raise exception if id does not map to a record with the required tags
+        // "his" or "tz".  The range may be either a StrRange or a DateTimeRange.
+        // If DateTimeRange is passed then must match the timezone configured on
+        // the history record.  Otherwise if a StrRange is passed, it is resolved
+        // relative to the history record's timezone.
+        Grid::auto_ptr_t his_read(const Ref& id, const std::string& range);
+
+        // Write a set of history time-series data to the given point record.
+        // The record must already be defined and must be properly tagged as
+        // a historized point.  The timestamp timezone must exactly match the
+        // point's configured "tz" tag.  If duplicate or out-of-order items are
+        // inserted then they must be gracefully merged.
+        void his_write(const Ref& id, const std::vector<HisItem>& items);
+
+    protected:
+        // Implementation hook for hisRead.  The items must be exclusive
+        // of start and inclusive of end time.
+        virtual std::vector<HisItem> on_his_read(const Dict& rec, const DateTimeRange& range) = 0;
+
+        // Implementation hook for onHisWrite.
+        virtual void on_his_write(const Dict& rec, const std::vector<HisItem>& items) = 0;
+
+    public:
+        //////////////////////////////////////////////////////////////////////////
+        // Actions
+        //////////////////////////////////////////////////////////////////////////
+
+        // Invoke an action identified by id and action.
+        Grid::auto_ptr_t invoke_action(const Ref& id, const std::string& action, const Dict& args)
+        {
+            // lookup entity
+            Dict::auto_ptr_t rec = read_by_id(id);
+
+            // route to subclass
+            return on_invoke_action(*rec, action, args);
+        }
+
+     protected:
+        // Implementation hook for invokeAction
+         virtual Grid::auto_ptr_t on_invoke_action(const Dict& rec, const std::string& action, const Dict& args) = 0;
+
+    public:
         // Impl
 
         static const DateTime& boot_time();

@@ -44,7 +44,8 @@ namespace haystack
         virtual Grid::auto_ptr_t on_service(Server& db, const Grid& req);
 
     protected:
-        Row::val_vec_t grid_to_ids(const Server& db, const Grid& grid) const;
+        typedef boost::ptr_vector<Ref> refs_t;
+        refs_t grid_to_ids(const Server& db, const Grid& grid) const;
 
         Ref::auto_ptr_t val_to_id(const Server& db, const Val& val) const;
 
@@ -70,13 +71,19 @@ namespace haystack
         // Navigate tree structure of database.
         static const Op& nav;
         // Watch subscription.
-        static const Op& watchSub;
+        static const Op& watch_sub;
         // Watch unsubscription.
-        static const Op& watchUnsub;
+        static const Op& watch_unsub;
         // Watch poll cov or refresh.
-        static const Op& watchPoll;
+        static const Op& watch_poll;
         // Read/write writable point priority array.
-        static const Op& pointWrite;
+        static const Op& point_write;
+        // Read time series history data.
+        static const Op& his_read;
+        // Write time series history data.
+        static const Op& his_write;
+        // Invoke action.
+        static const Op& invoke_action;
 
         typedef std::map<std::string, const Op* const> ops_map_t;
         static const ops_map_t& ops_map();

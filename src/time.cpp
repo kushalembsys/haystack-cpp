@@ -37,6 +37,8 @@ const std::string Time::to_zinc() const
     return os.str();
 }
 
+const Time& Time::MIDNIGHT = *new Time(0, 0, 0);
+
 ////////////////////////////////////////////////
 // Equal
 ////////////////////////////////////////////////

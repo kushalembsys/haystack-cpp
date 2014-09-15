@@ -48,6 +48,9 @@ namespace haystack {
         // Encode as "hh:mm:ss.FFF"
         const std::string to_zinc() const;
 
+        // constants
+        static const Time& MIDNIGHT;
+
         // Equality
         bool operator ==(const Time &b) const;
         bool operator !=(const Time &b) const;

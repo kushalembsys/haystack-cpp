@@ -1,6 +1,5 @@
 #pragma once
 #include "val.hpp"
-
 //
 // Copyright (c) 2014, J2 Innovations
 // Copyright (c) 2012 Brian Frank
@@ -10,6 +9,9 @@
 //
 
 namespace haystack {
+    class DateTime;
+    class TimeZone;
+
     /*
      Date models a date (day in year) tag value.
 
@@ -49,11 +51,16 @@ namespace haystack {
 
         // Return day of week: Sunday is 1, Saturday is 7
         int weekday() const;
+        
+        //Convert this date into DateTime for midnight in given timezone.
+        std::auto_ptr<DateTime> midnight(const TimeZone& tz) const;
 
         // Return if given year a leap year
         static bool is_leap_year(int year);
         // Return number of days in given year (xxxx) and month (1-12)
         static int days_in_month(int year, int mon);
+        // Get Date for current time in default timezone.
+        static const Date today();
 
         // Equality
         bool operator ==(const Date &b) const;

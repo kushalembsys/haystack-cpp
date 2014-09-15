@@ -1,10 +1,15 @@
 #include "testproj.hpp"
 #include "dict.hpp"
+#include "bool.hpp"
 #include "marker.hpp"
 #include "num.hpp"
 #include "ref.hpp"
 #include "uri.hpp"
+#include "hisitem.hpp"
+#include "datetime.hpp"
+#include "datetimerange.hpp"
 #include "op.hpp"
+#include <iostream>
 #include <boost/scoped_ptr.hpp>
 //
 // Copyright (c) 2014, J2 Innovations
@@ -188,7 +193,47 @@ Grid::auto_ptr_t TestProj::on_point_write_array(const Dict& rec)
 
 void TestProj::on_point_write(const Dict& rec, int level, const Val& val, const std::string& who, const Num& dur)
 {
+    std::cout << "on_point_write" << rec.dis() << " " + val.to_string() << "@" << level << " [" << who << "]\n";
+}
 
+//////////////////////////////////////////////////////////////////////////
+// History
+//////////////////////////////////////////////////////////////////////////
+
+std::vector<HisItem> TestProj::on_his_read(const Dict& entity, const DateTimeRange& range)
+{
+    // generate dummy 15min data
+    std::vector<HisItem> acc;
+
+    DateTime::auto_ptr_t ts = range.start().clone();
+    bool isBool = entity.get_str("kind") == "Bool";
+    while ((DateTime&)*ts < range.end())
+    {
+        Val::auto_ptr_t val = isBool ?
+            Bool(acc.size() % 2 == 0).clone() :
+            Num((long long)acc.size()).clone();
+
+        HisItem item((DateTime&)*ts, *val);
+        if ((DateTime&)*ts != range.start())
+            acc.push_back(item);
+        ts = DateTime::make(((DateTime&)*ts).millis() + 15 * 60 * 1000).clone();
+    }
+    return acc;
+}
+
+void TestProj::on_his_write(const Dict& rec, const std::vector<HisItem>& items)
+{
+    throw std::runtime_error("Unsupported Op 'on_his_write'");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Actions
+//////////////////////////////////////////////////////////////////////////
+
+Grid::auto_ptr_t TestProj::on_invoke_action(const Dict& rec, const std::string& action, const Dict& args)
+{
+    std::cout<< "-- invokeAction \"" << rec.dis() << "." << action << "\" " << args.to_string() << "\n";
+    return Grid::auto_ptr_t();
 }
 
 //////////////////////////////////////////////////////////////////////////

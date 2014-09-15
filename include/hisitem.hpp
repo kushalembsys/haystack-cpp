@@ -1,5 +1,6 @@
 #pragma once
 #include "headers.hpp"
+#include "grid.hpp"
 #include <boost/shared_ptr.hpp>
 #include <vector>
 //
@@ -13,6 +14,7 @@
 namespace haystack {
     class DateTime;
     class Val;
+    class Dict;
     class Grid;
     /*
      HisItem is used to model a timestamp/value pair.
@@ -26,10 +28,16 @@ namespace haystack {
         boost::shared_ptr<const Val> val;
 
         HisItem(const HisItem&);
+        HisItem(const DateTime& ts, const Val& val);
         HisItem(boost::shared_ptr<const DateTime> ts, boost::shared_ptr<const Val> val);
 
         // Map Grid to HisItems.  Grid must have ts and val columns.
         static const std::vector<HisItem> grid_to_items(const Grid& grid);
+
+
+        // Convenience to build grid from array of HisItem
+        static Grid::auto_ptr_t his_items_to_grid(const Dict& meta, const std::vector<HisItem>& items);
+
     };
 
 };

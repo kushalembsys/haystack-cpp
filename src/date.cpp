@@ -6,6 +6,7 @@
 //   06 Jun 2011  Brian Frank  Creation
 //
 #include "date.hpp"
+#include "datetime.hpp"
 #include <sstream>
 #include <ctime>
 
@@ -89,6 +90,11 @@ int Date::weekday() const
     return loc_time->tm_wday + 1;
 }
 
+std::auto_ptr<DateTime> Date::midnight(const TimeZone& tz) const
+{
+    return std::auto_ptr<DateTime>(new DateTime(*this, Time::MIDNIGHT, tz));
+}
+
 bool Date::is_leap_year(int year)
 {
     if ((year & 3) != 0) return false;
@@ -98,6 +104,11 @@ bool Date::is_leap_year(int year)
 int Date::days_in_month(int year, int mon)
 {
     return is_leap_year(year) ? daysInMonLeap[mon] : daysInMon[mon];
+}
+
+const Date Date::today()
+{
+    return DateTime::now().date;
 }
 
 ////////////////////////////////////////////////

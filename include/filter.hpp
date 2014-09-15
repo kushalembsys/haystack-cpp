@@ -138,7 +138,7 @@ namespace haystack {
     class PathN : public Path
     {
         friend class Path;
-        PathN(const std::string& s, std::vector<std::string>);
+        PathN(const std::string& s, const std::vector<std::string>&);
         size_t size() const;
         std::string get(size_t i) const;
         std::string str() const;

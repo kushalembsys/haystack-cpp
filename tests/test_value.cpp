@@ -12,6 +12,7 @@
 #include "coord.hpp"
 #include "date.hpp"
 #include "datetime.hpp"
+#include "datetimerange.hpp"
 #include "marker.hpp"
 #include "num.hpp"
 #include "ref.hpp"
@@ -268,6 +269,99 @@ TEST_CASE("DateTime testcase", "[DateTime]")
     CHECK_THROWS(READ("2000-02-02T03:04:00-05:!0 New_York"));
     CHECK_THROWS(READ("2000-02-02T03:04:00-05:00"));
     CHECK_THROWS(READ("2000-02-02T03:04:00-05:00 @"));
+}
+
+void verifyRange(const DateTimeRange& r, const Date& start, const Date& end)
+{
+    CHECK(r.start().date == start);
+    CHECK(r.start().time == Time::MIDNIGHT);
+    CHECK(r.start().tz.name == "New_York");
+    CHECK(r.end().date == end.inc_days(1));
+    CHECK(r.end().time == Time::MIDNIGHT);
+    CHECK(r.end().tz.name == "New_York");
+}
+
+void verifyRange(const DateTimeRange& r, const DateTime& start, const DateTime& end)
+{
+    CHECK(r.start() == start);
+    CHECK(r.end() == end);
+}
+
+///////////////////////////////////////////////////////////
+// DateTimeRange
+///////////////////////////////////////////////////////////
+TEST_CASE("DateTimeRange testcase", "[DateTimeRange]")
+{
+    TimeZone ny("New_York");
+    const Date& today = Date::today();
+    const Date& yesterday = today.dec_days(1);
+    Date x(2011, 7, 4);
+    Date y(2011, 11, 4);
+    DateTime xa(x, Time(2, 30), ny);
+    DateTime xb(x, Time(22, 5), ny);
+
+    verifyRange(*DateTimeRange::make("today", ny), today, today);
+    verifyRange(*DateTimeRange::make("yesterday", ny), yesterday, yesterday);
+    verifyRange(*DateTimeRange::make("2011-07-04", ny), x, x);
+    verifyRange(*DateTimeRange::make("2011-07-04,2011-11-04", ny), x, y);
+    verifyRange(*DateTimeRange::make("" + xa.to_string() + "," + xb.to_string(), ny), xa, xb);
+
+
+    DateTimeRange::auto_ptr_t r = DateTimeRange::make(xb.to_string(), ny);
+    CHECK(r->start() == xb);
+    CHECK(r->end().date == today);
+    CHECK(r->end().tz == ny);
+
+    // this week
+    Val::auto_ptr_t sun(Date::today().clone());
+    Val::auto_ptr_t sat(Date::today().clone());
+    {
+        while (((Date&)*sun).weekday() > DateTimeRange::SUNDAY) sun = ((Date&)*sun).dec_days(1).clone();
+        while (((Date&)*sat).weekday() < DateTimeRange::SATURDAY) sat = ((Date&)*sat).inc_days(1).clone();
+        verifyRange(*DateTimeRange::this_week(ny), (Date&)*sun, (Date&)*sat);
+    }
+
+
+    // this month
+    Val::auto_ptr_t first = Date::today().clone();
+    Val::auto_ptr_t last = Date::today().clone();
+    {
+        while (((Date&)*first).day > 1)  first = ((Date&)*first).dec_days(1).clone();
+        while (((Date&)*last).day < Date::days_in_month(today.year, today.month)) last = ((Date&)*last).inc_days(1).clone();
+        verifyRange(*DateTimeRange::this_month(ny), (Date&)*first, (Date&)*last);
+    }
+
+    // this year
+    {
+        first = Date(today.year, 1, 1).clone();
+        last = Date(today.year, 12, 31).clone();
+        verifyRange(*DateTimeRange::this_year(ny), (Date&)*first, (Date&)*last);
+    }
+
+    // last week
+    {
+        const Date& prev = today.dec_days(7);
+        sun = prev.clone();
+        sat = prev.clone();
+        while (((Date&)*sun).weekday() > DateTimeRange::SUNDAY) sun = ((Date&)*sun).dec_days(1).clone();
+        while (((Date&)*sat).weekday() < DateTimeRange::SATURDAY) sat = ((Date&)*sat).inc_days(1).clone();
+        verifyRange(*DateTimeRange::last_week(ny), (Date&)*sun, (Date&)*sat);
+    }
+
+    // last month
+    {
+
+        last = Date::today().clone();
+        while (((Date&)*last).month == today.month) last = ((Date&)*last).dec_days(1).clone();
+        first = Date(((Date&)*last).year, ((Date&)*last).month, 1).clone();
+        verifyRange(*DateTimeRange::last_month(ny), (Date&)*first, (Date&)*last);
+    }
+    // last year
+    {
+        first = Date(today.year - 1, 1, 1).clone();
+        last = Date(today.year - 1, 12, 31).clone();
+        verifyRange(*DateTimeRange::last_year(ny), (Date&)*first, (Date&)*last);
+    }
 }
 
 ///////////////////////////////////////////////////////////
