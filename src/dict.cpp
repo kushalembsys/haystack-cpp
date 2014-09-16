@@ -165,19 +165,24 @@ bool Dict::operator != (const Dict &other) const
     return !(*this == other);
 }
 
+Dict& Dict::add(std::string name, Val::auto_ptr_t val)
+{
+    std::string k = name;
+    m_map.insert(k, val);
+    return *this;
+}
+
 Dict& Dict::add(std::string name, const Val* val)
 {
     std::string k = name;
-    Val* d = const_cast<Val*>(val);
-    m_map.insert(k, d);
+    m_map.insert(k, const_cast<Val*>(val));
     return *this;
 }
 
 Dict& Dict::add(std::string name, const Val& val)
 {
     std::string k = name;
-    Val* v = (Val*)val.clone().release();
-    m_map.insert(k, v);
+    m_map.insert(k, (Val*)val.clone().release());
     return *this;
 }
 

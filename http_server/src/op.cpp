@@ -9,9 +9,10 @@
 #include "datetimerange.hpp"
 #include "op.hpp"
 #include "hisitem.hpp"
-#include "str.hpp"
 #include "marker.hpp"
 #include "num.hpp"
+#include "str.hpp"
+#include "uri.hpp"
 #include "zincreader.hpp"
 #include "zincwriter.hpp"
 #include "server.hpp"
@@ -34,12 +35,21 @@ void Op::on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse
     // parse GET query parameters or POST body into grid
     Grid::auto_ptr_t reqGrid;
     const std::string& method = req.getMethod();
-    if (method == "GET")  reqGrid = get_to_grid(req);
-    if (method == "POST") reqGrid = post_to_grid(req, res);
-    // unhandeld request type
-    if (reqGrid.get() == NULL)
+    if (method == "GET")
+    {
+        reqGrid = get_to_grid(req);
+    }
+    else if (method == "POST")
+    {
+        reqGrid = post_to_grid(req, res);
+        if (reqGrid.get() == NULL)
+            return;
+    }
+    else
+    {
+        // unhandeld request type
         return;
-
+    }
     // send response
     res.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
     res.setContentType("text/zinc; charset=utf-8");
@@ -47,10 +57,19 @@ void Op::on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse
     std::ostream& ostr = res.send();
     ZincWriter w(ostr);
 
-    // route to onService(HServer, HGrid)
+    // route to on_service(Server& db, const Grid& req)
     try
     {
-        w.write_grid(*on_service(const_cast<Server&>(db), *reqGrid));
+        Grid::auto_ptr_t g;
+        if (reqGrid.get() != NULL)
+            g = on_service(const_cast<Server&>(db), *reqGrid);
+        else
+            g = on_service(const_cast<Server&>(db), Grid::EMPTY);
+
+        if (g.get() != NULL)
+            w.write_grid(*g);
+        else
+            w.write_grid(Grid::EMPTY);
     }
     catch (std::runtime_error& e)
     {
@@ -77,7 +96,7 @@ Op::refs_t Op::grid_to_ids(const Server& db, const Grid& grid) const
     return ids;
 }
 
-Ref::auto_ptr_t Op::val_to_id(const Server& db, const Val& val) const
+Val::auto_ptr_t Op::val_to_id(const Server& db, const Val& val) const
 {
     if (val.type() == Val::URI_TYPE)
     {
@@ -97,7 +116,7 @@ Grid::auto_ptr_t  Op::get_to_grid(HTTPServerRequest& req)
     HTMLForm form(req);
 
     if (form.empty())
-        return Grid::auto_ptr_t(new Grid);
+        return Grid::auto_ptr_t();
 
     NameValueCollection::ConstIterator it = form.begin();
     NameValueCollection::ConstIterator end = form.end();
@@ -118,7 +137,7 @@ Grid::auto_ptr_t  Op::get_to_grid(HTTPServerRequest& req)
             val = Str(val_str).clone();
         }
 
-        d.add(name, val.release());
+        d.add(name, val);
     }
 
     return Grid::make(d);
@@ -128,12 +147,14 @@ Grid::auto_ptr_t  Op::get_to_grid(HTTPServerRequest& req)
 Grid::auto_ptr_t Op::post_to_grid(HTTPServerRequest& req, HTTPServerResponse& res)
 {
     const std::string& mime = req.getContentType();
-    if (mime != "text/zinc")
+    if (mime.find("text/zinc") == mime.npos && mime.find("text/plain") == mime.npos)
+    {
         res.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_NOT_ACCEPTABLE, mime);
+        res.send();
+        return Grid::auto_ptr_t();
+    }
 
-    ZincReader r(req.stream());
-
-    return r.read_grid();
+    return ZincReader(req.stream()).read_grid();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -163,7 +184,7 @@ public:
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         Grid::auto_ptr_t g(new Grid);
-        // lazy init the response grid
+
         g->add_col("name");
         g->add_col("summary");
 
@@ -255,7 +276,10 @@ public:
         if (!req.is_empty())
         {
             const Val& val = req.row(0).get("navId", false);
-            if (val.type() == Val::STR_TYPE) nav_id = ((Str&)val).value;
+            if (val.type() == Val::STR_TYPE)
+                nav_id = val.as<Str>().value;
+            else if (val.type() == Val::URI_TYPE)
+                nav_id = val.as<Uri>().value;
         }
         return db.nav(nav_id);
     }
@@ -356,7 +380,7 @@ public:
         // get required point id
         if (req.is_empty()) throw std::runtime_error("Request has no rows");
         const Row& row = req.row(0);
-        Ref::auto_ptr_t id = val_to_id(db, row.get("id"));
+        Val::auto_ptr_t id = val_to_id(db, row.get("id"));
 
         // check for write
         if (row.has("level"))
@@ -365,10 +389,10 @@ public:
             const std::string& who = row.get_str("who"); // be nice to have user fallback
             const Val& val = row.get("val", false);
             const Num& dur = (Num&)row.get("duration", false);
-            db.point_write((Ref&)*id, level, val, who, dur);
+            db.point_write(id->as<Ref>(), level, val, who, dur);
         }
 
-        return db.point_write_array((Ref&)*id);
+        return db.point_write_array(id->as<Ref>());
     }
 };
 
@@ -385,7 +409,7 @@ public:
     {
         if (req.is_empty()) throw std::runtime_error("Request has no rows");
         const Row& row = req.row(0);
-        Ref::auto_ptr_t id = val_to_id(db, row.get("id"));
+        Val::auto_ptr_t id = val_to_id(db, row.get("id"));
 
         const std::string& r = row.get_str("range");
         return db.his_read((Ref&)*id, r);
@@ -404,10 +428,10 @@ public:
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         if (req.is_empty()) throw std::runtime_error("Request has no rows");
-        Ref::auto_ptr_t id = val_to_id(db, req.meta().get("id"));
+        Val::auto_ptr_t id = val_to_id(db, req.meta().get("id"));
 
         std::vector<HisItem> items = HisItem::grid_to_items(req);
-        db.his_write((Ref&)*id, items);
+        db.his_write(id->as<Ref>(), items);
 
         return Grid::auto_ptr_t();
     }
@@ -423,14 +447,14 @@ public:
     std::string summary() const { return "Invoke action on target entity"; }
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
-        Ref::auto_ptr_t id = val_to_id(db, req.meta().get("id"));
+        Val::auto_ptr_t id = val_to_id(db, req.meta().get("id"));
 
         const std::string& action = req.meta().get_str("action");
-        
-        if (req.num_rows() > 0) 
-            return db.invoke_action((Ref&)*id, action, req.row(0));
+
+        if (req.num_rows() > 0)
+            return db.invoke_action(id->as<Ref>(), action, req.row(0));
         else
-            return db.invoke_action((Ref&)*id, action, Dict::EMPTY);
+            return db.invoke_action(id->as<Ref>(), action, Dict::EMPTY);
     }
 };
 

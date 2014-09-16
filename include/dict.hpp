@@ -86,6 +86,9 @@ namespace haystack {
         double get_double(const std::string& name) const;
 
 
+        // Returns a dict with the value added, Val is owned by this dict
+        Dict& add(std::string name, Val::auto_ptr_t val);
+
         // Returns a dict with the value added, Val* is owned by this dict
         Dict& add(std::string name, const Val* val);
 

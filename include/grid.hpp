@@ -97,6 +97,7 @@ namespace haystack {
         static Grid::auto_ptr_t make(const std::vector<const Dict*>&);
         static Grid::auto_ptr_t make(const boost::ptr_vector<Dict>&);
 
+        static const Grid& EMPTY;
     private:
         // Add new row with values from the Dict; Dict column
         // should match this grid columns.

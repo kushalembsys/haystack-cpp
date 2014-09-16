@@ -81,7 +81,7 @@ Watch::shared_ptr Server::watch(const std::string& id, bool checked/* = true*/)
     Watch::shared_ptr w = on_watch(id);
     if (w.get() != NULL) return w;
     if (checked) throw std::runtime_error(id);
-    return Watch::shared_ptr();
+    return w;
 }
 
 //////////////////////////////////////////////////////////////////////////

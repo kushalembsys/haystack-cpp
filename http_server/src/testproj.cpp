@@ -1,3 +1,11 @@
+//
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
+// History:
+//   09 Sep 2014  Radu Racariu<radur@2inn.com> Ported to C++
+//   06 Jun 2011  Brian Frank  Creation
+//
+
 #include "testproj.hpp"
 #include "dict.hpp"
 #include "bool.hpp"
@@ -9,15 +17,19 @@
 #include "datetime.hpp"
 #include "datetimerange.hpp"
 #include "op.hpp"
+
 #include <iostream>
+
 #include <boost/scoped_ptr.hpp>
-//
-// Copyright (c) 2014, J2 Innovations
-// Copyright (c) 2012 Brian Frank
-// History:
-//   09 Sep 2014  Radu Racariu<radur@2inn.com> Ported to C++
-//   06 Jun 2011  Brian Frank  Creation
-//
+#include <boost/make_shared.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_real.hpp>
+#include <boost/random/variate_generator.hpp>
+
 #include "Poco/StringTokenizer.h"
 #include "Poco/Net/DNS.h"
 
@@ -35,7 +47,7 @@ TestProj::TestProj()
 
 const std::vector<const Op*>& TestProj::ops()
 {
-
+    // lazy init
     if (m_ops != NULL)
         return (std::vector<const Op*>&)*m_ops;
 
@@ -53,12 +65,13 @@ const std::vector<const Op*>& TestProj::ops()
 
 const Op* const TestProj::op(const std::string& name, bool checked) const
 {
-    std::map<std::string, const Op* const>::const_iterator it = StdOps::ops_map().find(name);
+    const StdOps::ops_map_t& o_map = StdOps::ops_map();
+    std::map<std::string, const Op* const>::const_iterator it = o_map.find(name);
 
-    if (checked && it == StdOps::ops_map().end())
+    if (checked && it == o_map.end())
         throw std::runtime_error("Unknown Op Name");
     else
-        return it == StdOps::ops_map().end() ? NULL : it->second;
+        return it != o_map.end() ? it->second : NULL;
 }
 
 const Dict& TestProj::on_about() const
@@ -145,17 +158,27 @@ Grid::auto_ptr_t TestProj::on_nav(const std::string& nav_id) const
 
 Watch::shared_ptr TestProj::on_watch_open(const std::string& dis)
 {
-    throw std::runtime_error("Unsuported op on_watch_open");
+    Watch::shared_ptr w = boost::make_shared<TestWatch>(*this, dis);
+
+    m_watches[w->id()] = w;
+
+    return w;
 }
 
 const std::vector<Watch::shared_ptr> TestProj::on_watches()
 {
-    throw std::runtime_error("Unsuported op on_watches");
+    std::vector<Watch::shared_ptr> v;
+    for (watches_t::const_iterator it = m_watches.begin(), e = m_watches.end(); it != e; ++it)
+    {
+        v.push_back(it->second);
+    }
+
+    return v;
 }
 
 Watch::shared_ptr TestProj::on_watch(const std::string& id)
 {
-    throw std::runtime_error("Unsuported op on_watch");
+    return  m_watches[id];
 }
 
 Dict::auto_ptr_t TestProj::on_nav_read_by_uri(const Uri& uri) const
@@ -207,16 +230,16 @@ std::vector<HisItem> TestProj::on_his_read(const Dict& entity, const DateTimeRan
 
     DateTime::auto_ptr_t ts = range.start().clone();
     bool isBool = entity.get_str("kind") == "Bool";
-    while ((DateTime&)*ts < range.end())
+    while (ts->as<DateTime>() < range.end())
     {
         Val::auto_ptr_t val = isBool ?
             Bool(acc.size() % 2 == 0).clone() :
             Num((long long)acc.size()).clone();
 
-        HisItem item((DateTime&)*ts, *val);
-        if ((DateTime&)*ts != range.start())
+        HisItem item(ts->as<DateTime>(), *val);
+        if (ts->as<DateTime>() != range.start())
             acc.push_back(item);
-        ts = DateTime::make(((DateTime&)*ts).millis() + 15 * 60 * 1000).clone();
+        ts = DateTime::make(ts->as<DateTime>().millis() + 15 * 60 * 1000).clone();
     }
     return acc;
 }
@@ -232,7 +255,7 @@ void TestProj::on_his_write(const Dict& rec, const std::vector<HisItem>& items)
 
 Grid::auto_ptr_t TestProj::on_invoke_action(const Dict& rec, const std::string& action, const Dict& args)
 {
-    std::cout<< "-- invokeAction \"" << rec.dis() << "." << action << "\" " << args.to_string() << "\n";
+    std::cout << "-- invokeAction \"" << rec.dis() << "." << action << "\" " << args.to_string() << "\n";
     return Grid::auto_ptr_t();
 }
 
@@ -331,3 +354,121 @@ std::vector<const Op*>* TestProj::m_ops = NULL;
 
 Server::const_iterator TestProj::begin() const { return const_iterator(m_recs.begin()); }
 Server::const_iterator TestProj::end() const { return const_iterator(m_recs.end()); }
+
+//////////////////////////////////////////////////////////////////////////
+// TestWatch Impl
+//////////////////////////////////////////////////////////////////////////
+
+TestWatch::TestWatch(const TestProj& server, const std::string& dis) :
+m_server(server),
+m_uuid(boost::lexical_cast<std::string>(boost::uuids::random_generator()())),
+m_dis(dis),
+m_lease((size_t)-1),
+m_is_open(false){}
+
+const std::string TestWatch::id() const
+{
+    return m_uuid;
+}
+
+const std::string TestWatch::dis() const
+{
+    return m_dis;
+}
+
+const size_t TestWatch::lease() const
+{
+    return m_lease;
+}
+
+Grid::auto_ptr_t TestWatch::sub(const refs_t& ids, bool checked)
+{
+    m_ids = ids;
+
+    const TestProj::recs_t& recs = m_server.m_recs;
+
+    std::vector<const Dict*> res;
+
+    for (refs_t::iterator id = m_ids.begin(), e = m_ids.end(); id != e; ++id)
+    {
+        TestProj::recs_t::const_iterator rec = recs.find(id->value);
+
+        if (rec == recs.end())
+        {
+            m_ids.erase(id, id);
+
+            if (checked)
+                throw std::runtime_error("Id not found: " + id->value);
+
+            continue;
+        }
+
+        res.push_back(rec->second);
+    }
+
+    m_is_open = true;
+
+    Grid::auto_ptr_t g = Grid::make(res);
+    g->meta().add("watchId", m_uuid).add("lease", m_lease);
+
+    return g;
+}
+
+void TestWatch::unsub(const refs_t& ids)
+{
+    for (refs_t::iterator id = m_ids.begin(), e = m_ids.end(); id != e; ++id)
+    {
+        if (std::find(ids.begin(), ids.end(), *id) != ids.end())
+        {
+            m_ids.erase(id, id);
+        }
+    }
+}
+
+Grid::auto_ptr_t TestWatch::poll_changes()
+{
+    return poll_refresh();
+}
+
+Grid::auto_ptr_t TestWatch::poll_refresh()
+{
+    const TestProj::recs_t& recs = m_server.m_recs;
+    boost::ptr_vector<Dict> res;
+
+    boost::mt19937 rng(static_cast<uint32_t>(time(NULL)));
+    boost::uniform_real<> range(0.0, 100.0);
+    boost::variate_generator<boost::mt19937&, boost::uniform_real<> > gen(rng, range);
+
+    for (refs_t::iterator id = m_ids.begin(), e = m_ids.end(); id != e; ++id)
+    {
+        TestProj::recs_t::const_iterator rec = recs.find(id->value);
+        Dict::auto_ptr_t row(new Dict);
+        // clone the record
+        row->add(*rec->second);
+        // add the cur value
+        if (rec->second->get_str("kind") == "Number")
+        {
+            row->add("curVal", Num(gen()));
+        }
+        else if (rec->second->get_str("kind") == "Bool")
+        {
+            row->add("curVal", Bool((((int)gen()) % 2 == 0 ? true : false)));
+        }
+
+        res.push_back(row);
+    }
+
+    Grid::auto_ptr_t g = Grid::make(res);
+    g->meta().add("watchId", m_uuid).add("lease", m_lease);
+    return g;
+}
+
+void TestWatch::close()
+{
+    m_is_open = false;
+}
+
+bool TestWatch::is_open() const
+{
+    return m_is_open;
+}

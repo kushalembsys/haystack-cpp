@@ -47,7 +47,7 @@ namespace haystack
         typedef boost::ptr_vector<Ref> refs_t;
         refs_t grid_to_ids(const Server& db, const Grid& grid) const;
 
-        Ref::auto_ptr_t val_to_id(const Server& db, const Val& val) const;
+        Val::auto_ptr_t val_to_id(const Server& db, const Val& val) const;
 
     private:
         // Map the GET query parameters to grid with one row

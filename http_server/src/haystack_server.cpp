@@ -235,6 +235,7 @@ protected:
             HTTPServer srv(new HaystackRequestHandlerFactory(proj), svs, pParams);
             // start the HTTPServer
             srv.start();
+            std::cout << "Haystack++ HTTP Demo Server running... \n";
             // wait for CTRL-C or kill
             waitForTerminationRequest();
             // Stop the HTTPServer

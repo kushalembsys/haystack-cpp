@@ -159,6 +159,7 @@ Grid::auto_ptr_t Grid::make_err(const std::runtime_error& e)
 Grid::auto_ptr_t Grid::make(const Dict& d)
 {
     auto_ptr_t g(new Grid());
+
     if (d.is_empty())
         return g;
 
@@ -238,3 +239,5 @@ Grid::auto_ptr_t Grid::make(const boost::ptr_vector<Dict>& dicts)
 
     return g;
 }
+
+const Grid& Grid::EMPTY = *new Grid;

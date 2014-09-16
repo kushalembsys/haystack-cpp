@@ -39,7 +39,7 @@ namespace haystack {
             EMPTY_TYPE = '|'
         };
 
-        typedef std::auto_ptr<const Val> auto_ptr_t;
+        typedef std::auto_ptr<Val> auto_ptr_t;
 
         virtual ~Val() {};
         // String format is for human consumption only
@@ -53,6 +53,10 @@ namespace haystack {
         virtual bool operator==(const Val &other) const = 0;
         virtual bool operator > (const Val &other) const = 0;
         virtual bool operator < (const Val &other) const = 0;
+
+        //Converts to a concrete type
+        template<class Type>
+        inline const Type& as() const { return static_cast<const Type&>(*this); }
 
         // creates an auto_ptr pointer to the cloned Val
         virtual auto_ptr_t clone() const = 0;
