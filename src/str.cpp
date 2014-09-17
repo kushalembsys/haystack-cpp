@@ -8,6 +8,7 @@
 #include "str.hpp"
 #include <sstream>
 #include <iomanip>
+#include <stdint.h>
 
 ////////////////////////////////////////////////
 // Str
@@ -40,8 +41,8 @@ const std::string Str::to_zinc() const
 
     for (std::string::const_iterator it = value.begin(), end = value.end(); it != end; ++it)
     {
-        int c = *it & 0xFF;
-        if (c < ' ' || c > 127 || c == '"' || c == '\\')
+        int32_t c = *it & 0xFF;
+        if (c < ' ' || c == '"' || c == '\\')
         {
             os << '\\';
             switch (c)
@@ -55,8 +56,8 @@ const std::string Str::to_zinc() const
                 os << 'u' << '0' << '0';
                 if (c <= 0xf)
                     os << '0';
-                os << std::hex << std::setprecision(4) << std::uppercase << c
-                    << std::nouppercase << std::setprecision(0) << std::dec;
+                os << std::hex << std::uppercase << c
+                    << std::nouppercase << std::dec;
             }
         }
         else

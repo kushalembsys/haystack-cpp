@@ -21,19 +21,14 @@ namespace haystack {
     {
         friend class Grid;
         friend class Row;
-        //////////////////////////////////////////////////////////////////////////
-        // Fields
-        //////////////////////////////////////////////////////////////////////////
-        const size_t _index;
-        const std::string _name;
-        const std::auto_ptr<Dict> _meta;
 
         //////////////////////////////////////////////////////////////////////////
         // Constructor
         //////////////////////////////////////////////////////////////////////////
 
         // Private constructor
-        Col(size_t index, const std::string& name, std::auto_ptr<Dict> meta) : _index(index), _name(name), _meta(meta){}
+        Col(size_t index, const std::string& name, std::auto_ptr<Dict> meta) :
+            m_index(index), m_name(name), m_meta(meta){}
 
     public:
         //////////////////////////////////////////////////////////////////////////
@@ -52,5 +47,12 @@ namespace haystack {
         // Equality is name and meta
         bool operator== (const Col& that);
         bool operator!= (const Col& that);
+
+        //////////////////////////////////////////////////////////////////////////
+        // Fields
+        //////////////////////////////////////////////////////////////////////////
+        const size_t m_index;
+        const std::string m_name;
+        const std::auto_ptr<Dict> m_meta;
     };
 };

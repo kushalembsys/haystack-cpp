@@ -313,9 +313,9 @@ void TestProj::add_ahu(Dict& site, const std::string& dis)
     add_point(*equip, dis + "-Fan", "", "discharge air fan cmd");
     add_point(*equip, dis + "-Cool", "", "cool cmd");
     add_point(*equip, dis + "-Heat", "", "heat cmd");
-    add_point(*equip, dis + "-DTemp", "\u00B0F", "discharge air temp sensor");
-    add_point(*equip, dis + "-RTemp", "\u00B0F", "return air temp sensor");
-    add_point(*equip, dis + "-ZoneSP", "\u00B0F", "zone air temp sp writable");
+    add_point(*equip, dis + "-DTemp", "\xE2\x84\x89", "discharge air temp sensor");
+    add_point(*equip, dis + "-RTemp", "\xE2\x84\x89", "return air temp sensor");
+    add_point(*equip, dis + "-ZoneSP", "\xE2\x84\x89", "zone air temp sp writable");
 
     std::string k = dis;
     m_recs.insert(k, equip);

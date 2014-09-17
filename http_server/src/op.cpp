@@ -61,6 +61,7 @@ void Op::on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse
     try
     {
         Grid::auto_ptr_t g;
+        
         if (reqGrid.get() != NULL)
             g = on_service(const_cast<Server&>(db), *reqGrid);
         else

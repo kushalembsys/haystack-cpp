@@ -90,7 +90,7 @@ std::auto_ptr<Grid> ZincReader::read_grid()
             if (m_cur != ',' && m_cur != '\n')
             {
                 // ownership transfered to cells vector
-                (cells.get())[i] = (Val*) read_val().release();
+                (cells.get())[i] = (Val*)read_val().release();
             }
             else
                 (cells.get())[i] = NULL;
@@ -463,6 +463,34 @@ Val::auto_ptr_t ZincReader::read_str_val()
     return Val::auto_ptr_t(new Str(read_str_literal()));
 }
 
+inline void utf8_encode(const int32_t code_point, std::stringstream& ss)
+{
+    if (code_point <= 0x7F)
+    {
+        ss << (char)code_point;
+    }
+    else if (code_point >= 0x80 && code_point <= 0x7FF)
+    {
+        ss << (char)((code_point >> 6) | 0xC0)
+            << (char)((code_point & 0x3F) | 0x80);
+    }
+    else if (code_point >= 0x800 && code_point <= 0xFFFF)
+    {
+        ss << (char)((code_point >> 12) | 0xE0)
+            << (char)(((code_point >> 6) & 0x3F) | 0x80)
+            << (char)((code_point & 0x3F) | 0x80);
+    }
+    else if (code_point >= 0x10000 && code_point <= 0x1FFFFF)
+    {
+        ss << (char)((code_point >> 18) | 0xF0)
+            << (char)(((code_point >> 12) & 0x3F) | 0x80)
+            << (char)(((code_point >> 6) & 0x3F) | 0x80)
+            << (char)((code_point & 0x3F) | 0x80);
+    }
+
+}
+
+
 std::string ZincReader::read_str_literal()
 {
     consume(); // opening quote
@@ -473,7 +501,7 @@ std::string ZincReader::read_str_literal()
         if (m_cur == '\n' || m_cur == '\r') throw std::runtime_error("Unexpected newline in str literal");
         if (m_cur == '\\')
         {
-            s << (char)read_esc_char();
+            utf8_encode(read_esc_char(), s);
         }
         else
         {
@@ -506,10 +534,10 @@ int32_t ZincReader::read_esc_char()
     if (m_cur == 'u')
     {
         consume();
-        int n3 = to_nibble(m_cur); consume();
-        int n2 = to_nibble(m_cur); consume();
-        int n1 = to_nibble(m_cur); consume();
-        int n0 = to_nibble(m_cur); consume();
+        int32_t n3 = to_nibble(m_cur); consume();
+        int32_t n2 = to_nibble(m_cur); consume();
+        int32_t n1 = to_nibble(m_cur); consume();
+        int32_t n0 = to_nibble(m_cur); consume();
         return (n3 << 12) | (n2 << 8) | (n1 << 4) | (n0);
     }
 

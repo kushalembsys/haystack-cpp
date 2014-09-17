@@ -496,8 +496,12 @@ TEST_CASE("String testcase", "[Str]")
 
     // encoding
     VERIFY_ZINC(Str("hello"), "\"hello\"");
-    VERIFY_ZINC(Str("_ \\ \" \n \r \t \x00A0 _"), "\"_ \\\\ \\\" \\n \\r \\t \\u00A0 _\"");
-    VERIFY_ZINC(Str("\x00A0"), "\"\\u00A0\"");
+    VERIFY_ZINC(Str("_ \\ \" \n \r \t \x11 _"), "\"_ \\\\ \\\" \\n \\r \\t \\u0011 _\"");
+    VERIFY_ZINC(Str("\xE0\xAA\xBC"), "\"\xE0\xAA\xBC\"");
+
+    // hex upper and lower case
+    CHECK(*READ("\"[\\uabcd \\u1234]\"") == Str("[\xea\xaf\x8d \xe1\x88\xb4]"));
+    CHECK(*READ("\"[\\uABCD \\u1234]\"") == Str("[\xea\xaf\x8d \xe1\x88\xb4]"));
 
     CHECK_THROWS(READ("\"end..."));
     CHECK_THROWS(READ("\"end...\n\""));

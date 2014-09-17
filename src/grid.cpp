@@ -84,7 +84,7 @@ Dict& Grid::add_col(const std::string& name)
     if (m_cols_by_name.find(name) != m_cols_by_name.end())
         throw std::runtime_error("Duplicate col name: ");
 
-    size_t index = m_cols.size();
+    const size_t index = m_cols.size();
 
     // col is owned by m_cols vector
     Col* col = new Col(index, name, std::auto_ptr<Dict>(new Dict()));

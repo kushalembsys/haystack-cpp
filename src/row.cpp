@@ -24,9 +24,9 @@ const size_t Row::size() const { return m_grid.num_cols(); }
 const Val& Row::get(const std::string& name, bool checked) const
 {
     const Col* col = m_grid.col(name, false);
-    if (col != NULL && !m_cells->is_null(col->_index))
+    if (col != NULL && !m_cells->is_null(col->m_index))
     {
-        const Val& val = ((*m_cells)[col->_index]);
+        const Val& val = ((*m_cells)[col->m_index]);
         if (!val.is_empty()) return val;
     }
     if (checked)throw std::runtime_error("Column not found: " + name);
@@ -37,9 +37,9 @@ const Val& Row::get(const std::string& name, bool checked) const
 const std::string Row::get_string(const std::string& name) const
 {
     const Col* col = m_grid.col(name);
-    if (col != NULL && !m_cells->is_null(col->_index))
+    if (col != NULL && !m_cells->is_null(col->m_index))
     {
-        const Str* val = (Str*)&(*m_cells)[col->_index];
+        const Str* val = (Str*)&(*m_cells)[col->m_index];
         if (!val->is_empty() && val->type() == Val::STR_TYPE)
             return val->value;
     }
@@ -50,9 +50,9 @@ const std::string Row::get_string(const std::string& name) const
 const double Row::get_double(const std::string& name) const
 {
     const Col* col = m_grid.col(name);
-    if (col != NULL && !m_cells->is_null(col->_index))
+    if (col != NULL && !m_cells->is_null(col->m_index))
     {
-        const Num* val = (Num*)&(*m_cells)[col->_index];
+        const Num* val = (Num*)&(*m_cells)[col->m_index];
         if (!val->is_empty() && val->type() == Val::NUM_TYPE) return val->value;
     }
     throw std::runtime_error("Column not found: " + name);
@@ -61,8 +61,8 @@ const double Row::get_double(const std::string& name) const
 // Get a cell by column.
 const Val& Row::get(const Col& col) const
 {
-    if (col._index < m_cells->size() && !m_cells->is_null(col._index))
-        return ((*m_cells)[col._index]);
+    if (col.m_index < m_cells->size() && !m_cells->is_null(col.m_index))
+        return ((*m_cells)[col.m_index]);
 
     return EmptyVal::DEF;
 }
