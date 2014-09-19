@@ -96,7 +96,7 @@ public:
         Application& app = Application::instance();
 
         const std::string path = Poco::URI(request.getURI()).getPath();
-        app.logger().information("Request: " + path + " from: " + request.clientAddress().toString());
+        app.logger().information("Request: [" + request.getMethod() + "] " + path + " from: " + request.clientAddress().toString());
 
         if (path == "" || path == "/")
         {
@@ -146,7 +146,7 @@ public:
         Application& app = Application::instance();
 
         std::string path = Poco::URI(request().getURI()).getPath();
-        app.logger().information("Request: " + path + " from: " + request().clientAddress().toString());
+        app.logger().information("Request: [" + request().getMethod() + "] " + path + " from: " + request().clientAddress().toString());
 
         if (path == "/auth" || path == "/auth/")
         {

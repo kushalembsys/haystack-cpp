@@ -39,7 +39,7 @@ using namespace haystack;
 
 
 
-TestProj::TestProj() : m_timer(1000, 1 * 60 * 100) // once a minute
+TestProj::TestProj() : m_timer(1000, 1 * 60 * 1000) // once a minute
 {
     add_site("A", "Richmond", "VA", 1000);
     add_site("B", "Richmond", "VA", 2000);
@@ -395,7 +395,7 @@ void TestProj::on_timer(Poco::Timer& timer)
         for (std::vector<Watch::shared_ptr>::const_iterator it = del.begin(), e = del.end(); it != e; ++it)
         {
             watches_t::iterator pos = m_watches.find((**it).id());
-            m_watches.erase(pos, pos);
+            m_watches.erase(pos);
         }
     }
 
@@ -461,7 +461,7 @@ Grid::auto_ptr_t TestWatch::sub(const refs_t& ids, bool checked)
 
         if (rec == recs.end())
         {
-            m_ids.erase(id, id);
+            m_ids.erase(id);
 
             if (checked)
                 throw std::runtime_error("Id not found: " + id->value);
@@ -487,7 +487,7 @@ void TestWatch::unsub(const refs_t& ids)
     {
         if (std::find(ids.begin(), ids.end(), *id) != ids.end())
         {
-            m_ids.erase(id, id);
+            m_ids.erase(id);
         }
     }
 }

@@ -64,6 +64,14 @@ std::auto_ptr<Grid> ZincReader::read_grid()
     read_ver();
     read_meta(g->meta());
     consume_new_line();
+    
+    // empty grid
+    if (m_cur == '\n')
+    {
+        consume_new_line();
+        if (m_cur == '\n') consume_new_line();
+        return g;
+    }
 
     // read cols
     size_t numCols = 0;
@@ -736,4 +744,4 @@ bool ZincReader::is_alpha(int c)   { return c > 0 && c < 128 && (charType[c] & A
 bool ZincReader::is_unit(int c)    { return c > 0 && (c >= 128 || (charType[c] & UNIT) != 0); }
 bool ZincReader::is_tz(int c)      { return c > 0 && c < 128 && (charType[c] & TZ) != 0; }
 bool ZincReader::is_id_start(int c) { return c > 0 && c < 128 && (charType[c] & ID_START) != 0; }
-bool ZincReader::is_id(int c)      { return c > 0 && c < 128 && (charType[c] & ID) != 0; } 
+bool ZincReader::is_id(int c)      { return c > 0 && c < 128 && (charType[c] & ID) != 0; }

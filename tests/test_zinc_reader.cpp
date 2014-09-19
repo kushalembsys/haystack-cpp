@@ -70,6 +70,14 @@ void verifyGrid(const std::string& s, const Grid& e)
 
 TEST_CASE("ZincReader", "[ZincReader]")
 {
+    SECTION("Grid verifyEmpty")
+    {
+        std::string zg = ZincWriter::grid_to_string(Grid::EMPTY);
+        Grid::auto_ptr_t eg = ZincReader::make(zg)->read_grid();
+
+        CHECK(eg->is_empty());
+    }
+
     SECTION("Grid verifyCol")
     {
         Grid e;

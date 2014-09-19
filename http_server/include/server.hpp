@@ -5,6 +5,14 @@
 #include "proj.hpp"
 #include "watch.hpp"
 
+//
+// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2012 Brian Frank
+// History:
+//   08 Sep 2014  Radu Racariu<radur@2inn.com> Ported to C++
+//   06 Jun 2011  Brian Frank  Creation
+//
+
 namespace haystack
 {
     class Num;
