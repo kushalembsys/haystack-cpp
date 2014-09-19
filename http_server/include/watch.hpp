@@ -29,8 +29,8 @@ namespace haystack {
         // Debug display string used during "Proj.watch_open"
         virtual const std::string dis() const = 0;
 
-        // Lease period or -size_t if watch has not been opened yet.
-        virtual const size_t lease() const = 0;
+        // Lease period or int::min if watch has not been opened yet.
+        virtual const int lease() const = 0;
 
         // Add a list of records to the subscription list and return their
         // current representation.  If checked is true and any one of the

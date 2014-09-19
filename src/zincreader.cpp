@@ -669,7 +669,7 @@ Filter::shared_ptr_t ZincReader::read_filter_parens()
     consume();
     skip_space();
     Filter::shared_ptr_t q = read_filter_or();
-    if (m_cur != ')') std::runtime_error("Expecting ')'");
+    if (m_cur != ')') throw std::runtime_error("Expecting ')'");
     consume();
     return q;
 }
@@ -736,4 +736,4 @@ bool ZincReader::is_alpha(int c)   { return c > 0 && c < 128 && (charType[c] & A
 bool ZincReader::is_unit(int c)    { return c > 0 && (c >= 128 || (charType[c] & UNIT) != 0); }
 bool ZincReader::is_tz(int c)      { return c > 0 && c < 128 && (charType[c] & TZ) != 0; }
 bool ZincReader::is_id_start(int c) { return c > 0 && c < 128 && (charType[c] & ID_START) != 0; }
-bool ZincReader::is_id(int c)      { return c > 0 && c < 128 && (charType[c] & ID) != 0; }
+bool ZincReader::is_id(int c)      { return c > 0 && c < 128 && (charType[c] & ID) != 0; } 

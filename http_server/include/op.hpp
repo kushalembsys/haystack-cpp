@@ -31,10 +31,10 @@ namespace haystack
     public:
 
         // Programatic name of the operation.
-        virtual std::string name() const = 0;
+        virtual const std::string name() const = 0;
 
         // Short one line summary of what the operation does.
-        virtual std::string summary() const = 0;
+        virtual const std::string summary() const = 0;
 
         // Service the request and return response.
         // This method routes to "onService(HServer,HGrid)".
@@ -76,6 +76,8 @@ namespace haystack
         static const Op& watch_unsub;
         // Watch poll cov or refresh.
         static const Op& watch_poll;
+        // List all Watches.
+        static const Op& watch_list;
         // Read/write writable point priority array.
         static const Op& point_write;
         // Read time series history data.

@@ -37,6 +37,7 @@
 
 #include "Poco/Net/HTTPServer.h"
 #include "Poco/Net/HTTPRequestHandler.h"
+#include "Poco/Net/AbstractHTTPRequestHandler.h"
 #include "Poco/Net/HTTPRequestHandlerFactory.h"
 #include "Poco/Net/HTTPServerParams.h"
 #include "Poco/Net/HTTPServerRequest.h"
@@ -56,6 +57,8 @@
 #include "Poco/URI.h"
 
 #include <iostream>
+
+#include <boost/algorithm/string.hpp>
 
 // haystack includes
 #include "testproj.hpp"
@@ -91,7 +94,7 @@ public:
     void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
     {
         Application& app = Application::instance();
-        
+
         const std::string path = Poco::URI(request.getURI()).getPath();
         app.logger().information("Request: " + path + " from: " + request.clientAddress().toString());
 
@@ -106,6 +109,7 @@ public:
             slash = path.size();
 
         response.setChunkedTransferEncoding(true);
+        
         std::string op_name = path.substr(1, slash);
 
         haystack::Op* op = (haystack::Op*)_proj.op(op_name, false);
@@ -124,6 +128,80 @@ private:
     const haystack::TestProj& _proj;
 };
 
+class AuthRequestHandler : public Poco::Net::AbstractHTTPRequestHandler
+    /// Handle the /auth request.
+    /// A HTTP Basic Auth sample.
+{
+public:
+    AuthRequestHandler(const haystack::TestProj& proj) :
+        m_proj(proj){}
+
+    void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
+    {
+        AbstractHTTPRequestHandler::handleRequest(request, response);
+    }
+
+    void run()
+    {
+        Application& app = Application::instance();
+
+        std::string path = Poco::URI(request().getURI()).getPath();
+        app.logger().information("Request: " + path + " from: " + request().clientAddress().toString());
+
+        if (path == "/auth" || path == "/auth/")
+        {
+            response().redirect("/auth/about");
+            return;
+        }
+
+        path = path.substr(path.find("/auth/") + 6 );
+
+        size_t slash = path.find('/');
+        if (slash == path.npos)
+            slash = path.size();
+
+        response().setChunkedTransferEncoding(true);
+        std::string op_name = path.substr(0, slash);
+
+        haystack::Op* op = (haystack::Op*)m_proj.op(op_name, false);
+        if (op == NULL)
+        {
+            this->sendErrorResponse(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "Operation '" + op_name + "' not defined");
+            return;
+        }
+
+        //Timestamp now;
+        op->on_service(m_proj, request(), response());
+    }
+
+    bool authenticate()
+    {
+        // basic example
+        if (request().hasCredentials())
+        {
+            std::string scheme;
+            std::string authinfo;
+            request().getCredentials(scheme, authinfo);
+            // u: demo
+            // p: demo
+            if (scheme == "Basic" && authinfo == "ZGVtbzpkZW1v")
+            {
+                return true;
+            }
+            else
+            {
+                response().requireAuthentication("/auth");
+                return false;
+            }
+        }
+        response().requireAuthentication("/auth");
+        return false;
+    }
+
+private:
+    const haystack::TestProj& m_proj;
+};
+
 
 class HaystackRequestHandlerFactory : public HTTPRequestHandlerFactory
 {
@@ -135,7 +213,12 @@ public:
 
     HTTPRequestHandler* createRequestHandler(const HTTPServerRequest& request)
     {
-        return new HaystackRequestHandler(_proj);
+        const std::string path = Poco::URI(request.getURI()).getPath();
+
+        if (boost::starts_with(path, "/auth"))
+            return new AuthRequestHandler(_proj);
+        else 
+            return new HaystackRequestHandler(_proj);
     }
 
 private:
@@ -206,7 +289,7 @@ protected:
         HelpFormatter helpFormatter(options());
         helpFormatter.setCommand(commandName());
         helpFormatter.setUsage("OPTIONS");
-        helpFormatter.setHeader("A sample haystack server implementation.");
+        helpFormatter.setHeader("A sample Haystack Server implementation.");
         helpFormatter.format(std::cout);
     }
 
@@ -227,6 +310,7 @@ protected:
             HTTPServerParams* pParams = new HTTPServerParams;
             pParams->setMaxQueued(maxQueued);
             pParams->setMaxThreads(maxThreads);
+            pParams->setKeepAlive(true);
 
             // set-up a server socket
             ServerSocket svs(port);

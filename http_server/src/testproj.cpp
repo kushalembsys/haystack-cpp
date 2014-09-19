@@ -30,19 +30,24 @@
 #include <boost/random/uniform_real.hpp>
 #include <boost/random/variate_generator.hpp>
 
-#include "Poco/StringTokenizer.h"
-#include "Poco/Net/DNS.h"
+#include <Poco/StringTokenizer.h>
+#include <Poco/Net/DNS.h>
 
 #include <stdio.h>
 
 using namespace haystack;
 
-TestProj::TestProj()
+
+
+TestProj::TestProj() : m_timer(1000, 1 * 60 * 100) // once a minute
 {
     add_site("A", "Richmond", "VA", 1000);
     add_site("B", "Richmond", "VA", 2000);
     add_site("C", "Washington", "DC", 3000);
     add_site("D", "Boston", "MA", 4000);
+
+    Poco::TimerCallback<TestProj> callback(*this, &TestProj::on_timer);
+    m_timer.start(callback);
 }
 
 const std::vector<const Op*>& TestProj::ops()
@@ -155,12 +160,14 @@ Grid::auto_ptr_t TestProj::on_nav(const std::string& nav_id) const
 // Watches
 //////////////////////////////////////////////////////////////////////////
 
-
 Watch::shared_ptr TestProj::on_watch_open(const std::string& dis)
 {
     Watch::shared_ptr w = boost::make_shared<TestWatch>(*this, dis);
 
-    m_watches[w->id()] = w;
+    {
+        Poco::ScopedWriteRWLock l(m_lock);
+        m_watches[w->id()] = w;
+    }
 
     return w;
 }
@@ -168,9 +175,13 @@ Watch::shared_ptr TestProj::on_watch_open(const std::string& dis)
 const std::vector<Watch::shared_ptr> TestProj::on_watches()
 {
     std::vector<Watch::shared_ptr> v;
-    for (watches_t::const_iterator it = m_watches.begin(), e = m_watches.end(); it != e; ++it)
+
     {
-        v.push_back(it->second);
+        Poco::ScopedReadRWLock l(m_lock);
+        for (watches_t::const_iterator it = m_watches.begin(), e = m_watches.end(); it != e; ++it)
+        {
+            v.push_back(it->second);
+        }
     }
 
     return v;
@@ -178,7 +189,12 @@ const std::vector<Watch::shared_ptr> TestProj::on_watches()
 
 Watch::shared_ptr TestProj::on_watch(const std::string& id)
 {
-    return  m_watches[id];
+    Watch::shared_ptr w;
+    {
+        Poco::ScopedReadRWLock l(m_lock);
+        w = m_watches[id];
+    }
+    return  w;
 }
 
 Dict::auto_ptr_t TestProj::on_nav_read_by_uri(const Uri& uri) const
@@ -345,6 +361,46 @@ void TestProj::add_point(Dict& equip, const std::string& dis, const std::string&
     m_recs.insert(k, d.release());
 }
 
+void TestProj::on_timer(Poco::Timer& timer)
+{
+    std::vector<Watch::shared_ptr> del;
+    // detect garbage watches
+    {
+        Poco::ScopedReadRWLock l(m_lock);
+        for (watches_t::const_iterator it = m_watches.begin(), e = m_watches.end(); it != e; ++it)
+        {
+            TestWatch& w = (TestWatch&)*it->second.get();
+
+            if (w.is_open() && w.lease() > 0)
+            {
+                int lease = w.lease();
+                lease -= 1 * 60;
+                w.lease(lease);
+                // mark for delete
+                if (lease < 0)
+                    del.push_back(it->second);
+            }
+
+            if (!w.is_open() && w.lease() > 0)
+            {
+                del.push_back(it->second);
+            }
+
+        }
+    }
+
+    if (!del.empty())
+    {
+        Poco::ScopedWriteRWLock l(m_lock);
+        for (std::vector<Watch::shared_ptr>::const_iterator it = del.begin(), e = del.end(); it != e; ++it)
+        {
+            watches_t::iterator pos = m_watches.find((**it).id());
+            m_watches.erase(pos, pos);
+        }
+    }
+
+}
+
 Dict* TestProj::m_about = NULL;
 std::vector<const Op*>* TestProj::m_ops = NULL;
 
@@ -355,15 +411,20 @@ std::vector<const Op*>* TestProj::m_ops = NULL;
 Server::const_iterator TestProj::begin() const { return const_iterator(m_recs.begin()); }
 Server::const_iterator TestProj::end() const { return const_iterator(m_recs.end()); }
 
+
 //////////////////////////////////////////////////////////////////////////
 // TestWatch Impl
 //////////////////////////////////////////////////////////////////////////
+
+enum { DEFAULT_LEASE_TIME = 5 * 60 }; // 5min in seconds;
+#undef max
+#undef min
 
 TestWatch::TestWatch(const TestProj& server, const std::string& dis) :
 m_server(server),
 m_uuid(boost::lexical_cast<std::string>(boost::uuids::random_generator()())),
 m_dis(dis),
-m_lease((size_t)-1),
+m_lease(std::numeric_limits<Poco::AtomicCounter::ValueType>::min()),
 m_is_open(false){}
 
 const std::string TestWatch::id() const
@@ -376,9 +437,14 @@ const std::string TestWatch::dis() const
     return m_dis;
 }
 
-const size_t TestWatch::lease() const
+const int TestWatch::lease() const
 {
     return m_lease;
+}
+
+void TestWatch::lease(int value)
+{
+    m_lease = value;
 }
 
 Grid::auto_ptr_t TestWatch::sub(const refs_t& ids, bool checked)
@@ -407,6 +473,7 @@ Grid::auto_ptr_t TestWatch::sub(const refs_t& ids, bool checked)
     }
 
     m_is_open = true;
+    m_lease = DEFAULT_LEASE_TIME;
 
     Grid::auto_ptr_t g = Grid::make(res);
     g->meta().add("watchId", m_uuid).add("lease", m_lease);
@@ -457,6 +524,8 @@ Grid::auto_ptr_t TestWatch::poll_refresh()
 
         res.push_back(row);
     }
+
+    m_lease = DEFAULT_LEASE_TIME;
 
     Grid::auto_ptr_t g = Grid::make(res);
     g->meta().add("watchId", m_uuid).add("lease", m_lease);

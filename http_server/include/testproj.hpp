@@ -1,6 +1,10 @@
 #pragma once
 #include "server.hpp"
 
+#include <Poco/AtomicCounter.h>
+#include <Poco/RWLock.h>
+#include <Poco/Timer.h>
+
 //
 // Copyright (c) 2014, J2 Innovations
 // Copyright (c) 2012 Brian Frank
@@ -86,10 +90,13 @@ namespace haystack
         void add_meter(Dict& site, const std::string& dis);
         void add_ahu(Dict& site, const std::string& dis);
         void add_point(Dict& equip, const std::string& dis, const std::string& unit, const std::string& markers);
+        void on_timer(Poco::Timer& timer);
         
         friend class TestWatch;
         recs_t m_recs;
         watches_t m_watches;
+        Poco::RWLock m_lock;
+        Poco::Timer m_timer;
 
         static Dict* m_about;
         static std::vector<const Op*>* m_ops;
@@ -102,7 +109,8 @@ namespace haystack
 
         const std::string id() const;
         const std::string dis() const;
-        const size_t lease() const;
+        const int lease() const;
+        void lease(int);
         Grid::auto_ptr_t sub(const refs_t& ids, bool checked = true);
         void unsub(const refs_t& ids);
         Grid::auto_ptr_t poll_changes();
@@ -115,7 +123,7 @@ namespace haystack
         const std::string m_uuid;
         const std::string m_dis;
         refs_t m_ids;
-        size_t m_lease;
+        Poco::AtomicCounter m_lease;
         bool m_is_open;
 
     };

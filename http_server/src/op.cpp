@@ -6,15 +6,16 @@
 //   06 Jun 2011  Brian Frank  Creation
 //
 
-#include "datetimerange.hpp"
 #include "op.hpp"
-#include "hisitem.hpp"
+#include "bool.hpp"
 #include "marker.hpp"
 #include "num.hpp"
 #include "str.hpp"
 #include "uri.hpp"
 #include "zincreader.hpp"
 #include "zincwriter.hpp"
+#include "datetimerange.hpp"
+#include "hisitem.hpp"
 #include "server.hpp"
 #include "watch.hpp"
 
@@ -61,7 +62,7 @@ void Op::on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse
     try
     {
         Grid::auto_ptr_t g;
-        
+
         if (reqGrid.get() != NULL)
             g = on_service(const_cast<Server&>(db), *reqGrid);
         else
@@ -164,8 +165,8 @@ Grid::auto_ptr_t Op::post_to_grid(HTTPServerRequest& req, HTTPServerResponse& re
 class AboutOp : public Op
 {
 public:
-    std::string name() const { return "about"; }
-    std::string summary() const { return "Summary information for server"; }
+    const std::string name() const { return "about"; }
+    const std::string summary() const { return "Summary information for server"; }
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
@@ -179,8 +180,8 @@ public:
 class OpsOp : public Op
 {
 public:
-    std::string name() const { return "ops"; }
-    std::string summary() const { return "Operations supported by this server"; }
+    const std::string name() const { return "ops"; }
+    const std::string summary() const { return "Operations supported by this server"; }
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
@@ -209,8 +210,8 @@ public:
 class FormatsOp : public Op
 {
 public:
-    std::string name() const { return "formats"; }
-    std::string summary() const { return "Grid data formats supported by this server"; }
+    const std::string name() const { return "formats"; }
+    const std::string summary() const { return "Grid data formats supported by this server"; }
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
@@ -238,8 +239,8 @@ public:
 class ReadOp : public Op
 {
 public:
-    std::string name() const { return "read"; }
-    std::string summary() const { return "Read entity records in database"; }
+    const std::string name() const { return "read"; }
+    const std::string summary() const { return "Read entity records in database"; }
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
@@ -268,8 +269,8 @@ public:
 class NavOp : public Op
 {
 public:
-    std::string name() const { return "nav"; }
-    std::string summary() const { return "Navigate record tree"; }
+    const std::string name() const { return "nav"; }
+    const std::string summary() const { return "Navigate record tree"; }
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         // ensure we have one row
@@ -292,8 +293,8 @@ public:
 class WatchSubOp : public Op
 {
 public:
-    std::string name() const { return "watchSub"; }
-    std::string summary() const { return "Watch subscription"; }
+    const std::string name() const { return "watchSub"; }
+    const std::string summary() const { return "Watch subscription"; }
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         // check for watchId or watchId
@@ -310,6 +311,9 @@ public:
             db.watch_open(watchDis) :
             db.watch(watchId);
 
+        if (watch.get() == NULL)
+            return Grid::make_err(std::runtime_error("Watch not found."));
+
         // map grid to ids
         const Op::refs_t& ids = grid_to_ids(db, req);
 
@@ -324,8 +328,8 @@ public:
 class WatchUnsubOp : public Op
 {
 public:
-    std::string name() const { return "watchUnsub"; }
-    std::string summary() const { return "Watch unsubscription"; }
+    const std::string name() const { return "watchUnsub"; }
+    const std::string summary() const { return "Watch unsubscription"; }
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         // lookup watch, silently ignore failure
@@ -352,19 +356,57 @@ public:
 class WatchPollOp : public Op
 {
 public:
-    std::string name() const  { return "watchPoll"; }
-    std::string summary() const { return "Watch poll cov or refresh"; }
+    const std::string name() const  { return "watchPoll"; }
+    const std::string summary() const { return "Watch poll cov or refresh"; }
+    
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         // lookup watch
         const std::string& watchId = req.meta().get_str("watchId");
         Watch::shared_ptr watch = db.watch(watchId);
 
-        // poll cov or refresh
-        if (req.meta().has("refresh"))
-            return watch->poll_refresh();
-        else
-            return watch->poll_changes();
+        // check for close or unsub
+        if (watch.get() != NULL)
+        {
+            // poll cov or refresh
+            if (req.meta().has("refresh"))
+                return watch->poll_refresh();
+            else
+                return watch->poll_changes();
+        }
+        Grid::auto_ptr_t g = Grid::make_err(std::runtime_error("Watch not found. " + watchId));
+        g->meta().add("watchId", watchId);
+        return g;
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////
+// List all watches op
+//////////////////////////////////////////////////////////////////////////
+class WatchListOp : public Op
+{
+public:
+    const std::string name() const  { return "watchList"; }
+    const std::string summary() const { return "List all watches registered"; }
+
+    Grid::auto_ptr_t on_service(Server& db, const Grid& req)
+    {
+        boost::ptr_vector<Dict> rows;
+        const std::vector<Watch::shared_ptr>& ws = db.watches();
+        for (std::vector<Watch::shared_ptr>::const_iterator it = ws.begin(),
+            end = ws.end();
+            it != end;
+        ++it)
+        {
+            Dict::auto_ptr_t d(new Dict);
+            d->add("id", (**it).id());
+            d->add("dis", (**it).dis());
+            d->add("lease", (**it).lease(), "sec");
+            d->add("isOpen", Bool((**it).is_open()));
+            rows.push_back(d);
+        }
+
+        return Grid::make(rows);
     }
 };
 
@@ -374,8 +416,9 @@ public:
 class PointWriteOp : public Op
 {
 public:
-    std::string name() const { return "pointWrite"; }
-    std::string summary() const { return "Read/write writable point priority array"; }
+    const std::string name() const { return "pointWrite"; }
+    const std::string summary() const { return "Read/write writable point priority array"; }
+    
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         // get required point id
@@ -403,8 +446,8 @@ public:
 class HisReadOp : public Op
 {
 public:
-    std::string name() const  { return "hisRead"; }
-    std::string summary() const { return "Read time series from historian"; }
+    const std::string name() const  { return "hisRead"; }
+    const std::string summary() const { return "Read time series from historian"; }
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
@@ -423,8 +466,8 @@ public:
 class HisWriteOp : public Op
 {
 public:
-    std::string name() const  { return "hisWrite"; }
-    std::string summary() const  { return "Write time series data to historian"; }
+    const std::string name() const  { return "hisWrite"; }
+    const std::string summary() const  { return "Write time series data to historian"; }
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
@@ -444,8 +487,9 @@ public:
 class InvokeActionOp : public Op
 {
 public:
-    std::string name() const { return "invokeAction"; }
-    std::string summary() const { return "Invoke action on target entity"; }
+    const std::string name() const { return "invokeAction"; }
+    const std::string summary() const { return "Invoke action on target entity"; }
+    
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         Val::auto_ptr_t id = val_to_id(db, req.meta().get("id"));
@@ -473,6 +517,8 @@ const Op& StdOps::watch_sub = *new WatchSubOp();
 const Op& StdOps::watch_unsub = *new WatchUnsubOp();
 // Watch poll cov or refresh.
 const Op& StdOps::watch_poll = *new WatchPollOp();
+// List all Watches.
+const Op& StdOps::watch_list = *new WatchListOp();
 // Read/write writable point priority array.
 const Op& StdOps::point_write = *new PointWriteOp();
 // Read time series history data.
@@ -499,6 +545,7 @@ const StdOps::ops_map_t& StdOps::ops_map()
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::watch_sub.name(), &StdOps::watch_sub));
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::watch_unsub.name(), &StdOps::watch_unsub));
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::watch_poll.name(), &StdOps::watch_poll));
+    m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::watch_list.name(), &StdOps::watch_list));
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::point_write.name(), &StdOps::point_write));
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::his_read.name(), &StdOps::his_read));
     m_ops_map->insert(std::pair<std::string, const Op* const>(StdOps::his_write.name(), &StdOps::his_write));
