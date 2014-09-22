@@ -15,12 +15,12 @@ Dict::auto_ptr_t Proj::read_by_id(const Ref& id, bool checked) const
     return rec;
 }
 
-Grid::auto_ptr_t Proj::read_by_ids(const std::vector<Ref>& ids) const
+Grid::auto_ptr_t Proj::read_by_ids(const boost::ptr_vector<Ref>& ids) const
 {
     return read_by_ids(ids, true);
 }
 
-Grid::auto_ptr_t Proj::read_by_ids(const std::vector<Ref>& ids, bool checked) const
+Grid::auto_ptr_t Proj::read_by_ids(const boost::ptr_vector<Ref>& ids, bool checked) const
 {
     Grid::auto_ptr_t grid = on_read_by_ids(ids);
     if (checked)
@@ -39,7 +39,7 @@ Dict::auto_ptr_t Proj::read(const std::string& filter) const
 Dict::auto_ptr_t Proj::read(const std::string& filter, bool checked) const
 {
     Grid::auto_ptr_t grid = read_all(filter, 1);
-    if (grid->num_rows() > 0) return ((Dict&)grid->row(0)).clone();
+    if (grid->num_rows() > 0) return grid->row(0).to_dict();
     if (checked) throw std::runtime_error(filter);
     return Dict::auto_ptr_t();
 }

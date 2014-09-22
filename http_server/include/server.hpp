@@ -91,7 +91,7 @@ namespace haystack
         //  - moduleUri: Uri
         virtual const Dict& on_about() const = 0;
 
-        Grid::auto_ptr_t on_read_by_ids(const std::vector<Ref>& ids) const;
+        Grid::auto_ptr_t on_read_by_ids(const boost::ptr_vector<Ref>& ids) const;
 
         Grid::auto_ptr_t on_read_all(const std::string& filter, size_t limit) const;
 

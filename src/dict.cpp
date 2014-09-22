@@ -182,14 +182,14 @@ Dict& Dict::add(std::string name, const Val* val)
 Dict& Dict::add(std::string name, const Val& val)
 {
     std::string k = name;
-    m_map.insert(k, (Val*)val.clone().release());
+    m_map.insert(k, new_clone(val));
     return *this;
 }
 
 Dict& Dict::add(std::string name)
 {
     std::string k = name;
-    m_map.insert(k, (Marker*)Marker::VAL.clone().release());
+    m_map.insert(k, (Marker*)new_clone(Marker::VAL));
     return *this;
 }
 
@@ -224,7 +224,7 @@ Dict::auto_ptr_t Dict::clone()
     auto_ptr_t c(new Dict());
     for (const_iterator it = begin(), e = end(); it != e; ++it)
     {
-        c->add(it->first, it->second->clone().release());
+        c->add(it->first, it->second->clone());
     }
 
     return c;

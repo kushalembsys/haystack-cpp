@@ -358,7 +358,7 @@ void TestProj::add_point(Dict& equip, const std::string& dis, const std::string&
         d->add(*it);
 
     std::string k = dis;
-    m_recs.insert(k, d.release());
+    m_recs.insert(k, d);
 }
 
 void TestProj::on_timer(Poco::Timer& timer)

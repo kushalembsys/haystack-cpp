@@ -195,7 +195,7 @@ void ZincReader::read_meta(Dict& d)
             skip_space();
         }
         // ownership transfered to the dict
-        d.add(name, val.release());
+        d.add(name, val);
         skip_space();
     }
 }

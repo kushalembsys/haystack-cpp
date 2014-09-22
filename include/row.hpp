@@ -80,6 +80,9 @@ namespace haystack {
         // Get a cell by column.
         const Val& get(const Col& col) const;
 
+        // Get new Dict for this Row.
+        Dict::auto_ptr_t to_dict() const;
+
         // Get start it
         const_iterator begin() const;
 

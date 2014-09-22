@@ -23,11 +23,11 @@ Dict::auto_ptr_t Server::about() const
 // Operations
 //////////////////////////////////////////////////////////////////////////
 
-Grid::auto_ptr_t Server::on_read_by_ids(const std::vector<Ref>& ids) const
+Grid::auto_ptr_t Server::on_read_by_ids(const boost::ptr_vector<Ref>& ids) const
 {
     boost::ptr_vector<Dict> v(ids.size());
 
-    for (std::vector<Ref>::const_iterator it = ids.begin(), end = ids.end(); it != end; ++it)
+    for (boost::ptr_vector<Ref>::const_iterator it = ids.begin(), end = ids.end(); it != end; ++it)
     {
         v.push_back(on_read_by_id(*it));
     }

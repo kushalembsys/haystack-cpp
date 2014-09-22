@@ -33,8 +33,14 @@ namespace haystack
 
         // Authenticate the client and return this.
         Client& open();
-
+        // Call "about" to query summary info.
         Dict::auto_ptr_t about() const;
+        // Call "ops" to query which operations are supported by server.
+        Grid::auto_ptr_t ops();
+        // Call "formats" to query which MIME formats are available.
+        Grid::auto_ptr_t formats();
+        
+
         Grid::auto_ptr_t call(const std::string& op, const Grid& req) const;
 
         /*
@@ -57,7 +63,7 @@ namespace haystack
 
         // stubs
         Dict::auto_ptr_t on_read_by_id(const haystack::Ref &) const;
-        Grid::auto_ptr_t on_read_by_ids(const std::vector<haystack::Ref> &) const;
+        Grid::auto_ptr_t on_read_by_ids(const boost::ptr_vector<Ref> &) const;
         Grid::auto_ptr_t on_read_all(const std::string &, size_t) const;
 
         //////////////////////////////////////////////////////////////////////////

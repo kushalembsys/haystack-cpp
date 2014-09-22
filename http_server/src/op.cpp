@@ -258,6 +258,19 @@ public:
             size_t limit = static_cast<size_t>(row.has("limit") ? row.get_double("limit") : (size_t)-1);
             return db.read_all(filter, limit);
         }
+        else if (row.has("id"))
+        {
+            boost::ptr_vector<Ref> v;
+
+            Grid::const_iterator it = req.begin();
+            for (; it != req.end(); ++it)
+            {
+                if (it->has("id"))
+                    v.push_back(new_clone((Ref&)it->get("id")));
+            }
+
+            return db.read_by_ids(v);
+        }
 
         return  Grid::auto_ptr_t();
     }
@@ -358,7 +371,7 @@ class WatchPollOp : public Op
 public:
     const std::string name() const  { return "watchPoll"; }
     const std::string summary() const { return "Watch poll cov or refresh"; }
-    
+
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         // lookup watch
@@ -418,7 +431,7 @@ class PointWriteOp : public Op
 public:
     const std::string name() const { return "pointWrite"; }
     const std::string summary() const { return "Read/write writable point priority array"; }
-    
+
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         // get required point id
@@ -489,7 +502,7 @@ class InvokeActionOp : public Op
 public:
     const std::string name() const { return "invokeAction"; }
     const std::string summary() const { return "Invoke action on target entity"; }
-    
+
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         Val::auto_ptr_t id = val_to_id(db, req.meta().get("id"));

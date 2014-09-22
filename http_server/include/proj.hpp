@@ -50,7 +50,7 @@ namespace haystack {
         /**
         * Convenience for "read_by_ids(ids, true)"
         */
-        virtual Grid::auto_ptr_t read_by_ids(const std::vector<Ref>& ids) const;
+        virtual Grid::auto_ptr_t read_by_ids(const boost::ptr_vector<Ref>& ids) const;
 
         /**
         * Read a list of entity records by their unique identifier.
@@ -60,7 +60,7 @@ namespace haystack {
         * not resolved.  If checked is false, then each id not found has a
         * row where every cell is null.
         */
-        virtual Grid::auto_ptr_t read_by_ids(const std::vector<Ref>& ids, bool checked) const;
+        virtual Grid::auto_ptr_t read_by_ids(const boost::ptr_vector<Ref>& ids, bool checked) const;
 
         /**
         * Subclass hook for read_by_id, return null if not found.
@@ -71,7 +71,7 @@ namespace haystack {
         * Subclass hook for read_by_ids, return rows with nulls cells
         * for each id not found.
         */
-        virtual Grid::auto_ptr_t on_read_by_ids(const std::vector<Ref>& ids) const = 0;
+        virtual Grid::auto_ptr_t on_read_by_ids(const boost::ptr_vector<Ref>& ids) const = 0;
 
         //////////////////////////////////////////////////////////////////////////
         // Read by filter

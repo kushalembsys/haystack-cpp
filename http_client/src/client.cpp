@@ -20,6 +20,7 @@
 #include <Poco/Path.h>
 #include <Poco/URI.h>
 
+#include "num.hpp"
 #include "zincreader.hpp"
 #include "zincwriter.hpp"
 
@@ -72,18 +73,18 @@ void Client::authenticate() const
 Dict::auto_ptr_t Client::about() const
 {
     Grid::auto_ptr_t g = call("about", Grid::EMPTY);
-    const Row& r = g->row(0);
-    Dict::auto_ptr_t d(new Dict);
 
-    const size_t n_cols = g->num_cols();
+    return g->row(0).to_dict();
+}
 
-    for (size_t i = 0; i < n_cols; i++)
-    {
-        const Col& c = g->col(i);
-        d->add(c.name(), r.get(c));
-    }
+Grid::auto_ptr_t Client::ops()
+{
+    return call("ops", Grid::EMPTY);
+}
 
-    return d;
+Grid::auto_ptr_t Client::formats()
+{
+    return call("formats", Grid::EMPTY);
 }
 
 Grid::auto_ptr_t Client::call(const std::string& op, const Grid& req) const
@@ -112,7 +113,7 @@ const std::string Client::post_string(const std::string& op, const std::string& 
     post.setContentLength(req.length());
     post.setContentType("text/zinc; charset=utf-8");
     session.sendRequest(post) << req;
-    
+
     HTTPResponse res;
     std::stringstream ss;
     std::istream& rs = session.receiveResponse(res);
@@ -127,55 +128,88 @@ const std::string Client::post_string(const std::string& op, const std::string& 
 
 // stubs
 
-Dict::auto_ptr_t Client::on_read_by_id(const haystack::Ref &) const
+Dict::auto_ptr_t Client::on_read_by_id(const haystack::Ref &r) const
 {
-    return Dict::auto_ptr_t();
+    boost::ptr_vector<Ref> v;
+    v.push_back(new_clone(r));
+    Grid::auto_ptr_t res = read_by_ids(v, false);
+    if (res.get() == NULL || res->is_empty()) return  Dict::auto_ptr_t();
+    const Row& rec = res->row(0);
+    if (rec.missing("id")) return Dict::auto_ptr_t();
+    return rec.to_dict();
 }
 
-Grid::auto_ptr_t Client::on_read_by_ids(const std::vector<haystack::Ref> &) const
+Grid::auto_ptr_t Client::on_read_by_ids(const boost::ptr_vector<Ref> &r) const
 {
-    return Grid::auto_ptr_t();
+    Grid req;
+    req.add_col("id");
+    for (boost::ptr_vector<Ref>::const_iterator it = r.begin(); it != r.end(); ++it)
+    {
+        Val* v[1] = { new_clone(*it) };
+        req.add_row(v, 1);
+    }
+
+    return call("read", req);
 }
 
-Grid::auto_ptr_t Client::on_read_all(const std::string &, size_t) const
+Grid::auto_ptr_t Client::on_read_all(const std::string & filter, size_t limit) const
 {
-    return Grid::auto_ptr_t();
+    Grid req;
+    req.add_col("filter");
+    req.add_col("limit");
+    Val* v[2] = { new Str(filter), new Num((long long)limit) };
+    req.add_row(v, 2);
+    return call("read", req);
 }
 
 
 // stubs from Proj
 
-Dict::auto_ptr_t  Proj::read_by_id(const Ref&)const
+Dict::auto_ptr_t  Proj::read_by_id(const Ref& id)const
 {
+    return read_by_id(id, true);
+}
+Dict::auto_ptr_t  Proj::read_by_id(const Ref& id, bool checked)const
+{
+    Dict::auto_ptr_t rec = on_read_by_id(id);
+    if (rec.get() != NULL) return rec;
+    if (checked) throw std::runtime_error("Unknown id: " + id.to_string());
+    return rec;
+}
+Grid::auto_ptr_t  Proj::read_by_ids(const boost::ptr_vector<Ref>& ids)const
+{
+    return read_by_ids(ids, true);
+}
+Grid::auto_ptr_t  Proj::read_by_ids(const boost::ptr_vector<Ref>& ids, bool checked)const
+{
+    Grid::auto_ptr_t grid = on_read_by_ids(ids);
+    if (checked)
+    {
+        for (Grid::const_iterator it = grid->begin(), end = grid->end(); it != end; ++it)
+            if (it->missing("id")) throw std::runtime_error("Unknown id: " + it->to_string());
+    }
+    return grid;
+}
+
+Dict::auto_ptr_t  Proj::read(const std::string& filter) const
+{
+    return read(filter, true);
+}
+Dict::auto_ptr_t  Proj::read(const std::string& filter, bool checked) const
+{
+    Grid::auto_ptr_t grid = read_all(filter, 1);
+    if (grid->num_rows() > 0) return grid->row(0).to_dict();
+    if (checked) throw std::runtime_error(filter);
     return Dict::auto_ptr_t();
 }
-Dict::auto_ptr_t  Proj::read_by_id(const Ref&, bool)const
+#undef max
+Grid::auto_ptr_t  Proj::read_all(const std::string& filter) const
 {
-    return Dict::auto_ptr_t();
+    return read_all(filter, (size_t)-1);
 }
-Grid::auto_ptr_t  Proj::read_by_ids(const std::vector<Ref>&)const
+Grid::auto_ptr_t  Proj::read_all(const std::string& filter, size_t limit) const
 {
-    return Grid::auto_ptr_t();
-}
-Grid::auto_ptr_t  Proj::read_by_ids(const std::vector<Ref>&, bool)const
-{
-    return Grid::auto_ptr_t();
-}
-Dict::auto_ptr_t  Proj::read(const std::string&)const
-{
-    return Dict::auto_ptr_t();
-}
-Dict::auto_ptr_t  Proj::read(const std::string&, bool)const
-{
-    return Dict::auto_ptr_t();
-}
-Grid::auto_ptr_t  Proj::read_all(const std::string&) const
-{
-    return Grid::auto_ptr_t();
-}
-Grid::auto_ptr_t  Proj::read_all(const std::string&, size_t) const
-{
-    return Grid::auto_ptr_t();
+    return on_read_all(filter, limit);
 }
 
 /// stuff
@@ -187,6 +221,15 @@ int main(int argc, char*argv[])
         Client c("http://localhost:8085/auth/", "demo", "demo");
 
         std::cout << c.open().about()->get_str("serverName") << "\n";
+
+        std::cout << ZincWriter::grid_to_string(*c.ops()) << "\n";
+
+        std::cout << ZincWriter::grid_to_string(*c.formats()) << "\n";
+
+        std::cout << c.read_by_id(Ref("A"))->to_string() << "\n";
+
+        std::cout << c.read("site")->to_string() << "\n";
+
     }
     catch (std::exception& e)
     {

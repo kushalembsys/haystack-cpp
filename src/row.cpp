@@ -67,6 +67,22 @@ const Val& Row::get(const Col& col) const
     return EmptyVal::DEF;
 }
 
+// Get new Dict from this Row.
+Dict::auto_ptr_t Row::to_dict() const
+{
+    Dict::auto_ptr_t d(new Dict);
+
+    const size_t n_cols = m_grid.num_cols();
+
+    for (size_t i = 0; i < n_cols; i++)
+    {
+        const Col& c = m_grid.col(i);
+        d->add(c.name(), get(c));
+    }
+
+    return d;
+}
+
 // Get start it
 Row::const_iterator Row::begin() const
 {
