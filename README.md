@@ -2,6 +2,8 @@
 
 haystack-cpp, a C++ implementation of the haystack protocol.
 
+For more info please go to the wiki page [wiki/Home](/wiki/Home)
+
 ### What is this repository for? ###
 
 * haystack-cpp is a C++ implementation of the haystack protocol. It follows closely the design of the original haystack-java implementation while adding some C++ flavor.
