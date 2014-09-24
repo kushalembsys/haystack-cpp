@@ -12,7 +12,7 @@
 
 namespace haystack {
     class Dict;
-    /*
+    /**
      Col is a column in a Grid.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -35,16 +35,24 @@ namespace haystack {
         // Access
         //////////////////////////////////////////////////////////////////////////
 
-        // Return programatic name of column
+        /**
+        Return programatic name of column
+        */
         const std::string name() const;
 
-        // Return display name of column which is meta.dis or name
+        /**
+        Return display name of column which is meta.dis or name
+        */
         const std::string dis() const;
 
-        // Column meta-data tags
+        /**
+        Column meta-data tags
+        */
         const Dict& meta() const;
 
-        // Equality is name and meta
+        /**
+        Equality is name and meta
+        */
         bool operator== (const Col& that);
         bool operator!= (const Col& that);
 

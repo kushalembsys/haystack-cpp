@@ -10,7 +10,7 @@
 //
 
 namespace haystack {
-    /*
+    /**
      Str wraps a std::string as a tag value.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -25,20 +25,28 @@ namespace haystack {
     public:
         const Type type() const { return STR_TYPE; }
 
-        // This string value
+        /**
+        This string value
+        */
         const std::string value;
 
         Str(const std::string &val);
 
         static const Str& EMPTY;
 
-        // Return value string.
+        /**
+        Return value string.
+        */
         const std::string to_string() const;
 
-        // Encode using double quotes and back slash escapes
+        /**
+        Encode using double quotes and back slash escapes
+        */
         const std::string to_zinc() const;
 
-        // Equality is value based
+        /**
+        Equality is value based
+        */
         bool operator ==(const Str &other) const;
         bool operator !=(const Str &other) const;
         bool operator < (const Val &other) const;

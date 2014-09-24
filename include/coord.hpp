@@ -11,7 +11,7 @@
 //
 
 namespace haystack {
-    /*
+    /**
      Coord models a geographic coordinate as latitude and longitude.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -26,33 +26,51 @@ namespace haystack {
     public:
         const Type type() const { return COORD_TYPE; }
 
-        // Latitude in micro-degrees
+        /**
+        Latitude in micro-degrees
+        */
         const int32_t ulat;
-        // Longitude in micro-degrees
+        /**
+        Longitude in micro-degrees
+        */
         const int32_t ulng;
 
         Coord(double, double);
 
-        // Parse from string fomat "C(lat,lng)" or raise runtime exception
+        /**
+        Parse from string fomat "C(lat,lng)" or raise runtime exception
+        */
         static Coord make(const std::string &val);
 
-        // Return if given latitude is legal value between -90.0 and +90.0 */
+        /**
+        Return if given latitude is legal value between -90.0 and +90.0
+        */
         static bool is_lat(double lat);
 
-        // Return if given is longtitude is legal value between -180.0 and +180.0
+        /**
+        Return if given is longtitude is legal value between -180.0 and +180.0
+        */
         static bool is_lng(double lng);
 
-        // Latitude in decimal degrees
+        /**
+        Latitude in decimal degrees
+        */
         double lat() const;
 
-        // Longtitude in decimal degrees
+        /**
+        Longtitude in decimal degrees
+        */
         double lng() const;
 
 
-        // Encode using double quotes and back slash escapes
+        /**
+        Encode using double quotes and back slash escapes
+        */
         const std::string to_zinc() const;
 
-        // Equality is value based
+        /**
+        Equality is value based
+        */
         bool operator ==(const Coord &other) const;
         bool operator !=(const Coord &other) const;
         bool operator < (const Val &other) const;

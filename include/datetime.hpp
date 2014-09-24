@@ -13,7 +13,7 @@
 //
 
 namespace haystack {
-    /*
+    /**
      DateTime models a timestamp with a specific timezone.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -32,16 +32,24 @@ namespace haystack {
     public:
         const Type type() const { return DATE_TIME_TYPE; }
 
-        // Date component of the timestamp
+        /**
+        Date component of the timestamp
+        */
         const Date date;
 
-        // Time component of the timestamp
+        /**
+        Time component of the timestamp
+        */
         const Time time;
 
-        // Timezone as Olson database city name
+        /**
+        Timezone as Olson database city name
+        */
         const TimeZone tz;
 
-        // Offset in seconds from UTC including DST offset
+        /**
+        Offset in seconds from UTC including DST offset
+        */
         const int tz_offset;
 
         // ctors
@@ -53,27 +61,41 @@ namespace haystack {
         DateTime(const Date& date, const Time& time, const TimeZone& tz) : date(date), time(time), tz(tz), tz_offset(tz.offset * 3600), m_millis(-1) {};
         DateTime(const Date& date, const Time& time, const TimeZone& tz, int tzOffset) : date(date), time(time), tz(tz), tz_offset(tzOffset), m_millis(-1) {};
 
-        // construct from time_t
+        /**
+        construct from time_t
+        */
         static DateTime make_time_t(const time_t& ts, const TimeZone& = TimeZone::DEFAULT);
-        // construct from millis
+        /**
+        construct from millis
+        */
         static DateTime make(const int64_t& time, const TimeZone& = TimeZone::DEFAULT);
-        // Get DateTime for current time in default timezone or optionaly for given timezone
+        /**
+        Get DateTime for current time in default timezone or optionaly for given timezone
+        */
         static DateTime now(const TimeZone& = TimeZone::DEFAULT);
 
-        // Encode as "YYYY-MM-DD'T'hh:mm:ss.FFFz zzzz"
+        /**
+        Encode as "YYYY-MM-DD'T'hh:mm:ss.FFFz zzzz"
+        */
         const std::string to_zinc() const;
 
-        // Equality
+        /**
+        Equality
+        */
         bool operator ==(const DateTime &) const;
         bool operator !=(const DateTime &) const;
 
         bool operator==(const Val &other) const;
 
-        // Comparator
+        /**
+        Comparator
+        */
         bool operator <(const Val &) const;
         bool operator >(const Val &) const;
 
-        // Get this date time as Java milliseconds since epoch
+        /**
+        Get this date time as Java milliseconds since epoch
+        */
         const int64_t millis() const;
 
         auto_ptr_t clone() const;

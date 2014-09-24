@@ -10,8 +10,8 @@
 //
 
 namespace haystack {
-    /*
-     Ref wraps a string reference identifier and a optional display name.
+    /**
+     TimeZone.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
      */
@@ -22,21 +22,30 @@ namespace haystack {
         TimeZone& operator=(const TimeZone &other);
 
     public:
-        // This string name
+        /**
+        This string name
+        */
         const std::string	name;
-        // This int offset
+        /**
+        This int offset
+        */
         const int           offset;
 
         TimeZone(const std::string& name) : name(name), offset(detect_gmt_offset(name)) {};
         TimeZone(const std::string& name, const int offset) : name(name), offset(offset) {};
         TimeZone(const TimeZone &other) : name(other.name), offset(other.offset) {};
 
-        // UTC timezone
+        /**
+        UTC timezone
+        */
         static const TimeZone UTC;
-        // Default timezone for the machine
+        /**
+        Default timezone for the machine
+        */
         static const TimeZone DEFAULT;
-
-        // Equality
+        /**
+        Equality
+        */
         bool operator ==(const TimeZone &other) const;
         bool operator !=(const TimeZone &other) const;
 

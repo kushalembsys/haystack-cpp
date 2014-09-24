@@ -10,7 +10,7 @@
 //
 
 namespace haystack {
-    /*
+    /**
      Bin models a binary file with a MIME type.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -25,18 +25,28 @@ namespace haystack {
     public:
         const Type type() const { return BIN_TYPE; }
 
-        // This string value
+        /**
+        This string value
+        */
         const std::string value;
-        // Construct from std::string
+        /**
+        Construct from std::string
+        */
         Bin(const std::string &val);
 
-        // MIME type for binary file
+        /**
+        MIME type for binary file
+        */
         const std::string to_string() const;
 
-        // Encode as "Bin(<mime>)" 
+        /**
+        Encode as "Bin(<mime>)"
+        */
         const std::string to_zinc() const;
 
-        // Equality is value based
+        /**
+        Equality is value based
+        */
         bool operator ==(const Bin &b) const;
         bool operator !=(const Bin &b) const;
         bool operator ==(const std::string &other) const;

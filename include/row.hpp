@@ -46,7 +46,7 @@ namespace haystack {
         const Grid& m_grid;
     };
 
-    /*
+    /**
      Row is a row in a Grid.  It implements the Dict interface also.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -62,31 +62,49 @@ namespace haystack {
         // Private constructor
         Row(const Grid& grid, std::auto_ptr<val_vec_t> cells) : m_grid(grid), m_cells(cells) {}
     public:
-        // Get the grid associated with this row
+        /**
+        Get the grid associated with this row
+        */
         const Grid& grid() const;
 
-        // Number of columns in grid (which may map to null cells)
+        /**
+        Number of columns in grid (which may map to null cells)
+        */
         const size_t size() const;
 
-        // Get a cell by column name. 
+        /**
+        Get a cell by column name.
+        */
         const Val& get(const std::string& name, bool checked = true) const;
 
-        // Get a string by column name. 
+        /**
+        Get a string by column name.
+        */
         const std::string get_string(const std::string& name) const;
         
-        // Get a int by column name. 
+        /**
+        Get a int by column name.
+        */
         const double get_double(const std::string& name) const;
 
-        // Get a cell by column.
+        /**
+        Get a cell by column.
+        */
         const Val& get(const Col& col) const;
 
-        // Get new Dict for this Row.
+        /**
+        Get new Dict for this Row.
+        */
         Dict::auto_ptr_t to_dict() const;
 
-        // Get start it
+        /**
+        Get start it
+        */
         const_iterator begin() const;
 
-        // Get end it
+        /**
+        Get end it
+        */
         const_iterator end() const;
 
     private:

@@ -12,12 +12,12 @@
 
 namespace haystack {
 
-    /*
-    Val is the base class for representing haystack tag
-    scalar values as an immutable class.
+    /**
+     Val is the base class for representing haystack tag
+     scalar values as an immutable class.
 
-    @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
-    */
+     @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
+     */
     class Val : boost::noncopyable
     {
         // disable copy ctor
@@ -42,29 +42,43 @@ namespace haystack {
         typedef std::auto_ptr<Val> auto_ptr_t;
 
         virtual ~Val() {};
-        // String format is for human consumption only
+        /**
+        String format is for human consumption only
+        */
         virtual const std::string to_string() const { return to_zinc(); }
 
-        // Encode value to zinc format
+        /**
+        Encode value to zinc format
+        */
         virtual const std::string to_zinc() const = 0;
-        // Return this Val type
+        /**
+        Return this Val type
+        */
         virtual const Type type() const = 0;
 
         virtual bool operator==(const Val &other) const = 0;
         virtual bool operator > (const Val &other) const = 0;
         virtual bool operator < (const Val &other) const = 0;
 
-        //Converts to a concrete type
+        /**
+        Converts to a concrete type
+        */
         template<class Type>
         inline const Type& as() const { return static_cast<const Type&>(*this); }
 
-        // creates an auto_ptr pointer to the cloned Val
+        /**
+        creates an auto_ptr pointer to the cloned Val
+        */
         virtual auto_ptr_t clone() const = 0;
-        // Check if this Val's Type is EMPTY_TYPE
+        /**
+        Check if this Val's Type is EMPTY_TYPE
+        */
         const bool is_empty() const { return type() == EMPTY_TYPE; }
     };
 
-    // This class is the "empty" value for all types of Val
+    /**
+    This class is the "empty" value for all types of Val
+    */
     class EmptyVal : public Val
     {
     private:
@@ -85,8 +99,10 @@ namespace haystack {
         auto_ptr_t clone() const;
     };
 
-    // generic clone function
-    inline Val* new_clone(const Val& other) 
+    /**
+    generic clone function
+    */
+    inline Val* new_clone(const Val& other)
     {
         return (Val*)other.clone().release();
     }

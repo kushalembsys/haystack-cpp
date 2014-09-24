@@ -12,7 +12,7 @@
 namespace haystack {
 
     class Grid;
-    /*
+    /**
      GridReader is base class for reading grids from an input stream.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -21,7 +21,9 @@ namespace haystack {
     class GridReader
     {
     public:
-        // Read a grid
+        /**
+        Read a grid
+        */
         virtual std::auto_ptr<Grid> read_grid() = 0;
     };
 };

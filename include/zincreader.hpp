@@ -16,7 +16,7 @@
 namespace haystack {
     class Dict;
     class Filter;
-    /*
+    /**
      ZincReader reads grids using the Zinc format.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -30,13 +30,21 @@ namespace haystack {
         virtual ~ZincReader(){}
         static std::auto_ptr<ZincReader> make(const std::string& s);
 
-        // Read a grid
+        /**
+        Read a grid
+        */
         std::auto_ptr<Grid> read_grid();
-        // Parses a filter
+        /**
+        Parses a filter
+        */
         Filter::shared_ptr_t read_filter();
-        // Read set of name/value tags as dictionary
+        /**
+        Read set of name/value tags as dictionary
+        */
         std::auto_ptr<Dict> read_dict();
-        // Read scalar value.
+        /**
+        Read scalar value.
+        */
         Val::auto_ptr_t read_scalar();
 
     private:

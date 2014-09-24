@@ -10,7 +10,7 @@
 //
 
 namespace haystack {
-    /*
+    /**
      Num wraps a 64-bit floating point number and optional unit name.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -25,9 +25,13 @@ namespace haystack {
     public:
         const Type type() const { return NUM_TYPE; }
 
-        // This double value
+        /**
+        This double value
+        */
         const double		value;
-        // This unit string
+        /**
+        This unit string
+        */
         const std::string	unit;
 
         Num(double val, const std::string &unit) : value(val), unit(unit) { enforceUnit(); };
@@ -36,16 +40,22 @@ namespace haystack {
         Num(int val) : value(val), unit("") { enforceUnit(); };
         Num(long long val, const std::string &unit) : value(static_cast<double>(val)), unit(unit) { enforceUnit(); };
         Num(long long val) : value(static_cast<double>(val)), unit("") { enforceUnit(); };
-        // special values
+        /**
+        special values
+        */
         static const Num ZERO;
         static const Num POS_INF;
         static const Num NEG_INF;
         static const Num NaN;
 
-        // Encode value to zinc format
+        /**
+        Encode value to zinc format
+        */
         const std::string to_zinc() const;
 
-        // Equality
+        /**
+        Equality
+        */
         bool operator ==(const Num &other) const;
         bool operator !=(const Num &other) const;
         bool operator > (const Val &other) const;
@@ -56,7 +66,9 @@ namespace haystack {
         bool operator==(const Val &other) const;
         auto_ptr_t clone() const;
 
-        // check if str is a valid unit name
+        /**
+        check if str is a valid unit name
+        */
         static bool isUnitName(const std::string&);
 
         // utils

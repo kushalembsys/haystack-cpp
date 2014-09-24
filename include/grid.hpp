@@ -14,7 +14,7 @@
 //
 
 namespace haystack {
-    /*
+    /**
      Grid a two dimension data structure of cols and rows.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -37,40 +37,60 @@ namespace haystack {
         // Access
         //////////////////////////////////////////////////////////////////////////
 
-        // Return grid level meta
+        /**
+        Return grid level meta
+        */
         Dict& meta();
         const Dict& meta() const;
 
-        // Error grid have the meta.err marker tag
+        /**
+        Error grid have the meta.err marker tag
+        */
         const bool is_err() const;
 
-        // Return if number of rows is zero
+        /**
+        Return if number of rows is zero
+        */
         const bool is_empty() const;
 
-        // Return number of rows
+        /**
+        Return number of rows
+        */
         const size_t num_rows() const;
 
-        // Get a row by its zero based index
+        /**
+        Get a row by its zero based index
+        */
         const Row& row(size_t row) const;
 
-        // Get number of columns
+        /**
+        Get number of columns
+        */
         const size_t num_cols() const;
 
-        // Get a column by its index
+        /**
+        Get a column by its index
+        */
         const Col& col(size_t index) const;
 
-        // Convenience for "col(name, true)"
+        /**
+        Convenience for "col(name, true)"
+        */
         const Col* const col(const std::string& name) const;
 
-        // Get a column by name.  If not found and checked if false then
-        // return null, otherwise throw exception
+        /**
+        Get a column by name.  If not found and checked if false then
+        return null, otherwise throw exception
+        */
         const Col* const col(const std::string& name, bool checked) const;
 
         //////////////////////////////////////////////////////////////////////////
         // Iterator
         //////////////////////////////////////////////////////////////////////////
 
-        // Return rows iterator
+        /**
+        Return rows iterator
+        */
         const_iterator begin() const;
         const_iterator end() const;
 
@@ -78,23 +98,38 @@ namespace haystack {
         // Construction
         //////////////////////////////////////////////////////////////////////////
 
-        // Add new column and return builder for column metadata.
-        //Columns cannot be added after adding the first row. */
+        /**
+        Add new column and return builder for column metadata.
+        Columns cannot be added after adding the first row. 
+        */
         Dict& add_col(const std::string& name);
 
-        // Add new row with array of cells which correspond to column
-        // order.  Return this.
+        /**
+        Add new row with array of cells which correspond to column
+        order.  Return this.
+        */
         Grid& add_row(Val *[], size_t count);
 
-        // Tell grid to allocate space for this abount of rows entries.
+        /**
+        Tell grid to allocate space for this abount of rows entries.
+        */
         void reserve_rows(size_t count);
 
-        // Constructs an err grid
+        /**
+        Constructs an err grid
+        */
         static Grid::auto_ptr_t make_err(const std::runtime_error&);
-        // Constructs grid from Dict
+        /**
+        Constructs grid from Dict
+        */
         static Grid::auto_ptr_t make(const Dict&);
-        // Constructs grid from Dicts vector
+        /**
+        Constructs grid from Dicts* vector
+        */
         static Grid::auto_ptr_t make(const std::vector<const Dict*>&);
+        /**
+        Constructs grid from Dicts ptr_vector
+        */
         static Grid::auto_ptr_t make(const boost::ptr_vector<Dict>&);
 
         static const Grid& EMPTY;

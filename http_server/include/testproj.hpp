@@ -16,9 +16,10 @@
 namespace haystack
 {
     class Dict;
-
+    //
     // TestProj provides a simple implementation of
     // Server with some test entities.
+    //
     class TestProj : public Server
     {
 

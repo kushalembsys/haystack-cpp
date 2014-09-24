@@ -10,7 +10,7 @@
 //
 
 namespace haystack {
-    /*
+    /**
      Uri models a URI as a string.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -23,20 +23,28 @@ namespace haystack {
         Uri(const Uri &other) : value(other.value) {};
     public:
         const Type type() const { return URI_TYPE; }
-        // This value
+        /**
+        This value
+        */
         const std::string value;
 
         Uri(const std::string &val) : value(val) {};
 
         static const Uri EMPTY;
 
-        // Return value string.
+        /**
+        Return value string.
+        */
         const std::string to_string() const;
 
-        // Encode using double quotes and back slash escapes
+        /**
+        Encode using double quotes and back slash escapes
+        */
         const std::string to_zinc() const;
 
-        // Equality is value based
+        /**
+        Equality is value based
+        */
         bool operator ==(const Uri &other) const;
         bool operator !=(const Uri &other) const;
         bool operator < (const Val &other) const;

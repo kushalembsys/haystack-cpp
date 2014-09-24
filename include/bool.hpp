@@ -10,7 +10,7 @@
 //
 
 namespace haystack {
-    /*
+    /**
      Bool defines true/false tag values.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -24,24 +24,36 @@ namespace haystack {
     public:
         const Type type() const { return BOOL_TYPE; }
 
-        // This bool value
+        /**
+        This bool value
+        */
         const bool value;
 
         Bool(bool val);
 
-        // Singleton value for true
+        /**
+        Singleton value for true
+        */
         static const Bool TRUE_VAL;
 
-        // Singleton value for false
+        /**
+        Singleton value for false
+        */
         static const Bool FALSE_VAL;
 
-        // Encode as "true" or "false"
+        /**
+        Encode as "true" or "false"
+        */
         const std::string to_string() const;
 
-        // Encode as "T" or "F"
+        /**
+        Encode as "T" or "F"
+        */
         const std::string to_zinc() const;
 
-        // Equality
+        /**
+        Equality
+        */
         bool operator ==(const Bool &other) const;
         bool operator !=(const Bool &other) const;
         bool operator==(const Val &other) const;

@@ -10,7 +10,7 @@
 //
 
 namespace haystack {
-    /*
+    /**
      Marker is the singleton value for a marker tag.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -26,16 +26,24 @@ namespace haystack {
         Marker() {};
         const Type type() const { return MARKER_TYPE; }
 
-        // default marker value
+        /**
+        default marker value
+        */
         static const Marker& VAL;
 
-        // Encode as "marker"
+        /**
+        Encode as "marker"
+        */
         const std::string to_string() const;
 
-        // Encode as "M"
+        /**
+        Encode as "M"
+        */
         const std::string to_zinc() const;
 
-        // Equality
+        /**
+        Equality
+        */
         bool operator ==(const Marker &b) const;
         bool operator==(const Val &other) const;
         bool operator > (const Val &other) const;

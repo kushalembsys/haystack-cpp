@@ -10,7 +10,7 @@
 //
 
 namespace haystack {
-    /*
+    /**
      Ref wraps a string reference identifier and a optional display name.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -24,26 +24,38 @@ namespace haystack {
     public:
         const Type type() const { return REF_TYPE; }
 
-        // This string value
+        /**
+        This string value
+        */
         const std::string	value;
 
 
         Ref(const std::string& val) : value(val), m_dis("") { Ref::enforceId(); };
         Ref(const std::string& val, const std::string &unit) : value(val), m_dis(unit) { Ref::enforceId(); };
 
-        // Encode as "@id"
+        /**
+        Encode as "@id"
+        */
         const std::string to_code() const { return "@" + value; }
 
-        // Return the val string
+        /**
+        Return the val string
+        */
         const std::string to_string() const;
 
-        // Encode value to zinc format
+        /**
+        Encode value to zinc format
+        */
         const std::string to_zinc() const;
 
-        // Return display string which is dis field if nont empty, val field otherwise
+        /**
+        Return display string which is dis field if nont empty, val field otherwise
+        */
         const std::string dis() const;
 
-        // Equality
+        /**
+        Equality
+        */
         bool operator ==(const Ref &other) const;
         bool operator !=(const Ref &other) const;
         bool operator==(const Val &other) const;
@@ -53,7 +65,9 @@ namespace haystack {
         auto_ptr_t clone() const;
 
         static bool is_id_char(int c);
-        // check if str is a valid id
+        /**
+        check if str is a valid id
+        */
         static bool isId(const std::string&);
 
         // utils

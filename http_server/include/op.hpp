@@ -23,24 +23,34 @@ namespace haystack
     class Ref;
     class Val;
 
-    // Op is the base class for server side operations exposed by the REST API.
-    // All methods on Op must be thread safe.
-    // @see <a href = 'http://project-haystack.org/doc/Ops'>Project Haystack< / a>
+    /**
+    Op is the base class for server side operations exposed by the REST API.
+    All methods on Op must be thread safe.
+    @see <a href = 'http://project-haystack.org/doc/Ops'>Project Haystack< / a>
+    */
     class Op : boost::noncopyable
     {
     public:
 
-        // Programatic name of the operation.
+        /**
+        Programatic name of the operation.
+        */
         virtual const std::string name() const = 0;
 
-        // Short one line summary of what the operation does.
+        /**
+        Short one line summary of what the operation does.
+        */
         virtual const std::string summary() const = 0;
 
-        // Service the request and return response.
-        // This method routes to "onService(HServer,HGrid)".
+        /**
+        Service the request and return response.
+        This method routes to "on_service(Server& db, const Grid& req)"
+        */
         void on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse& res);
 
-        // Service the request and return response.
+        /**
+        Service the request and return response.
+        */
         virtual Grid::auto_ptr_t on_service(Server& db, const Grid& req);
 
     protected:
@@ -60,31 +70,57 @@ namespace haystack
     class StdOps
     {
     public:
-        // List the registered operations.
+        /**
+        List the registered operations.
+        */
         static const Op& about;
-        // List the registered operations.
+        /**
+        List the registered operations.
+        */
         static const Op& ops;
-        // List the registered grid formats.
+        /**
+        List the registered grid formats.
+        */
         static const Op& formats;
-        // Read entity records in database.
+        /**
+        Read entity records in database.
+        */
         static const Op& read;
-        // Navigate tree structure of database.
+        /**
+        Navigate tree structure of database.
+        */
         static const Op& nav;
-        // Watch subscription.
+        /**
+        Watch subscription.
+        */
         static const Op& watch_sub;
-        // Watch unsubscription.
+        /**
+        Watch unsubscription.
+        */
         static const Op& watch_unsub;
-        // Watch poll cov or refresh.
+        /**
+        Watch poll cov or refresh.
+        */
         static const Op& watch_poll;
-        // List all Watches.
+        /**
+        List all Watches.
+        */
         static const Op& watch_list;
-        // Read/write writable point priority array.
+        /**
+        Read/write writable point priority array.
+        */
         static const Op& point_write;
-        // Read time series history data.
+        /**
+        Read time series history data.
+        */
         static const Op& his_read;
-        // Write time series history data.
+        /**
+        Write time series history data.
+        */
         static const Op& his_write;
-        // Invoke action.
+        /**
+        Invoke action.
+        */
         static const Op& invoke_action;
 
         typedef std::map<std::string, const Op* const> ops_map_t;

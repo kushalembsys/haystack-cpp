@@ -1,11 +1,11 @@
 # README #
 
-haystack-cpp, a C++ implementation of the haystack protocol.
+**haystack-cpp**, a C++ implementation of the **Haystack** protocol.
 
 ### What is this repository for? ###
 
-* haystack-cpp is a C++ implementation of the haystack protocol. It follows closely the design of the original haystack-java implementation while adding some C++ flavor.
-You will find included all the basic **haystack** types, serialization/de-serialization support and a battery of tests for the types and serialization parts.
+* **haystack-cpp** is a C++ implementation of the **Haystack** protocol. It follows closely the design of the original **haystack-java** implementation while adding some C++ flavor.
+You will find included all the basic **Haystack** types, serialization/de-serialization support and a battery of tests for the types and serialization parts.
 
 * Version 0.1
 

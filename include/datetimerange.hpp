@@ -11,7 +11,7 @@
 
 namespace haystack {
     class Date;
-    /*
+    /**
     DateTimeRange models a starting and ending timestamp.
 
     @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -25,50 +25,74 @@ namespace haystack {
 
         typedef std::auto_ptr<DateTimeRange> auto_ptr_t;
 
-        // Make for single date within given timezone
+        /**
+        Make for single date within given timezone
+        */
         DateTimeRange(const Date& date, const TimeZone& tz);
 
-        // Make from two timestamps
+        /**
+        Make from two timestamps
+        */
         DateTimeRange(const DateTime& start, const DateTime& end);
 
-        // Make for inclusive dates within given timezone
+        /**
+        Make for inclusive dates within given timezone
+        */
         DateTimeRange(const Date& start, const Date& end, const TimeZone& tz);
 
-        // Inclusive starting timestamp
+        /**
+        Inclusive starting timestamp
+        */
         const DateTime& start() const { return m_start; }
 
-        // Inclusive ending timestamp
+        /**
+        Inclusive ending timestamp
+        */
         const DateTime& end() const { return m_end; }
 
-        // Make a range which encompasses the current week.
-        // The week is defined as Sunday thru Saturday. */
+        /**
+        Make a range which encompasses the current week.
+        The week is defined as Sunday thru Saturday. 
+        */
         static DateTimeRange::auto_ptr_t this_week(const TimeZone& tz);
 
-        // Make a range which encompasses the current month.
+        /**
+        Make a range which encompasses the current month.
+        */
         static DateTimeRange::auto_ptr_t  this_month(const TimeZone& tz);
 
-        // Make a range which encompasses the current year.
+        /**
+        Make a range which encompasses the current year.
+        */
         static DateTimeRange::auto_ptr_t  this_year(const TimeZone& tz);
 
-        // Make a range which encompasses the previous week.
-        //The week is defined as Sunday thru Saturday.
+        /**
+        Make a range which encompasses the previous week.
+        The week is defined as Sunday thru Saturday.
+        */
         static DateTimeRange::auto_ptr_t  last_week(const TimeZone& tz);
 
-        // Make a range which encompasses the previous month.
+        /**
+        Make a range which encompasses the previous month.
+        */
         static DateTimeRange::auto_ptr_t  last_month(const TimeZone& tz);
 
-        // Make a range which encompasses the previous year.
+        /**
+        Make a range which encompasses the previous year.
+        */
         static DateTimeRange::auto_ptr_t  last_year(const TimeZone& tz);
 
-        // Parse from string using the given timezone as context for
-        // date based ranges.  The formats are:
-        //  - "today"
-        //  - "yesterday"
-        //  - "{date}"
-        //  - "{date},{date}"
-        //  - "{dateTime},{dateTime}"
-        //  - "{dateTime}"  // anything after given timestamp
-        // Throw exception is invalid string format.
+        /**
+        Parse from string using the given timezone as context for
+        date based ranges.  The formats are:
+        - "today"
+        - "yesterday"
+        - "{date}"
+        - "{date},{date}"
+        - "{dateTime},{dateTime}"
+        - "{dateTime}"  // anything after given timestamp
+        Throw exception is invalid string format.
+        */
         static DateTimeRange::auto_ptr_t  make(std::string str, const TimeZone& tz);
 
         const std::string to_string() const;

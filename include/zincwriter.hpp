@@ -15,7 +15,7 @@ namespace haystack {
     class Dict;
     class Col;
     class Row;
-    /*
+    /**
      ZincWriter is used to write grids in the Zinc format.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -27,10 +27,14 @@ namespace haystack {
 
         ZincWriter(std::ostream& os);
 
-        // Write a grid
+        /**
+        Write a grid
+        */
         void write_grid(const Grid& grid);
 
-        // Write a grid to string
+        /**
+        Write a grid to string
+        */
         static const std::string grid_to_string(const Grid& grid);
 
     private:

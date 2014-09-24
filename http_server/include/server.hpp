@@ -45,10 +45,11 @@ namespace haystack
         boost::ptr_map<std::string, Dict>::const_iterator m_it;
     };
 
-    // Server is the interface between HTTPRequestHandler and a database of
-    // tag based entities.  All methods on HServer must be thread safe.
-    //
-    // @see <a href='http://project-haystack.org/doc/Rest'>Project Haystack</a>
+    /**
+    Server is the interface between HTTPRequestHandler and a database of
+    tag based entities.  All methods on HServer must be thread safe.
+    @see <a href='http://project-haystack.org/doc/Rest'>Project Haystack</a>
+    */
     class Server : public Proj
     {
 
@@ -64,22 +65,29 @@ namespace haystack
         // Operations
         //////////////////////////////////////////////////////////////////////////
 
-        // Return the operations supported by this database.
+        /**
+        Return the operations supported by this database.
+        */
         virtual const std::vector<const Op*>& ops() = 0;
 
         //////////////////////////////////////////////////////////////////////////
         // Navigation
         //////////////////////////////////////////////////////////////////////////
 
-        // Return navigation children for given navId.
+        /**
+        Return navigation children for given navId.
+        */
         Grid::auto_ptr_t nav(const std::string& navId) const;
 
-        // Read a record from the database using a navigation path.
-        // If not found then return NULL or raise runtime_exception
-        // base on checked flag.
+        /**
+        Read a record from the database using a navigation path.
+        If not found then return NULL or raise runtime_exception
+        base on checked flag.
+        */
         Dict::auto_ptr_t nav_read_by_uri(const Uri& uri, bool checked) const;
 
     protected:
+        //
         // Implementation hook for "about" method.
         // Should return these tags:
         //   - serverName: Str
@@ -89,6 +97,7 @@ namespace haystack
         //   - moduleName: Str
         //   - moduleVersion: Str
         //  - moduleUri: Uri
+        //
         virtual const Dict& on_about() const = 0;
 
         Grid::auto_ptr_t on_read_by_ids(const boost::ptr_vector<Ref>& ids) const;
@@ -98,65 +107,85 @@ namespace haystack
         virtual const_iterator begin() const = 0;
         virtual const_iterator end() const = 0;
 
+        //
         // Return navigation tree children for given navId.
         // The grid must define the "navId" column.
+        //
         virtual Grid::auto_ptr_t on_nav(const std::string& nav_id) const = 0;
-
+        //
         // Implementation hook for nav_read_by_uri.  Return null if not
         // found.  Do NOT raise any exceptions.
+        //
         virtual Dict::auto_ptr_t on_nav_read_by_uri(const Uri& uri) const = 0;
 
     public:
         //////////////////////////////////////////////////////////////////////////
         // Watches
         //////////////////////////////////////////////////////////////////////////
-
+        //
         // Create a new watch with an empty subscriber list.  The dis
         // string is a debug string to keep track of who created the watch.
+        //
         const Watch::shared_ptr watch_open(const std::string& dis);
 
-        // List the open watches.
+        /**
+        List the open watches.
+        */
         const std::vector<Watch::shared_ptr> watches();
-
+        //
         // Lookup a watch by its unique identifier.  If not found then
         // raise runtime_error or return NULL based on checked flag.
+        //
         virtual Watch::shared_ptr watch(const std::string& id, bool checked = true);
     protected:
-        // Implementation hook for on_watch_open.
+        /**
+        Implementation hook for on_watch_open.
+        */
         virtual Watch::shared_ptr on_watch_open(const std::string& dis) = 0;
 
-        // Implementation hook for watches.
+        /**
+        Implementation hook for watches.
+        */
         virtual const std::vector<Watch::shared_ptr> on_watches() = 0;
 
-        // Implementation hook for watch lookup, return null if not found.
+        /**
+        Implementation hook for watch lookup, return null if not found.
+        */
         virtual  Watch::shared_ptr on_watch(const std::string& id) = 0;
     public:
         //////////////////////////////////////////////////////////////////////////
         // Point Writes
         //////////////////////////////////////////////////////////////////////////
-
+        //
         // Return priority array for writable point identified by id.
         // The grid contains 17 rows with following columns:
         //   - level: number from 1 - 17 (17 is default)
         //   - levelDis: human description of level
         //   - val: current value at level or null
         //   - who: who last controlled the value at this level
+        //
         Grid::auto_ptr_t point_write_array(const Ref& id);
 
-        // Write to the given priority array level.
+        /**
+        Write to the given priority array level.
+        */
         void point_write(const Ref& id, int level, const Val& val, const std::string& who, const Num& dur);
     protected:
-        // Implementation hook for pointWriteArray
+        /**
+        Implementation hook for pointWriteArray
+        */
         virtual Grid::auto_ptr_t on_point_write_array(const Dict& rec) = 0;
 
-        // Implementation hook for pointWrite
+        /**
+        Implementation hook for pointWrite
+        */
         virtual void on_point_write(const Dict& rec, int level, const Val& val, const std::string& who, const Num& dur) = 0;
 
     public:
         //////////////////////////////////////////////////////////////////////////
         // History
         //////////////////////////////////////////////////////////////////////////
-
+        //
         // Read history time-series data for given record and time range. The
         // items returned are exclusive of start time and inclusive of end time.
         // Raise exception if id does not map to a record with the required tags
@@ -164,21 +193,27 @@ namespace haystack
         // If DateTimeRange is passed then must match the timezone configured on
         // the history record.  Otherwise if a StrRange is passed, it is resolved
         // relative to the history record's timezone.
+        //
         Grid::auto_ptr_t his_read(const Ref& id, const std::string& range);
-
+        //
         // Write a set of history time-series data to the given point record.
         // The record must already be defined and must be properly tagged as
         // a historized point.  The timestamp timezone must exactly match the
         // point's configured "tz" tag.  If duplicate or out-of-order items are
         // inserted then they must be gracefully merged.
+        //
         void his_write(const Ref& id, const std::vector<HisItem>& items);
 
     protected:
+        //
         // Implementation hook for hisRead.  The items must be exclusive
         // of start and inclusive of end time.
+        //
         virtual std::vector<HisItem> on_his_read(const Dict& rec, const DateTimeRange& range) = 0;
 
-        // Implementation hook for onHisWrite.
+        /**
+        Implementation hook for onHisWrite.
+        */
         virtual void on_his_write(const Dict& rec, const std::vector<HisItem>& items) = 0;
 
     public:
@@ -186,7 +221,9 @@ namespace haystack
         // Actions
         //////////////////////////////////////////////////////////////////////////
 
-        // Invoke an action identified by id and action.
+        /**
+        Invoke an action identified by id and action.
+        */
         Grid::auto_ptr_t invoke_action(const Ref& id, const std::string& action, const Dict& args)
         {
             // lookup entity
@@ -197,7 +234,9 @@ namespace haystack
         }
 
      protected:
-        // Implementation hook for invokeAction
+         /**
+         Implementation hook for invokeAction
+         */
          virtual Grid::auto_ptr_t on_invoke_action(const Dict& rec, const std::string& action, const Dict& args) = 0;
 
     public:

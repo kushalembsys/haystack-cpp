@@ -21,7 +21,9 @@ namespace haystack
         // Construction
         //////////////////////////////////////////////////////////////////////////
 
-        // Convenience for construction and call to open().
+        /**
+        Convenience for construction and call to open().
+        */
         static Client::auto_ptr_t open(const std::string& uri, const std::string& user, const std::string& pass);
 
         // Constructor with URI to server's API and authentication credentials.
@@ -31,13 +33,21 @@ namespace haystack
         // Operations
         //////////////////////////////////////////////////////////////////////////
 
-        // Authenticate the client and return this.
+        /**
+        Authenticate the client and return this.
+        */
         Client& open();
-        // Call "about" to query summary info.
+        /**
+        Call "about" to query summary info.
+        */
         Dict::auto_ptr_t about() const;
-        // Call "ops" to query which operations are supported by server.
+        /**
+        Call "ops" to query which operations are supported by server.
+        */
         Grid::auto_ptr_t ops();
-        // Call "formats" to query which MIME formats are available.
+        /**
+        Call "formats" to query which MIME formats are available.
+        */
         Grid::auto_ptr_t formats();
         
 

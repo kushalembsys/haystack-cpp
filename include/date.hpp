@@ -12,7 +12,7 @@ namespace haystack {
     class DateTime;
     class TimeZone;
 
-    /*
+    /**
      Date models a date (day in year) tag value.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -29,44 +29,70 @@ namespace haystack {
     public:
         const Type type() const { return DATE_TYPE; }
 
-        // Four digit year such as 2014
+        /**
+        Four digit year such as 2014
+        */
         const int year;
 
-        // Month as 1-12 (Jan is 1, Dec is 12)
+        /**
+        Month as 1-12 (Jan is 1, Dec is 12)
+        */
         const int month;
 
-        // Day of month as 1-31
+        /**
+        Day of month as 1-31
+        */
         const int day;
 
         // ctors
         Date(int year, int month, int day) : year(year), month(month), day(day) {};
 
-        // Encode as "YYYY-MM-DD"
+        /**
+        Encode as "YYYY-MM-DD"
+        */
         const std::string to_zinc() const;
 
-        // Return date in future given number of days
+        /**
+        Return date in future given number of days
+        */
         Date inc_days(int) const;
-        // Return date in past given number of days
+        /**
+        Return date in past given number of days
+        */
         Date dec_days(int) const;
 
-        // Return day of week: Sunday is 1, Saturday is 7
+        /**
+        Return day of week: Sunday is 1, Saturday is 7
+        */
         int weekday() const;
-        
-        //Convert this date into DateTime for midnight in given timezone.
+
+        /**
+        Convert this date into DateTime for midnight in given timezone.
+        */
         std::auto_ptr<DateTime> midnight(const TimeZone& tz) const;
 
-        // Return if given year a leap year
+        /**
+        Return if given year a leap year
+        */
         static bool is_leap_year(int year);
-        // Return number of days in given year (xxxx) and month (1-12)
+        /**
+        Return number of days in given year (xxxx) and month (1-12)
+        */
         static int days_in_month(int year, int mon);
-        // Get Date for current time in default timezone.
+        /**
+        Get Date for current time in default timezone.
+        */
         static const Date today();
 
-        // Equality
+        /**
+        Equality
+        */
         bool operator ==(const Date &b) const;
         bool operator !=(const Date &b) const;
 
-        // Comparator
+        /**
+        Comparator
+        */
         bool operator <(const Val &b) const;
         bool operator >(const Val &b) const;
 

@@ -10,7 +10,7 @@
 //
 
 namespace haystack {
-    /*
+    /**
      Time models a time of day tag value.
 
      @see <a href='http://project-haystack.org/doc/TagModel#tagKinds'>Project Haystack</a>
@@ -27,16 +27,24 @@ namespace haystack {
     public:
         const Type type() const { return TIME_TYPE; }
 
-        // Hour of day as 0-23
+        /**
+        Hour of day as 0-23
+        */
         const int hour;
 
-        // Minute of hour as 0-59
+        /**
+        Minute of hour as 0-59
+        */
         const int minutes;
 
-        // Second of minute as 0-59
+        /**
+        Second of minute as 0-59
+        */
         const int sec;
 
-        // Fractional seconds in milliseconds 0-999
+        /**
+        Fractional seconds in milliseconds 0-999
+        */
         const int ms;
 
         // ctors
@@ -45,19 +53,27 @@ namespace haystack {
         Time(int hour, int minutes) : hour(hour), minutes(minutes), sec(0), ms(0) { enforceInit(); }
         
 
-        // Encode as "hh:mm:ss.FFF"
+        /**
+        Encode as "hh:mm:ss.FFF"
+        */
         const std::string to_zinc() const;
 
-        // constants
+        /**
+        constant for midnight
+        */
         static const Time& MIDNIGHT;
 
-        // Equality
+        /**
+        Equality
+        */
         bool operator ==(const Time &b) const;
         bool operator !=(const Time &b) const;
 
         bool operator==(const Val &other) const;
 
-        // Comparator
+        /**
+        Comparator
+        */
         bool operator <(const Val &b) const;
         bool operator >(const Val &b) const;
 
