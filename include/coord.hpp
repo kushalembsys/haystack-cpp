@@ -72,7 +72,7 @@ namespace haystack {
         Equality is value based
         */
         bool operator ==(const Coord &other) const;
-        bool operator !=(const Coord &other) const;
+        
         bool operator < (const Val &other) const;
         bool operator > (const Val &other) const;
 

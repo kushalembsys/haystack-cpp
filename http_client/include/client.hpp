@@ -26,7 +26,9 @@ namespace haystack
         */
         static Client::auto_ptr_t open(const std::string& uri, const std::string& user, const std::string& pass);
 
-        // Constructor with URI to server's API and authentication credentials.
+        /**
+        Constructor with URI to server's API and authentication credentials.
+        */
         Client(const std::string& uri, const std::string& user, const std::string& pass);
 
         //////////////////////////////////////////////////////////////////////////
@@ -50,18 +52,14 @@ namespace haystack
         */
         Grid::auto_ptr_t formats();
         
-
+        /**
+        Make a call to the given operation.  The request grid is posted
+        to the URI "this.uri+op" and the response is parsed as a grid.
+        Raise std::runtime_error if there is a communication I/O error.
+        Raise std::runtime_error if there is a server side error and an error
+        grid is returned.
+        */
         Grid::auto_ptr_t call(const std::string& op, const Grid& req) const;
-
-        /*
-        Dict::auto_ptr_t read_by_id(const Ref&) const;
-        Dict::auto_ptr_t read_by_id(const Ref&, bool)const;
-        Grid::auto_ptr_t read_by_ids(const std::vector<Ref>&)const;
-        Grid::auto_ptr_t read_by_ids(const std::vector<Ref>&, bool)const;
-        Dict::auto_ptr_t read(const std::string&)const;
-        Dict::auto_ptr_t read(const std::string&, bool)const;
-        Grid::auto_ptr_t read_all(const std::string&)const;
-        Grid::auto_ptr_t read_all(const std::string&, unsigned int)const;*/
 
     private:
 

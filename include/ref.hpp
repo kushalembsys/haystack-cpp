@@ -57,7 +57,6 @@ namespace haystack {
         Equality
         */
         bool operator ==(const Ref &other) const;
-        bool operator !=(const Ref &other) const;
         bool operator==(const Val &other) const;
         bool operator > (const Val &other) const;
         bool operator < (const Val &other) const;
@@ -68,7 +67,7 @@ namespace haystack {
         /**
         check if str is a valid id
         */
-        static bool isId(const std::string&);
+        static bool is_id(const std::string&);
 
         // utils
     private:
@@ -76,7 +75,7 @@ namespace haystack {
         const Str m_dis;
         void enforceId()
         {
-            if (!Ref::isId(value))
+            if (!Ref::is_id(value))
                 throw std::runtime_error("invalid id");
         }
     };

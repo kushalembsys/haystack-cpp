@@ -20,7 +20,9 @@ namespace haystack {
     class DateTimeRange : boost::noncopyable
     {
     public:
-
+        /**
+        Enumerate week days starting from Sunday
+        */
         enum WeekDays { SUNDAY = 1, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY };
 
         typedef std::auto_ptr<DateTimeRange> auto_ptr_t;
@@ -80,7 +82,7 @@ namespace haystack {
         /**
         Make a range which encompasses the previous year.
         */
-        static DateTimeRange::auto_ptr_t  last_year(const TimeZone& tz);
+        static DateTimeRange::auto_ptr_t last_year(const TimeZone& tz);
 
         /**
         Parse from string using the given timezone as context for

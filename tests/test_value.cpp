@@ -426,8 +426,8 @@ TEST_CASE("Num testcase", "[Num]")
     CHECK(Num(-std::numeric_limits<double>::infinity(), "%").to_zinc() == "-INF");
 
     // verify bad unit names
-    CHECK(Num::isUnitName("x_z") == true);
-    CHECK(Num::isUnitName("x z") == false);
+    CHECK(Num::is_unit_name("x_z") == true);
+    CHECK(Num::is_unit_name("x z") == false);
 
     CHECK_THROWS(Num(123.4, "foo bar"));
     CHECK_THROWS(Num(123.4, "foo,bar"));
@@ -455,10 +455,10 @@ TEST_CASE("Ref testcase", "[Ref]")
     VERIFY_ZINC(Ref("1234-5678", "Foo \"Bar\""), "@1234-5678 \"Foo \\\"Bar\\\"\"");
 
     // veify ids
-    CHECK(Ref::isId("%") == false);
-    CHECK(Ref::isId("a") == true);
-    CHECK(Ref::isId("a-b:c") == true);
-    CHECK(Ref::isId("a b") == false);
+    CHECK(Ref::is_id("%") == false);
+    CHECK(Ref::is_id("a") == true);
+    CHECK(Ref::is_id("a-b:c") == true);
+    CHECK(Ref::is_id("a b") == false);
 
     // verify ctor
     CHECK_THROWS(Ref("@a"));

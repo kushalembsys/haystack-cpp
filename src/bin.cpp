@@ -66,10 +66,6 @@ bool Bin::operator==(const Val &other) const
     return static_cast<const Bin&>(other).operator==(*this);
 }
 
-bool Bin::operator !=(const Bin &other) const
-{
-    return value != other.value;
-}
 bool Bin::operator ==(const std::string &other) const
 {
     return value == other;

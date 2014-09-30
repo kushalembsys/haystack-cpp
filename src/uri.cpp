@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////
 using namespace haystack;
 
-const Uri Uri::EMPTY = Uri("");
+const Uri& Uri::EMPTY = Uri("");
 
 ////////////////////////////////////////////////
 // to string
@@ -61,11 +61,6 @@ bool Uri::operator==(const Val &other) const
     if (type() != other.type())
         return false;
     return static_cast<const Uri&>(other).operator==(*this);
-}
-
-bool Uri::operator !=(const Uri &other) const
-{
-    return !(*this == other);
 }
 
 bool Uri::operator < (const Val &other) const

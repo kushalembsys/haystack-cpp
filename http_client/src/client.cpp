@@ -11,6 +11,9 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <stdexcept>
+
+#include <boost/algorithm/string.hpp>
 
 #include <Poco/Base64Encoder.h>
 #include <Poco/Exception.h>
@@ -29,10 +32,17 @@ using namespace Poco;
 using namespace Poco::Net;
 
 Client::Client(const std::string& uri, const std::string& user, const std::string& pass) :
-m_uri(uri),
+m_uri(boost::ends_with(uri, "/") ? uri : uri + "/"),
 m_user(user),
 m_pass(pass)
 {
+    // check uri
+    if (!boost::starts_with(uri, "http://") && !boost::starts_with(uri, "https://"))
+        throw std::runtime_error("Invalid uri format: " + uri);
+
+    // sanity check arguments
+    if (user.empty()) throw std::runtime_error("user cannot be empty string");
+
     // Initialize session
     m_session.reset(new HTTPClientSession(m_uri.getHost(), m_uri.getPort()));
     session().setKeepAlive(true);

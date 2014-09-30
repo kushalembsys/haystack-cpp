@@ -25,14 +25,14 @@ const bool Dict::is_empty() const { return size() == 0; }
 const size_t Dict::size() const { return m_map.size(); }
 
 // Return if the given tag is present
-const bool Dict::has(const std::string& name) const 
-{ 
-    return !(get(name, false) == EmptyVal::DEF);
+const bool Dict::has(const std::string& name) const
+{
+    return get(name, false) != EmptyVal::DEF;
 }
 
 // Return if the given tag is not present
 const bool Dict::missing(const std::string& name) const
-{ 
+{
     return get(name, false) == EmptyVal::DEF;
 }
 
@@ -49,7 +49,7 @@ const Val& Dict::get(const std::string& name, bool checked) const
     if (it != end())
         return *it->second;
 
-    if (checked) 
+    if (checked)
         throw std::runtime_error("Name not found: " + name);
     return EmptyVal::DEF;
 }
@@ -82,7 +82,7 @@ const std::string Dict::to_zinc() const
         const Val* val = it->second;
         if (first) first = false; else os << ' ';
         os << name;
-        if (!(*val == Marker::VAL)) { os << ':' << val->to_zinc(); }
+        if (*val != Marker::VAL) { os << ':' << val->to_zinc(); }
     }
     return os.str();
 }
@@ -143,7 +143,8 @@ long long Dict::get_int(const std::string& name) const
 double Dict::get_double(const std::string& name) const
 {
     const Val& v = get(name);
-    if (v.type() == Val::NUM_TYPE) return ((Num&)v).value;
+    if (v.type() == Val::NUM_TYPE)
+        return ((Num&)v).value;
 
     throw std::runtime_error("Value type not a NUM_TYPE");
 }
@@ -155,7 +156,8 @@ bool Dict::operator == (const Dict &other) const
 
     for (dict_t::const_iterator it = begin(), e = end(); it != e; ++it)
     {
-        if (!(*it->second == other.get(it->first, false))) return false;
+        if (*it->second != other.get(it->first, false))
+            return false;
     }
     return true;
 }
@@ -234,11 +236,11 @@ Dict::auto_ptr_t Dict::clone()
 // Static
 ////////////////////////////////////////////////
 
-const Dict& Dict::EMPTY = *(new Dict());
+const Dict& Dict::EMPTY = Dict();
 
 const bool Dict::is_tag_name(const std::string &n)
 {
-    if (n.size() == 0) return false;
+    if (n.empty()) return false;
 
     int first = n[0] & 0xFF;
     if (first < 'a' || first > 'z') return false;

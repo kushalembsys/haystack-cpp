@@ -63,11 +63,6 @@ bool Ref::operator==(const Val &other) const
     return static_cast<const Ref&>(other).operator==(*this);
 }
 
-bool Ref::operator !=(const Ref &other) const
-{
-    return !(*this == other);
-}
-
 ////////////////////////////////////////////////
 // Cmp
 ////////////////////////////////////////////////
@@ -92,7 +87,7 @@ Ref::auto_ptr_t Ref::clone() const
 
 
 // is valid id
-bool Ref::isId(const std::string& id)
+bool Ref::is_id(const std::string& id)
 {
     for (std::string::const_iterator it = id.begin(), end = id.end(); it != end; ++it)
     {

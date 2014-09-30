@@ -57,14 +57,14 @@ std::auto_ptr<ZincReader> ZincReader::make(const std::string& s)
 }
 
 // Read a grid
-std::auto_ptr<Grid> ZincReader::read_grid()
+Grid::auto_ptr_t ZincReader::read_grid()
 {
-    std::auto_ptr<Grid> g(new Grid());
+    Grid::auto_ptr_t g(new Grid());
     // meta line
     read_ver();
     read_meta(g->meta());
     consume_new_line();
-    
+
     // empty grid
     if (m_cur == '\n')
     {

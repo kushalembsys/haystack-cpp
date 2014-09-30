@@ -48,12 +48,12 @@ namespace haystack {
         Equality is value based
         */
         bool operator ==(const Str &other) const;
-        bool operator !=(const Str &other) const;
+        bool operator==(const Val &other) const;
+        bool operator ==(const std::string &other) const;
+
         bool operator < (const Val &other) const;
         bool operator > (const Val &other) const;
 
-        bool operator ==(const std::string &other) const;
-        bool operator==(const Val &other) const;
         auto_ptr_t clone() const;
 
         // implicit conversion to std::string

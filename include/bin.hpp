@@ -48,7 +48,6 @@ namespace haystack {
         Equality is value based
         */
         bool operator ==(const Bin &b) const;
-        bool operator !=(const Bin &b) const;
         bool operator ==(const std::string &other) const;
         bool operator==(const Val &other) const;
 

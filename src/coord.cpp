@@ -55,7 +55,7 @@ bool Coord::is_lat(double lat) { return -90.0 <= lat && lat <= 90.0; }
 // Return if given is longtitude is legal value between -180.0 and +180.0
 bool Coord::is_lng(double lng) { return -180.0 <= lng && lng <= 180.0; }
 
-static void uToStr(std::stringstream &s, int ud)
+void u_to_str(std::stringstream &s, int ud)
 {
     if (ud < 0) { s << '-'; ud = -ud; }
     if (ud < 1000000.0)
@@ -102,9 +102,9 @@ const std::string Coord::to_zinc() const
 	std::stringstream os;
 	
     os << "C(";
-    uToStr(os, ulat);
+    u_to_str(os, ulat);
     os << ',';
-    uToStr(os, ulng);
+    u_to_str(os, ulng);
     os << ")";
 
 	return os.str();
@@ -123,11 +123,6 @@ bool Coord::operator==(const Val &other) const
     if (type() != other.type())
         return false;
     return static_cast<const Coord&>(other).operator==(*this);
-}
-
-bool Coord::operator !=(const Coord &other) const
-{
-	return !(*this == other);
 }
 
 bool Coord::operator < (const Val &other) const

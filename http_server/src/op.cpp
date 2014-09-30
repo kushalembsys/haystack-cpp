@@ -517,29 +517,29 @@ public:
 };
 
 // List the registered operations.
-const Op& StdOps::about = *new AboutOp();
+const Op& StdOps::about = AboutOp();
 // List the registered grid formats.
-const Op& StdOps::formats = *new FormatsOp();
+const Op& StdOps::formats = FormatsOp();
 // Read entity records in database.
-const Op& StdOps::read = *new ReadOp();
+const Op& StdOps::read = ReadOp();
 // Navigate tree structure of database.
-const Op& StdOps::nav = *new NavOp();
+const Op& StdOps::nav = NavOp();
 // Watch subscription.
-const Op& StdOps::watch_sub = *new WatchSubOp();
+const Op& StdOps::watch_sub = WatchSubOp();
 // Watch unsubscription.
-const Op& StdOps::watch_unsub = *new WatchUnsubOp();
+const Op& StdOps::watch_unsub = WatchUnsubOp();
 // Watch poll cov or refresh.
-const Op& StdOps::watch_poll = *new WatchPollOp();
+const Op& StdOps::watch_poll = WatchPollOp();
 // List all Watches.
-const Op& StdOps::watch_list = *new WatchListOp();
+const Op& StdOps::watch_list = WatchListOp();
 // Read/write writable point priority array.
-const Op& StdOps::point_write = *new PointWriteOp();
+const Op& StdOps::point_write = PointWriteOp();
 // Read time series history data.
-const Op& StdOps::his_read = *new HisReadOp();
+const Op& StdOps::his_read = HisReadOp();
 // Write time series history data.
-const Op& StdOps::his_write = *new HisWriteOp();
+const Op& StdOps::his_write = HisWriteOp();
 // Invoke action.
-const Op& StdOps::invoke_action = *new InvokeActionOp();
+const Op& StdOps::invoke_action = InvokeActionOp();
 
 // List the registered operations.
 const Op& StdOps::ops = *new OpsOp();

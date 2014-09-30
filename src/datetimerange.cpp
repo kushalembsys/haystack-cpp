@@ -25,7 +25,8 @@ DateTimeRange::DateTimeRange(const Date& s, const Date& e, const TimeZone& tz) :
 
 DateTimeRange::DateTimeRange(const DateTime& s, const DateTime& e) : m_start(s), m_end(e)
 {
-    if (start().tz != end().tz) throw std::runtime_error("start.tz != end.tz");
+    if (start().tz != end().tz) 
+        throw std::runtime_error("start.tz != end.tz");
 }
 
 DateTimeRange::auto_ptr_t  DateTimeRange::this_week(const TimeZone& tz)
@@ -123,7 +124,7 @@ DateTimeRange::auto_ptr_t DateTimeRange::make(std::string str, const TimeZone& t
         if (end->type() == Val::DATE_TIME_TYPE) return auto_ptr_t(new DateTimeRange((DateTime&)*start, (DateTime&)*end));
     }
 
-    throw std::runtime_error("Invalid HDateTimeRange: " + str);
+    throw std::runtime_error("Invalid DateTimeRange: " + str);
 }
 
 ////////////////////////////////////////////////

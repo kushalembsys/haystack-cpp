@@ -271,7 +271,7 @@ void TestProj::on_his_write(const Dict& rec, const std::vector<HisItem>& items)
 
 Grid::auto_ptr_t TestProj::on_invoke_action(const Dict& rec, const std::string& action, const Dict& args)
 {
-    std::cout << "-- invokeAction \"" << rec.dis() << "." << action << "\" " << args.to_string() << "\n";
+    std::cout << "-- on_invoke_action \"" << rec.dis() << "." << action << "\" " << args.to_string() << "\n";
     return Grid::auto_ptr_t();
 }
 

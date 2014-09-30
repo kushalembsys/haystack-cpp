@@ -34,12 +34,12 @@ namespace haystack {
         /**
         Singleton value for true
         */
-        static const Bool TRUE_VAL;
+        static const Bool& TRUE_VAL;
 
         /**
         Singleton value for false
         */
-        static const Bool FALSE_VAL;
+        static const Bool& FALSE_VAL;
 
         /**
         Encode as "true" or "false"
@@ -55,7 +55,6 @@ namespace haystack {
         Equality
         */
         bool operator ==(const Bool &other) const;
-        bool operator !=(const Bool &other) const;
         bool operator==(const Val &other) const;
 
         bool operator > (const Val &other) const;

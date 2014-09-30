@@ -13,7 +13,7 @@ using namespace haystack;
 // EmptyVal
 ////////////////////////////////////////////////
 
-const EmptyVal& EmptyVal::DEF = *(new EmptyVal());
+const EmptyVal& EmptyVal::DEF = EmptyVal();
 
 const Val::Type EmptyVal::type() const { return EMPTY_TYPE; }
 

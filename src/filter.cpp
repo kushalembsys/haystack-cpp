@@ -252,7 +252,7 @@ std::string Ne::cmp_str() const
 }
 bool Ne::do_include(const Val& val) const
 {
-    return !val.is_empty() && !(CmpFilter::val() == val);
+    return !val.is_empty() && CmpFilter::val() != val;
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -51,12 +51,7 @@ bool Time::operator==(const Val &other) const
 {
     if (type() != other.type())
         return false;
-    return static_cast<const Time&>(other).operator==(*this);
-}
-
-bool Time::operator !=(const Time &other) const
-{
-    return !(*this == other);
+    return *this == static_cast<const Time&>(other);
 }
 
 ////////////////////////////////////////////////

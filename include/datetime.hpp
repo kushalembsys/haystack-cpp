@@ -83,8 +83,7 @@ namespace haystack {
         Equality
         */
         bool operator ==(const DateTime &) const;
-        bool operator !=(const DateTime &) const;
-
+        
         bool operator==(const Val &other) const;
 
         /**

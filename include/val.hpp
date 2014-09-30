@@ -22,7 +22,9 @@ namespace haystack {
     {
         // disable copy ctor
     public:
-        // Define Val type enumeration for all types
+        /**
+        Defines Val type enumeration for all types
+        */
         enum Type
         {
             BOOL_TYPE = 'B',
@@ -57,14 +59,19 @@ namespace haystack {
         virtual const Type type() const = 0;
 
         virtual bool operator==(const Val &other) const = 0;
+        virtual bool operator!=(const Val &other) const
+        {
+            return !(*this == other);
+        }
+
         virtual bool operator > (const Val &other) const = 0;
         virtual bool operator < (const Val &other) const = 0;
 
         /**
-        Converts to a concrete type
+        Converts to a concrete Val type
         */
-        template<class Type>
-        inline const Type& as() const { return static_cast<const Type&>(*this); }
+        template<class ValType>
+        inline const ValType& as() const { return static_cast<const ValType&>(*this); }
 
         /**
         creates an auto_ptr pointer to the cloned Val

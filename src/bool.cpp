@@ -14,8 +14,8 @@ using namespace haystack;
 
 Bool::Bool(bool val) : value(val){}
 
-const Bool Bool::TRUE_VAL = Bool(true);
-const Bool Bool::FALSE_VAL = Bool(false);
+const Bool& Bool::TRUE_VAL = Bool(true);
+const Bool& Bool::FALSE_VAL = Bool(false);
 
 ////////////////////////////////////////////////
 // to string
@@ -51,11 +51,6 @@ bool Bool::operator==(const Val &other) const
     if (type() != other.type())
         return false;
     return static_cast<const Bool&>(other).operator==(*this);
-}
-
-bool Bool::operator != (const Bool &other) const
-{
-    return !(*this == other);
 }
 
 bool Bool::operator < (const Val &other) const

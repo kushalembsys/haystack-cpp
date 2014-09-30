@@ -35,7 +35,7 @@ TEST_CASE("Grid testcase", "[Grid]")
         CHECK(g.meta() == Dict::EMPTY);
         CHECK(g.num_rows() == 0);
         CHECK(g.is_empty() == true);
-        CHECK(!(g.col("foo", false) != NULL));
+        CHECK_FALSE((g.col("foo", false) != NULL));
         CHECK_THROWS(g.col("foo"));
     }
 

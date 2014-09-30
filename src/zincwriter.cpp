@@ -32,6 +32,7 @@ void ZincWriter::write_grid(const Grid& grid)
         if (i > 0) m_os << ',';
         write_col(grid.col(i));
     }
+
     m_os << '\n';
 
     // rows
@@ -67,7 +68,7 @@ void ZincWriter::write_meta(const Dict& meta)
         m_os << ' ';
         m_os << name;
 
-        if (!(val == Marker::VAL))
+        if (val != Marker::VAL)
         {
             m_os << ':';
             m_os << val.to_zinc();

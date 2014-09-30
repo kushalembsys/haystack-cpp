@@ -88,8 +88,15 @@ const std::string DateTime::to_zinc() const
     else
     {
         int offset = tz_offset;
-        if (offset < 0) { os << '-'; offset = -offset; }
-        else { os << '+'; }
+        if (offset < 0) 
+        { 
+            os << '-';
+            offset = -offset;
+        }
+        else 
+        { 
+            os << '+';
+        }
         int zh = offset / 3600;
         int zm = (offset % 3600) / 60;
         if (zh < 10)  os << '0';  os << zh << ':';
@@ -112,12 +119,7 @@ bool DateTime::operator==(const Val &other) const
 {
     if (type() != other.type())
         return false;
-    return static_cast<const DateTime&>(other).operator==(*this);
-}
-
-bool DateTime::operator !=(const DateTime &other) const
-{
-    return !(*this == other);
+    return *this == static_cast<const DateTime&>(other);
 }
 
 ////////////////////////////////////////////////

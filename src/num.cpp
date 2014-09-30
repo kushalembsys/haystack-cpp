@@ -7,7 +7,6 @@
 //
 #include "num.hpp"
 #include <sstream>
-//#include <iomanip>
 #include <cstdio>
 #include <limits>
 #include <cmath>
@@ -69,11 +68,6 @@ bool Num::operator==(const Val &other) const
     return static_cast<const Num&>(other).operator==(*this);
 }
 
-bool Num::operator !=(const Num &other) const
-{
-    return !(*this == other);
-}
-
 bool Num::operator ==(double other) const
 {
     return value == other && unit == "";
@@ -112,7 +106,7 @@ Num::auto_ptr_t Num::clone() const
 ////////////////////////////////////////////////
 
 // is valid unit
-bool Num::isUnitName(const std::string& unit)
+bool Num::is_unit_name(const std::string& unit)
 {
     for (std::string::const_iterator it = unit.begin(), end = unit.end(); it != end; ++it)
     {

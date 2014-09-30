@@ -152,7 +152,7 @@ Grid::auto_ptr_t Server::his_read(const Ref& id, const std::string& range)
     }
 
     // checking
-    if (!(r->start().tz == *tz))
+    if (r->start().tz != *tz)
         throw std::runtime_error("range.tz != rec: " + r->start().tz.name + " != " + tz->name);
 
     // route to subclass
@@ -193,7 +193,7 @@ void Server::his_write(const Ref& id, const std::vector<HisItem>& items)
 
     for (std::vector<HisItem>::const_iterator it = items.begin(), e = items.end(); it != e; ++it)
     {
-        if (!(it->ts->tz == *tz))
+        if (it->ts->tz != *tz)
             throw std::runtime_error("item.tz != rec.tz: " + it->ts->tz.name + " != " + tz->name);
     }
 

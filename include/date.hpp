@@ -88,8 +88,7 @@ namespace haystack {
         Equality
         */
         bool operator ==(const Date &b) const;
-        bool operator !=(const Date &b) const;
-
+       
         /**
         Comparator
         */

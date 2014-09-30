@@ -30,7 +30,7 @@ namespace haystack {
 
         Uri(const std::string &val) : value(val) {};
 
-        static const Uri EMPTY;
+        static const Uri& EMPTY;
 
         /**
         Return value string.
@@ -46,13 +46,11 @@ namespace haystack {
         Equality is value based
         */
         bool operator ==(const Uri &other) const;
-        bool operator !=(const Uri &other) const;
+        bool operator ==(const std::string &other) const;
+        bool operator==(const Val &other) const;
+        
         bool operator < (const Val &other) const;
         bool operator > (const Val &other) const;
-
-        bool operator ==(const std::string &other) const;
-
-        bool operator==(const Val &other) const;
 
         auto_ptr_t clone() const;
 

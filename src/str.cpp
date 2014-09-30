@@ -15,7 +15,7 @@
 ////////////////////////////////////////////////
 using namespace haystack;
 
-const Str& Str::EMPTY = *(new Str(""));
+const Str& Str::EMPTY = Str("");
 
 Str::Str(const std::string &val) : value(val){}
 
@@ -41,7 +41,7 @@ const std::string Str::to_zinc() const
 
     for (std::string::const_iterator it = value.begin(), end = value.end(); it != end; ++it)
     {
-        int32_t c = *it & 0xFF;
+        int c = *it & 0xFF;
         if (c < ' ' || c == '"' || c == '\\')
         {
             os << '\\';
@@ -83,11 +83,6 @@ bool Str::operator==(const Val &other) const
     if (type() != other.type())
         return false;
     return static_cast<const Str&>(other).operator==(*this);
-}
-
-bool Str::operator !=(const Str &other) const
-{
-    return !(*this == other);
 }
 
 bool Str::operator < (const Val &other) const

@@ -126,11 +126,6 @@ bool Date::operator==(const Val &other) const
     return static_cast<const Date&>(other).operator==(*this);
 }
 
-bool Date::operator !=(const Date &other) const
-{
-    return !(*this == other);
-}
-
 ////////////////////////////////////////////////
 // Comparators
 ////////////////////////////////////////////////

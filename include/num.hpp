@@ -19,7 +19,7 @@ namespace haystack {
     {
         Num() : value(0.0), unit("") {};
         // disable assignment
-        Num(const Num &other) : value(other.value), unit(other.unit) { enforceUnit(); };
+        Num(const Num &other) : value(other.value), unit(other.unit) { enforce_unit(); };
         Num operator=(const Num &other) { return Num(other.value, other.unit); };
 
     public:
@@ -34,12 +34,12 @@ namespace haystack {
         */
         const std::string	unit;
 
-        Num(double val, const std::string &unit) : value(val), unit(unit) { enforceUnit(); };
-        Num(double val) : value(val), unit("") { enforceUnit(); };
-        Num(int val, const std::string &unit) : value(val), unit(unit) { enforceUnit(); };
-        Num(int val) : value(val), unit("") { enforceUnit(); };
-        Num(long long val, const std::string &unit) : value(static_cast<double>(val)), unit(unit) { enforceUnit(); };
-        Num(long long val) : value(static_cast<double>(val)), unit("") { enforceUnit(); };
+        Num(double val, const std::string &unit) : value(val), unit(unit) { enforce_unit(); };
+        Num(double val) : value(val), unit("") { enforce_unit(); };
+        Num(int val, const std::string &unit) : value(val), unit(unit) { enforce_unit(); };
+        Num(int val) : value(val), unit("") { enforce_unit(); };
+        Num(long long val, const std::string &unit) : value(static_cast<double>(val)), unit(unit) { enforce_unit(); };
+        Num(long long val) : value(static_cast<double>(val)), unit("") { enforce_unit(); };
         /**
         special values
         */
@@ -57,25 +57,24 @@ namespace haystack {
         Equality
         */
         bool operator ==(const Num &other) const;
-        bool operator !=(const Num &other) const;
+        bool operator ==(double other) const;
+        bool operator ==(long long other) const;
+        bool operator ==(int other) const;
+        bool operator==(const Val &other) const;
         bool operator > (const Val &other) const;
         bool operator < (const Val &other) const;
-        bool operator ==(double other) const;
-        bool operator ==(int other) const;
-        bool operator ==(long long other) const;
-        bool operator==(const Val &other) const;
         auto_ptr_t clone() const;
-
+        
         /**
         check if str is a valid unit name
         */
-        static bool isUnitName(const std::string&);
+        static bool is_unit_name(const std::string&);
 
         // utils
     private:
-        void enforceUnit()
+        void enforce_unit()
         {
-            if (!Num::isUnitName(unit))
+            if (!Num::is_unit_name(unit))
                 throw std::runtime_error("invalid unit");
         }
     };

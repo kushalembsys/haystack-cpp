@@ -29,7 +29,6 @@ bool TimeZone::operator !=(const TimeZone &other) const
     return !(*this == other);
 }
 
-
 char upp(char input)
 {
     return (char)toupper(input);
