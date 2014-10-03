@@ -87,7 +87,7 @@ class HaystackRequestHandler : public HTTPRequestHandler
     /// Return the Zinc encoded grid for the invoked Haystack Op.
 {
 public:
-    HaystackRequestHandler(const haystack::TestProj& proj) : _proj(proj)
+    HaystackRequestHandler(haystack::TestProj& proj) : _proj(proj)
     {
     }
 
@@ -125,7 +125,7 @@ public:
     }
 
 private:
-    const haystack::TestProj& _proj;
+    haystack::TestProj& _proj;
 };
 
 class AuthRequestHandler : public Poco::Net::AbstractHTTPRequestHandler
@@ -133,7 +133,7 @@ class AuthRequestHandler : public Poco::Net::AbstractHTTPRequestHandler
     /// A HTTP Basic Auth sample.
 {
 public:
-    AuthRequestHandler(const haystack::TestProj& proj) :
+    AuthRequestHandler(haystack::TestProj& proj) :
         m_proj(proj){}
 
     void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
@@ -199,7 +199,7 @@ public:
     }
 
 private:
-    const haystack::TestProj& m_proj;
+    haystack::TestProj& m_proj;
 };
 
 
@@ -222,7 +222,7 @@ public:
     }
 
 private:
-    const haystack::TestProj& _proj;
+    haystack::TestProj& _proj;
 };
 
 

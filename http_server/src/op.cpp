@@ -31,7 +31,7 @@ using namespace haystack;
 
 // Service the request and return response.
 // This method routes to "on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse& res)".
-void Op::on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse& res)
+void Op::on_service(Server& db, HTTPServerRequest& req, HTTPServerResponse& res)
 {
     // parse GET query parameters or POST body into grid
     Grid::auto_ptr_t reqGrid;
@@ -64,9 +64,9 @@ void Op::on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse
         Grid::auto_ptr_t g;
 
         if (reqGrid.get() != NULL)
-            g = on_service(const_cast<Server&>(db), *reqGrid);
+            g = on_service(db, *reqGrid);
         else
-            g = on_service(const_cast<Server&>(db), Grid::EMPTY);
+            g = on_service(db, Grid::EMPTY);
 
         if (g.get() != NULL)
             w.write_grid(*g);
@@ -185,6 +185,14 @@ public:
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
+        if (ops_grid.get() != NULL)
+        {
+            // construct a static GridView
+            static GridView gv(*ops_grid);
+            // we return copies of a GridView, this should be fairly light
+            return Grid::auto_ptr_t(new GridView(gv));
+        }
+
         Grid::auto_ptr_t g(new Grid);
 
         g->add_col("name");
@@ -199,9 +207,13 @@ public:
             g->add_row(vals, sizeof(vals) / sizeof(Val*));
         }
 
-        return g;
-    }
+        if (ops_grid.get() == NULL)
+            ops_grid = g;
 
+        return Grid::auto_ptr_t(new GridView(*ops_grid));
+    }
+private:
+    Grid::auto_ptr_t ops_grid;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -215,23 +227,34 @@ public:
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
-        Grid::auto_ptr_t g(new Grid);
-
-        // init the response grid
-        g->add_col("mime");
-        g->add_col("read");
-        g->add_col("write");
-
-        Val* v[3] = {
-            new Str("text/zinc"),
-            new Marker(),
-            new Marker() };
-        g->add_row(v, 3);
-
-        return g;
+        // construct a static GridView
+        static GridView gv(*fmt_grid);
+        // we return copies of a GridView, this should be fairly light
+        return Grid::auto_ptr_t(new GridView(gv));
     }
-
+private:
+    static const Grid::auto_ptr_t fmt_grid;
+    static Grid::auto_ptr_t fmt_grid_init();
 };
+
+Grid::auto_ptr_t FormatsOp::fmt_grid_init()
+{
+    Grid::auto_ptr_t g(new Grid);
+
+    // init the response grid
+    g->add_col("mime");
+    g->add_col("read");
+    g->add_col("write");
+
+    Val* v[3] = {
+        new Str("text/zinc"),
+        new Marker(),
+        new Marker() };
+    g->add_row(v, 3);
+
+    return g;
+}
+const Grid::auto_ptr_t FormatsOp::fmt_grid = fmt_grid_init();
 
 //////////////////////////////////////////////////////////////////////////
 // ReadOp
@@ -284,6 +307,7 @@ class NavOp : public Op
 public:
     const std::string name() const { return "nav"; }
     const std::string summary() const { return "Navigate record tree"; }
+
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         // ensure we have one row
@@ -308,6 +332,7 @@ class WatchSubOp : public Op
 public:
     const std::string name() const { return "watchSub"; }
     const std::string summary() const { return "Watch subscription"; }
+    
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         // check for watchId or watchId
@@ -343,6 +368,7 @@ class WatchUnsubOp : public Op
 public:
     const std::string name() const { return "watchUnsub"; }
     const std::string summary() const { return "Watch unsubscription"; }
+
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         // lookup watch, silently ignore failure

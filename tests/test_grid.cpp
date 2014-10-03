@@ -110,14 +110,14 @@ TEST_CASE("Grid testcase", "[Grid]")
         i = 0;
         for (Row::const_iterator it = gr2.begin(), end = gr2.end(); it != end; ++it, i++)
             CHECK(*it == *r2[i]);
-        
+
         i = 0;
         BOOST_FOREACH(const Val& v, gr1)
         {
             CHECK(v == *r1[i]);
             i++;
         }
-        
+
         i = 0;
         BOOST_FOREACH(const Row& r, g)
         {
@@ -128,5 +128,33 @@ TEST_CASE("Grid testcase", "[Grid]")
         for (Grid::const_iterator it = g.begin(), end = g.end(); it != end; ++it, i++)
             CHECK(*it == g.row(i));
 
+    }
+
+    SECTION("GridView testSimple")
+    {
+        Grid g;
+        g.add_col("id");
+        g.add_col("dis");
+        g.add_col("area");
+        Val* r1[3] = { new Ref("a"), new Str("Alpha"), new Num(1200) };
+        g.add_row(r1, sizeof(r1) / sizeof(Val*));
+
+        Val* r2[3] = { new Ref("b"), new Str("Beta"), NULL };
+        g.add_row(r2, sizeof(r2) / sizeof(Val*));
+
+        GridView gv(g);
+
+        CHECK(g.num_cols() == gv.num_cols());
+        CHECK(g.num_rows() == gv.num_rows());
+        CHECK(g.meta() == gv.meta());
+
+        GridView gvv = gv;
+        CHECK(gvv.num_cols() == gv.num_cols());
+        CHECK(gvv.num_rows() == gv.num_rows());
+        CHECK(gvv.meta() == gv.meta());
+        
+        int i = 0;
+        for (GridView::const_iterator it = gvv.begin(), end = gvv.end(); it != end; ++it, i++)
+            CHECK(**it == g.row(i));
     }
 }

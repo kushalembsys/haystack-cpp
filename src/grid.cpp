@@ -45,7 +45,7 @@ const Col& Grid::col(size_t index) const
     if (index < m_cols.size())
         return m_cols[index];
     else
-        throw std::runtime_error("Col index out of bouds.");
+        throw std::runtime_error("Col index out of bounds.");
 }
 
 // Convenience for "col(name, true)"
@@ -79,10 +79,10 @@ Dict& Grid::add_col(const std::string& name)
     if (m_rows.size() > 0)
         throw std::runtime_error("Cannot add cols after rows have been added");
     if (!Dict::is_tag_name(name))
-        throw  std::runtime_error("Invalid column name: ");
+        throw  std::runtime_error("Invalid column name: " + name);
 
     if (m_cols_by_name.find(name) != m_cols_by_name.end())
-        throw std::runtime_error("Duplicate col name: ");
+        throw std::runtime_error("Duplicate col name: " + name);
 
     const size_t index = m_cols.size();
 

@@ -80,9 +80,13 @@ const std::string Dict::to_zinc() const
     {
         const std::string& name = it->first;
         const Val* val = it->second;
-        if (first) first = false; else os << ' ';
+        if (first) 
+            first = false;
+        else os << ' ';
+        
         os << name;
-        if (*val != Marker::VAL) { os << ':' << val->to_zinc(); }
+        if (*val != Marker::VAL) 
+            os << ':' << val->to_zinc();
     }
     return os.str();
 }

@@ -46,7 +46,7 @@ namespace haystack
         Service the request and return response.
         This method routes to "on_service(Server& db, const Grid& req)"
         */
-        void on_service(const Server& db, HTTPServerRequest& req, HTTPServerResponse& res);
+        void on_service(Server& db, HTTPServerRequest& req, HTTPServerResponse& res);
 
         /**
         Service the request and return response.
