@@ -51,7 +51,7 @@ namespace haystack {
         Time(int hour, int minutes, int sec, int ms) : hour(hour), minutes(minutes), sec(sec), ms(ms) { enforceInit(); }
         Time(int hour, int minutes, int sec) : hour(hour), minutes(minutes), sec(sec), ms(0) { enforceInit(); }
         Time(int hour, int minutes) : hour(hour), minutes(minutes), sec(0), ms(0) { enforceInit(); }
-        
+
 
         /**
         Encode as "hh:mm:ss.FFF"
@@ -66,14 +66,14 @@ namespace haystack {
         /**
         Equality
         */
-        bool operator ==(const Time &b) const;
-        bool operator==(const Val &other) const;
+        bool operator == (const Time &b) const;
+        bool operator == (const Val &other) const;
 
         /**
         Comparator
         */
-        bool operator <(const Val &b) const;
-        bool operator >(const Val &b) const;
+        bool operator < (const Val &b) const;
+        bool operator > (const Val &b) const;
 
         auto_ptr_t clone() const;
 

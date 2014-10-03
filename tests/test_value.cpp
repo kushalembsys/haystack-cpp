@@ -403,6 +403,8 @@ TEST_CASE("Num testcase", "[Num]")
     CHECK(Num(9) < Num(11));
     CHECK(Num(-3) > Num(-4));
     CHECK(Num(-23) == Num(-23));
+    CHECK(Num::NaN == Num::NaN);
+    CHECK_FALSE(Num::NaN == Num::POS_INF);
 
     // zinc
     VERIFY_ZINC(Num(123), "123");

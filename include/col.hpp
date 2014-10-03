@@ -53,8 +53,8 @@ namespace haystack {
         /**
         Equality is name and meta
         */
-        bool operator== (const Col& that);
-        bool operator!= (const Col& that);
+        bool operator == (const Col& that);
+        bool operator != (const Col& that);
 
         //////////////////////////////////////////////////////////////////////////
         // Fields

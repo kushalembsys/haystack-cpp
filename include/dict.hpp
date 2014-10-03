@@ -168,8 +168,8 @@ namespace haystack {
         /**
         Equality
         */
-        bool operator ==(const Dict &b) const;
-        bool operator !=(const Dict &b) const;
+        virtual bool operator == (const Dict &b) const;
+        bool operator != (const Dict &b) const;
 
         // Members
     private:

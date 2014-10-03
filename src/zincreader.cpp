@@ -377,7 +377,7 @@ Val::auto_ptr_t ZincReader::read_num_val()
         if (date.get() == NULL) return time;
     }
 
-    // HDateTime (if we have date and time)
+    // DateTime (if we have date and time)
     bool zUtc = false;
     if (date.get() != NULL)
     {
@@ -418,7 +418,7 @@ Val::auto_ptr_t ZincReader::read_num_val()
             while (is_tz(m_cur)) { tzBuf << (char)m_cur; consume(); }
             tz.reset(new TimeZone(tzBuf.str()));
         }
-        return Val::auto_ptr_t(new DateTime((Date&)*date, (Time&)*time, *tz, tzOffset));
+        return Val::auto_ptr_t(new DateTime((Date&)*date, (Time&)*time, *tz));
     }
 
     // if we have unit, parse that

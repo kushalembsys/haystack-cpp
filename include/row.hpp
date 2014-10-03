@@ -81,7 +81,7 @@ namespace haystack {
         Get a string by column name.
         */
         const std::string get_string(const std::string& name) const;
-        
+
         /**
         Get a int by column name.
         */
@@ -91,6 +91,11 @@ namespace haystack {
         Get a cell by column.
         */
         const Val& get(const Col& col) const;
+
+        /**
+        Encode values to zinc format
+        */
+        const std::string to_zinc() const;
 
         /**
         Get new Dict for this Row.
@@ -106,8 +111,24 @@ namespace haystack {
         Get end it
         */
         const_iterator end() const;
+        
+        /**
+        Equality
+        */
+        bool operator == (const Dict &b) const;
 
     private:
+        // hide from base class
+
+        Dict& add(std::string name, Val::auto_ptr_t val);
+        Dict& add(std::string name, const Val* val);
+        Dict& add(std::string name, const Val& val);
+        Dict& add(std::string name);
+        Dict& add(std::string name, const std::string& val);
+        Dict& add(std::string name, double val, const std::string &unit = "");
+        Dict& add(const Dict& other);
+        auto_ptr_t clone() { return auto_ptr_t(); }
+
         //////////////////////////////////////////////////////////////////////////
         // Fields
         //////////////////////////////////////////////////////////////////////////

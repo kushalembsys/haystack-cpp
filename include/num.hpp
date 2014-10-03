@@ -20,7 +20,7 @@ namespace haystack {
         Num() : value(0.0), unit("") {};
         // disable assignment
         Num(const Num &other) : value(other.value), unit(other.unit) { enforce_unit(); };
-        Num operator=(const Num &other) { return Num(other.value, other.unit); };
+        Num operator = (const Num &other) { return Num(other.value, other.unit); };
 
     public:
         const Type type() const { return NUM_TYPE; }
@@ -56,11 +56,11 @@ namespace haystack {
         /**
         Equality
         */
-        bool operator ==(const Num &other) const;
-        bool operator ==(double other) const;
-        bool operator ==(long long other) const;
-        bool operator ==(int other) const;
-        bool operator==(const Val &other) const;
+        bool operator == (const Num &other) const;
+        bool operator == (double other) const;
+        bool operator == (long long other) const;
+        bool operator == (int other) const;
+        bool operator == (const Val &other) const;
         bool operator > (const Val &other) const;
         bool operator < (const Val &other) const;
         auto_ptr_t clone() const;

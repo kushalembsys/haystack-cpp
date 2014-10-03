@@ -20,7 +20,7 @@ namespace haystack {
     {
         Bin();
         // disable assignment
-        Bin& operator=(const Bin &other);
+        Bin& operator = (const Bin &other);
         Bin(const Bin& other) : value(other.value) {};
     public:
         const Type type() const { return BIN_TYPE; }
@@ -47,9 +47,9 @@ namespace haystack {
         /**
         Equality is value based
         */
-        bool operator ==(const Bin &b) const;
-        bool operator ==(const std::string &other) const;
-        bool operator==(const Val &other) const;
+        bool operator == (const Bin &b) const;
+        bool operator == (const std::string &other) const;
+        bool operator == (const Val &other) const;
 
         bool operator > (const Val &other) const;
         bool operator < (const Val &other) const;

@@ -21,7 +21,7 @@ namespace haystack {
         Coord();
         Coord(int32_t, int32_t);
         // disable assigment
-        Coord& operator=(const Coord &other);
+        Coord& operator = (const Coord &other);
         Coord(const Coord &other) : ulat(other.ulat), ulng(other.ulng) {};
     public:
         const Type type() const { return COORD_TYPE; }
@@ -71,13 +71,12 @@ namespace haystack {
         /**
         Equality is value based
         */
-        bool operator ==(const Coord &other) const;
+        bool operator == (const Coord &other) const;
+        bool operator == (const std::string &other) const;
+        bool operator == (const Val &other) const;
         
         bool operator < (const Val &other) const;
         bool operator > (const Val &other) const;
-
-        bool operator ==(const std::string &other) const;
-        bool operator==(const Val &other) const;
 
         auto_ptr_t clone() const;
 

@@ -19,7 +19,7 @@ namespace haystack {
     {
         Ref();
         // disable assignment
-        Ref& operator=(const Ref &other);
+        Ref& operator = (const Ref &other);
         Ref(const Ref &other) : value(other.value), m_dis(other.m_dis) { Ref::enforceId(); };
     public:
         const Type type() const { return REF_TYPE; }
@@ -56,8 +56,8 @@ namespace haystack {
         /**
         Equality
         */
-        bool operator ==(const Ref &other) const;
-        bool operator==(const Val &other) const;
+        bool operator == (const Ref &other) const;
+        bool operator == (const Val &other) const;
         bool operator > (const Val &other) const;
         bool operator < (const Val &other) const;
 

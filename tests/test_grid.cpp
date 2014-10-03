@@ -91,6 +91,13 @@ TEST_CASE("Grid testcase", "[Grid]")
         CHECK(gr1.get("id") == Ref("a"));
         CHECK(gr1.get("dis") == Str("Alpha"));
         CHECK(gr1.get("area") == Num(1200));
+        Dict d;
+        d.add("id", Ref("a")).add("dis", Str("Alpha")).add("area", Num(1200));
+        CHECK(gr1 == d);
+        CHECK(d == gr1);
+        Dict d1;
+        d1.add("id", Ref("b")).add("dis", Str("Alpha")).add("area", Num(1200));
+        CHECK_FALSE(gr1 == d1);
 
         const Row& gr2 = g.row(1);
         CHECK(gr2.get("id") == Ref("b"));
@@ -122,6 +129,7 @@ TEST_CASE("Grid testcase", "[Grid]")
         BOOST_FOREACH(const Row& r, g)
         {
             CHECK(r == g.row(i));
+            i++;
         }
 
         i = 0;

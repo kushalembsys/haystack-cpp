@@ -23,7 +23,7 @@ namespace haystack {
         // disable construction
         Date();
         // disable assignment
-        Date& operator=(const Date &other);
+        Date& operator = (const Date &other);
         friend class DateTime;
         Date(const Date &other) : year(other.year), month(other.month), day(other.day) {};
     public:
@@ -87,15 +87,14 @@ namespace haystack {
         /**
         Equality
         */
-        bool operator ==(const Date &b) const;
+        bool operator == (const Date &b) const;
+        bool operator == (const Val &other) const;
        
         /**
         Comparator
         */
-        bool operator <(const Val &b) const;
-        bool operator >(const Val &b) const;
-
-        bool operator==(const Val &other) const;
+        bool operator < (const Val &b) const;
+        bool operator > (const Val &b) const;
 
         auto_ptr_t clone() const;
 

@@ -19,7 +19,7 @@ namespace haystack {
     {
         Uri();
         // disable assigment
-        Uri& operator=(const Uri &other);
+        Uri& operator = (const Uri &other);
         Uri(const Uri &other) : value(other.value) {};
     public:
         const Type type() const { return URI_TYPE; }
@@ -45,9 +45,9 @@ namespace haystack {
         /**
         Equality is value based
         */
-        bool operator ==(const Uri &other) const;
-        bool operator ==(const std::string &other) const;
-        bool operator==(const Val &other) const;
+        bool operator == (const Uri &other) const;
+        bool operator == (const std::string &other) const;
+        bool operator == (const Val &other) const;
         
         bool operator < (const Val &other) const;
         bool operator > (const Val &other) const;

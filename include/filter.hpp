@@ -101,7 +101,7 @@ namespace haystack {
         virtual std::string str() const;
         virtual Type type() const { return NORMAL_FILTER_TYPE; };
 
-        virtual bool operator ==(const Filter& other);
+        virtual bool operator == (const Filter& other);
 
         virtual ~Filter(){}
 

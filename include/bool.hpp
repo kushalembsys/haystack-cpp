@@ -19,7 +19,7 @@ namespace haystack {
     {
         Bool();
         // disable assignment
-        Bool& operator=(const Bool &other);
+        Bool& operator = (const Bool &other);
         Bool(const Bool &other) : value(other.value){};
     public:
         const Type type() const { return BOOL_TYPE; }
@@ -54,8 +54,8 @@ namespace haystack {
         /**
         Equality
         */
-        bool operator ==(const Bool &other) const;
-        bool operator==(const Val &other) const;
+        bool operator == (const Bool &other) const;
+        bool operator == (const Val &other) const;
 
         bool operator > (const Val &other) const;
         bool operator < (const Val &other) const;

@@ -7,7 +7,9 @@
 //
 #include "grid.hpp"
 #include "num.hpp"
+#include "marker.hpp"
 #include "str.hpp"
+#include <sstream>
 
 ////////////////////////////////////////////////
 // Row
@@ -67,6 +69,29 @@ const Val& Row::get(const Col& col) const
     return EmptyVal::DEF;
 }
 
+//Encode values to zinc format
+const std::string Row::to_zinc() const
+{
+    const size_t n_cols = m_grid.num_cols();
+    std::stringstream os;
+    bool first = true;
+
+    for (size_t i = 0; i < n_cols; i++)
+    {
+        const Col& c = m_grid.col(i);
+        const std::string& name = c.name();
+        const Val& val = get(c);
+        if (first)
+            first = false;
+        else os << ' ';
+
+        os << name;
+        if (val != Marker::VAL)
+            os << ':' << val.to_zinc();
+    }
+    return os.str();
+}
+
 // Get new Dict from this Row.
 Dict::auto_ptr_t Row::to_dict() const
 {
@@ -93,6 +118,24 @@ Row::const_iterator Row::begin() const
 Row::const_iterator Row::end() const
 {
     return const_row_iterator(*this, m_cells->size());
+}
+
+// Equality
+bool Row::operator == (const Dict &other) const
+{
+    if (size() != other.size()) return false;
+
+    const size_t n_cols = m_grid.num_cols();
+
+    for (size_t i = 0; i < n_cols; i++)
+    {
+        const Col& c = m_grid.col(i);
+        const std::string& name = c.name();
+        const Val& val = get(c);
+        if (val != other.get(name, false))
+            return false;
+    }
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////

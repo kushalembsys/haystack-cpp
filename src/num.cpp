@@ -45,7 +45,14 @@ const std::string Num::to_zinc() const
         }
         else
         {
-            os << value;
+            if (value < 0.001)
+            {
+                char buf[64];
+                sprintf(buf, "%.13e", value);
+                os << buf;
+            }
+            else
+                os << value;
         }
 
         os << unit;
@@ -58,6 +65,10 @@ const std::string Num::to_zinc() const
 ////////////////////////////////////////////////
 bool Num::operator ==(const Num &other) const
 {
+    // special NaN case
+    if (isnan(value) && isnan(other.value) && unit == other.unit)
+        return true;
+
     return value == other.value && unit == other.unit;
 }
 

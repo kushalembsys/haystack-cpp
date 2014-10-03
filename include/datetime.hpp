@@ -24,7 +24,7 @@ namespace haystack {
         // disable construction
         DateTime();
         // disable assignment
-        DateTime& operator=(const DateTime &other);
+        DateTime& operator = (const DateTime &other);
         friend class DateTimeRange;
         DateTime(const DateTime &other) : date(other.date), time(other.time),
             tz(other.tz), tz_offset(tz.offset * 3600),
@@ -82,15 +82,15 @@ namespace haystack {
         /**
         Equality
         */
-        bool operator ==(const DateTime &) const;
+        bool operator == (const DateTime &) const;
         
-        bool operator==(const Val &other) const;
+        bool operator == (const Val &other) const;
 
         /**
         Comparator
         */
-        bool operator <(const Val &) const;
-        bool operator >(const Val &) const;
+        bool operator < (const Val &) const;
+        bool operator > (const Val &) const;
 
         /**
         Get this date time as Java milliseconds since epoch

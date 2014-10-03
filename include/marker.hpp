@@ -21,7 +21,7 @@ namespace haystack {
         // disable copy ctor
         Marker(const Marker&);
         // disable assignment
-        Marker& operator=(const Marker &other);
+        Marker& operator = (const Marker &other);
     public:
         Marker() {};
         const Type type() const { return MARKER_TYPE; }
@@ -44,8 +44,8 @@ namespace haystack {
         /**
         Equality
         */
-        bool operator ==(const Marker &b) const;
-        bool operator==(const Val &other) const;
+        bool operator == (const Marker &b) const;
+        bool operator == (const Val &other) const;
         bool operator > (const Val &other) const;
         bool operator < (const Val &other) const;
 

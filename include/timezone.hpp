@@ -19,7 +19,7 @@ namespace haystack {
     {
         TimeZone();
         // disable assignment
-        TimeZone& operator=(const TimeZone &other);
+        TimeZone& operator = (const TimeZone &other);
 
     public:
         /**
@@ -46,8 +46,8 @@ namespace haystack {
         /**
         Equality
         */
-        bool operator ==(const TimeZone &other) const;
-        bool operator !=(const TimeZone &other) const;
+        bool operator == (const TimeZone &other) const;
+        bool operator != (const TimeZone &other) const;
 
     private:
         int detect_gmt_offset(std::string name);

@@ -58,8 +58,8 @@ namespace haystack {
         */
         virtual const Type type() const = 0;
 
-        virtual bool operator==(const Val &other) const = 0;
-        virtual bool operator!=(const Val &other) const
+        virtual bool operator == (const Val &other) const = 0;
+        virtual bool operator != (const Val &other) const
         {
             return !(*this == other);
         }
@@ -99,7 +99,7 @@ namespace haystack {
 
         const Type type() const;
 
-        bool operator==(const Val &other) const;
+        bool operator == (const Val &other) const;
         bool operator > (const Val &other) const;
         bool operator < (const Val &other) const;
 

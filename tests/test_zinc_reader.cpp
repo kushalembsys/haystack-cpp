@@ -45,10 +45,10 @@ void verifyGridEq(const Grid& grid, const Grid& expected)
     // rows
     CHECK(grid.num_rows() == expected.num_rows());
 
-    size_t i = 0;
-    for (Grid::const_iterator it = expected.begin(), end = expected.end(); it != end; ++it, i++)
+    size_t j = 0;
+    for (Grid::const_iterator it = expected.begin(), end = expected.end(); it != end; ++it, j++)
     {
-        CHECK(grid.row(i) == *it);
+        CHECK(grid.row(j) == *it);
     }
 }
 
@@ -156,7 +156,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
 
         Val* r1[4] = { new Bool(true), new Bool(false), NULL, new Num(-99.0) };
         Val* r2[4] = { new Num(2.3), new Num(-5.0E-10), new Num(2.4E20), new Num(1.23E-8) };
-        Val* r3[4] = { new Str(""), new Str("a"), new Str("\" \\ \t \n \r"), new Str("\x0a") };
+        Val* r3[4] = { new Str(""), new Str("a"), new Str("\" \\ \t \n \r"), new Str("\xEA\xAF\x8D") };
         Val* r4[4] = { new Uri("path"), new Ref("12cbb082-0c02ae73"), new Num(4.0, "s"), new Num(-2.5, "min") };
         Val* r5[4] = { (Val*)new Marker(), new Str("_remove_"), new Bin("image/png"), new Bin("image/png") };
         Val* r6[4] = { new Date(2009, 12, 31), new Time(23, 59, 1, 0), new Time(1, 2, 3, 123), new DateTime(Date(2009, 2, 3), Time(4, 5, 6, 0), TimeZone("UTC")) };
@@ -291,7 +291,7 @@ TEST_CASE("ZincReader", "[ZincReader]")
 
         e.add_col("a");
 
-        Val* r1[1] = { new Num(3.814697265625E-6) };
+        Val* r1[1] = { new Num((double)3.814697265625E-6L) };
         Val* r2[1] = { new DateTime(Date(2010, 12, 18), Time(14, 11, 30, 924), TimeZone("UTC")) };
         Val* r3[1] = { new DateTime(Date(2010, 12, 18), Time(14, 11, 30, 925), TimeZone("UTC")) };
         Val* r4[1] = { new DateTime(Date(2010, 12, 18), Time(14, 11, 30, 925), TimeZone("London")) };
