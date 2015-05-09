@@ -1,15 +1,17 @@
 #pragma once
-#include "headers.hpp"
-#include "grid.hpp"
-#include <boost/shared_ptr.hpp>
-#include <vector>
 //
 // Copyright (c) 2015, J2 Innovations
 // Copyright (c) 2012 Brian Frank
+// Licensed under the Academic Free License version 3.0
 // History:
 //   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
+
+#include "headers.hpp"
+#include "grid.hpp"
+#include <boost/shared_ptr.hpp>
+#include <vector>
 
 namespace haystack {
     class DateTime;

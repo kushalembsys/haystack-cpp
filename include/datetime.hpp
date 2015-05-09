@@ -1,16 +1,17 @@
 #pragma once
-#include "date.hpp"
-#include "time.hpp"
-#include "timezone.hpp"
-#include <stdint.h>
-
 //
 // Copyright (c) 2015, J2 Innovations
 // Copyright (c) 2012 Brian Frank
+// Licensed under the Academic Free License version 3.0
 // History:
 //   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
+
+#include "date.hpp"
+#include "time.hpp"
+#include "timezone.hpp"
+#include <stdint.h>
 
 namespace haystack {
     /**

@@ -1,3 +1,8 @@
+# Copyright (c) 2015, J2 Innovations
+# Licensed under the Academic Free License version 3.0
+# History:
+#   08 Sep 2014  Radu Racariu<radur@2inn.com> created.
+#
 SET (EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin CACHE PATH
    "Single output directory for building all executables.")
 

@@ -1,13 +1,14 @@
 #pragma once
-#include "headers.hpp"
-
 //
 // Copyright (c) 2015, J2 Innovations
 // Copyright (c) 2012 Brian Frank
+// Licensed under the Academic Free License version 3.0
 // History:
 //   29 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation
 //
+
+#include "headers.hpp"
 
 namespace haystack {
 
