@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2015, J2 Innovations
 // Copyright (c) 2012 Brian Frank
 // History:
 //   08 Sep 2014  Radu Racariu<radur@2inn.com> Ported to C++
@@ -165,6 +165,7 @@ Grid::auto_ptr_t Op::post_to_grid(HTTPServerRequest& req, HTTPServerResponse& re
 class AboutOp : public Op
 {
 public:
+    AboutOp() {}
     const std::string name() const { return "about"; }
     const std::string summary() const { return "Summary information for server"; }
 
@@ -222,6 +223,7 @@ private:
 class FormatsOp : public Op
 {
 public:
+    FormatsOp() {}
     const std::string name() const { return "formats"; }
     const std::string summary() const { return "Grid data formats supported by this server"; }
 
@@ -262,6 +264,7 @@ const Grid::auto_ptr_t FormatsOp::fmt_grid = fmt_grid_init();
 class ReadOp : public Op
 {
 public:
+    ReadOp() {}
     const std::string name() const { return "read"; }
     const std::string summary() const { return "Read entity records in database"; }
 
@@ -305,6 +308,7 @@ public:
 class NavOp : public Op
 {
 public:
+    NavOp() {}
     const std::string name() const { return "nav"; }
     const std::string summary() const { return "Navigate record tree"; }
 
@@ -330,9 +334,10 @@ public:
 class WatchSubOp : public Op
 {
 public:
+    WatchSubOp() {}
     const std::string name() const { return "watchSub"; }
     const std::string summary() const { return "Watch subscription"; }
-    
+
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
         // check for watchId or watchId
@@ -366,6 +371,7 @@ public:
 class WatchUnsubOp : public Op
 {
 public:
+    WatchUnsubOp() {}
     const std::string name() const { return "watchUnsub"; }
     const std::string summary() const { return "Watch unsubscription"; }
 
@@ -395,7 +401,8 @@ public:
 class WatchPollOp : public Op
 {
 public:
-    const std::string name() const  { return "watchPoll"; }
+    WatchPollOp() {}
+    const std::string name() const { return "watchPoll"; }
     const std::string summary() const { return "Watch poll cov or refresh"; }
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
@@ -425,7 +432,8 @@ public:
 class WatchListOp : public Op
 {
 public:
-    const std::string name() const  { return "watchList"; }
+    WatchListOp() {}
+    const std::string name() const { return "watchList"; }
     const std::string summary() const { return "List all watches registered"; }
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
@@ -435,7 +443,7 @@ public:
         for (std::vector<Watch::shared_ptr>::const_iterator it = ws.begin(),
             end = ws.end();
             it != end;
-        ++it)
+            ++it)
         {
             Dict::auto_ptr_t d(new Dict);
             d->add("id", (**it).id());
@@ -455,6 +463,7 @@ public:
 class PointWriteOp : public Op
 {
 public:
+    PointWriteOp() {}
     const std::string name() const { return "pointWrite"; }
     const std::string summary() const { return "Read/write writable point priority array"; }
 
@@ -485,7 +494,8 @@ public:
 class HisReadOp : public Op
 {
 public:
-    const std::string name() const  { return "hisRead"; }
+    HisReadOp() {}
+    const std::string name() const { return "hisRead"; }
     const std::string summary() const { return "Read time series from historian"; }
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
@@ -505,8 +515,9 @@ public:
 class HisWriteOp : public Op
 {
 public:
-    const std::string name() const  { return "hisWrite"; }
-    const std::string summary() const  { return "Write time series data to historian"; }
+    HisWriteOp() {}
+    const std::string name() const { return "hisWrite"; }
+    const std::string summary() const { return "Write time series data to historian"; }
 
     Grid::auto_ptr_t on_service(Server& db, const Grid& req)
     {
@@ -526,6 +537,7 @@ public:
 class InvokeActionOp : public Op
 {
 public:
+    InvokeActionOp() {}
     const std::string name() const { return "invokeAction"; }
     const std::string summary() const { return "Invoke action on target entity"; }
 

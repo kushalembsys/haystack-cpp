@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2015, J2 Innovations
 // Copyright (c) 2012 Brian Frank
 // History:
 //   19 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
@@ -238,7 +238,6 @@ Dict::auto_ptr_t Dict::clone()
 
 ////////////////////////////////////////////////
 // Static
-////////////////////////////////////////////////
 
 const Dict& Dict::EMPTY = Dict();
 

@@ -1,7 +1,7 @@
 //
 // haystack_server.cpp
 // 
-// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2015, J2 Innovations
 // Author: Radu Racariu <radur@j2inn.com>
 // 
 // Based on (original notes):

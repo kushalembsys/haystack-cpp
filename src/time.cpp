@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2015, J2 Innovations
 // Copyright (c) 2012 Brian Frank
 // History:
 //   06 Jun 2011  Brian Frank  Creation

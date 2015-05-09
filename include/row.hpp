@@ -5,7 +5,7 @@
 #include <boost/iterator/iterator_facade.hpp>
 
 //
-// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2015, J2 Innovations
 // Copyright (c) 2012 Brian Frank
 // History:
 //   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
@@ -127,7 +127,7 @@ namespace haystack {
         Dict& add(std::string name, const std::string& val);
         Dict& add(std::string name, double val, const std::string &unit = "");
         Dict& add(const Dict& other);
-        auto_ptr_t clone() { return auto_ptr_t(); }
+        auto_ptr_t clone() { return Dict::clone(); }
 
         //////////////////////////////////////////////////////////////////////////
         // Fields

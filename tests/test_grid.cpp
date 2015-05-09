@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2014, Radu Racariu<radur@2inn.com>, Brian Frank
+// Copyright (c) 2015, J2 Innovations
 // History:
 //   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
 //   06 Jun 2011  Brian Frank  Creation

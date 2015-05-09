@@ -3,7 +3,7 @@
 #include <boost/ptr_container/ptr_map.hpp>
 
 //
-// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2015, J2 Innovations
 // Copyright (c) 2012 Brian Frank
 // History:
 //   26 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
@@ -25,14 +25,14 @@ namespace haystack {
         // dict internal type
         typedef boost::ptr_map < std::string, haystack::Val > dict_t;
         typedef dict_t::const_iterator const_iterator;
-    public:
-
+        
+        Dict() {};
         virtual ~Dict(){}
 
         /**
         Singleton for empty set of tags.
         */
-        const static Dict& EMPTY;
+        static const Dict& EMPTY;
 
         /**
         Return true if size is zero

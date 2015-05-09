@@ -1,6 +1,6 @@
 #pragma once
 //
-// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2015, J2 Innovations
 // Copyright (c) 2012 Brian Frank
 // History:
 //   19 Sep 2014  Radu Racariu<radur@2inn.com> Ported to C++

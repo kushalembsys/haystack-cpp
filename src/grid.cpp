@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2014, J2 Innovations
+// Copyright (c) 2015, J2 Innovations
 // Copyright (c) 2012 Brian Frank
 // History:
 //   28 Aug 2014  Radu Racariu<radur@2inn.com> Ported to C++
@@ -185,7 +185,7 @@ Grid::auto_ptr_t Grid::make(const std::vector<const Dict*>& dicts)
     // add cols
     for (std::vector<const Dict*>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
     {
-        for (Dict::const_iterator vit = (**dit).begin(), e = (**dit).end(); vit != e; ++vit)
+        for (Dict::const_iterator vit = (**dit).begin(), e1 = (**dit).end(); vit != e1; ++vit)
         {
             const std::string& col_name = vit->first;
             if (col_names.find(col_name) == col_names.end())
@@ -219,7 +219,7 @@ Grid::auto_ptr_t Grid::make(const boost::ptr_vector<Dict>& dicts)
     // add cols
     for (boost::ptr_vector<Dict>::const_iterator dit = dicts.begin(), e = dicts.end(); dit != e; ++dit)
     {
-        for (Dict::const_iterator vit = dit->begin(), e = dit->end(); vit != e; ++vit)
+        for (Dict::const_iterator vit = dit->begin(), e1 = dit->end(); vit != e1; ++vit)
         {
             const std::string& col_name = vit->first;
             if (col_names.find(col_name) == col_names.end())
@@ -240,4 +240,4 @@ Grid::auto_ptr_t Grid::make(const boost::ptr_vector<Dict>& dicts)
     return g;
 }
 
-const Grid& Grid::EMPTY = Grid();
+const Grid& Grid::EMPTY = *(new Grid());
