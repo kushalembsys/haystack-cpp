@@ -2,7 +2,7 @@
 
 **haystack-cpp**, a C++ implementation of the **Haystack** protocol.
 
-For more info please go to the wiki page [wiki/Home](/jasondbriggs/haystack-cpp/wiki/Home)
+For more info please go to the wiki page [wiki/Home](https://bitbucket.org/jasondbriggs/haystack-cpp/wiki/Home)
 
 ### What is this repository for? ###
 
