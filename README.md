@@ -29,4 +29,4 @@ You will find included all the basic **Haystack** types, serialization/de-serial
 
 ### Who do I talk to? ###
 
-* Repo owner or admin: Radu Racariu <radur@j2inn.com>
+* Repo owner or admin: Radu Racariu <radur<atsign>j2inn.com>
