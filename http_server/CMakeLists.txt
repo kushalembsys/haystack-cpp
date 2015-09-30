@@ -81,7 +81,7 @@ TARGET_LINK_LIBRARIES ( ${EXE_NAME}
   "debug" PocoNetd
  )
 
- target_link_libraries(${EXE_NAME} haystack++)
+target_link_libraries(${EXE_NAME} haystack++ pthread)
 
 # Copy the DLLS to where the executable is.
 # Only do this if you haven't set your path to the Poco DLLs.

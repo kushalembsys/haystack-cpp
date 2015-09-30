@@ -82,5 +82,5 @@ TARGET_LINK_LIBRARIES ( ${EXE_NAME}
   "debug" PocoNetd
  )
 
- target_link_libraries(${EXE_NAME} haystack++)
+target_link_libraries(${EXE_NAME} haystack++ pthread)
 
