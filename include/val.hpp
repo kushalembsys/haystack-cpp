@@ -34,6 +34,7 @@ namespace haystack {
             COORD_TYPE = 'C',
             DATE_TIME_TYPE = 'd',
             DATE_TYPE = 'D',
+            GRID_TYPE = 'G',
             MARKER_TYPE = 'M',
             NUM_TYPE = 'N',
             REF_TYPE = 'R',
