@@ -60,14 +60,23 @@ static const TimeZone currentTZ()
     const int dst = l->tm_isdst;
     const int gmt = std::gmtime(&time)->tm_hour;
 
-    int offset = local - gmt - dst;
+    // localtime gives current local time and adjusts for DST/no DST
+    // dst tells if DST is active or inactive for local time
+    // gmtime converts local time to UTC so the offset = (local - gmt)
+    //
+    int offset = local - gmt;
+
+
+    // only display "+" when offset is greater or equal to 0.
+    // if offset is less than 0, offset will be displayed as a negative value,
+    // so no need to display a second minus sign using (os << '-')
 
     std::stringstream os;
     os << "GMT";
     if (offset >= 0)
+    {
         os << '+';
-    else
-        os << '-';
+    }
     os << offset;
 
     return TimeZone(os.str(), offset);
