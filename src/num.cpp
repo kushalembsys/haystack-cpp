@@ -32,7 +32,7 @@ const std::string Num::to_zinc() const
     std::stringstream os;
     if (value == std::numeric_limits<double>::infinity()) os << "INF";
     else if (value == -std::numeric_limits<double>::infinity()) os << "-INF";
-    else if (isnan(value)) os << "NaN";
+    else if (std::isnan(value)) os << "NaN";
     else
     {
         // don't let fractions
@@ -67,7 +67,7 @@ const std::string Num::to_zinc() const
 bool Num::operator ==(const Num &other) const
 {
     // special NaN case
-    if (isnan(value) && isnan(other.value) && unit == other.unit)
+    if (std::isnan(value) && std::isnan(other.value) && unit == other.unit)
         return true;
 
     return value == other.value && unit == other.unit;
